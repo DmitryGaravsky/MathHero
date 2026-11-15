@@ -52,3 +52,5 @@ repository, MIT licensing, and the complete development/deployment workflow.
 Use GitHub Pages (base /MathHero/), not Sites hosting. The user has iPhone and
 iPad and will perform real-device acceptance after implementation is complete.
 Use the repository-local GitHub noreply identity for this personal project.
+The user explicitly chose unsigned commits for MathHero; local commit.gpgsign
+is false. Preserve other repositories' global signing settings.
