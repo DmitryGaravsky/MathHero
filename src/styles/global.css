@@ -691,14 +691,15 @@ main {
 .skip-link {
   position: fixed;
   left: 20px;
-  top: -100px;
+  top: 15px;
+  clip-path: inset(50%);
   background: white;
   border: 2px solid var(--purple);
   padding: 15px;
   z-index: 10;
 }
 .skip-link:focus {
-  top: 15px;
+  clip-path: none;
 }
 @keyframes float {
   50% {

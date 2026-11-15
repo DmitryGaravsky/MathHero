@@ -40,8 +40,8 @@ attachment itself as a website asset.
 | Stage | Deliverable | State / chat / PR |
 | --- | --- | --- |
 | 1. Audit | Screens, documents, algorithms, debt, baseline and release requirements | Accepted / 01a1dfe4-77de-7401-aa39-e23055253c8f / [PR 1](https://github.com/DmitryGaravsky/MathHero/pull/1) |
-| 2. Architecture | Central settings, modes, parent gate, storage boundaries/migrations | Local review accepted; CI pending / 01a1dff0-6e88-7131-abe8-a916c704b53f |
-| 3. Child experience | Short entry flow, exercises, automatic feedback, results, achievements | Pending |
+| 2. Architecture | Central settings, modes, parent gate, storage boundaries/migrations | Accepted / 01a1dff0-6e88-7131-abe8-a916c704b53f / [PR 2](https://github.com/DmitryGaravsky/MathHero/pull/2) |
+| 3. Child experience | Short entry flow, exercises, automatic feedback, results, achievements | Local review accepted; CI pending / 01a1e017-9be1-7173-be21-1064b66d2c7e |
 | 4. Parent experience and themes | Complete management, light/dark/system, localization and terminology | Pending |
 | 5. Pedagogy | Learned/fluent/retained evidence, retention checks, error/weakness analytics | Pending |
 | 6. Documentation and release | Product/user/pedagogy/architecture/developer docs, screenshots, regression, publication | Pending |
@@ -97,3 +97,24 @@ their records survived the additive upgrade. Legacy import preserved the local
 PIN, and an old installed worker updated naturally with offline state intact.
 The reusable upgrade suite is included in CI. See the stage handoff for exact
 fixtures and remaining stage-specific work. No physical-device claims are made.
+
+[GitHub CI run 43736486605](https://github.com/DmitryGaravsky/MathHero/actions/runs/43736486605)
+passed every verification job on Ubuntu, including the native-upgrade suite.
+PR 2 merged into the integration branch as `449ef3d`; Pages was not deployed.
+
+## Stage 3 acceptance
+
+Reviewed the child home, two-action start/resume, focused progress queries,
+visual achievements, concise evidence-based results and optional error correction.
+Correct feedback advances after 800 ms using the exact owned session snapshot.
+Incorrect feedback and restored feedback from another view require deliberate
+continuation. The coordinator requested and reviewed a live two-tab timer race,
+automatic final-answer summary, zero-answer result and landscape input-fit checks.
+
+Build/types/lint, 61 unit, 178 browser (six baseline skips), 10 PWA and 6 native
+upgrade checks passed locally. Final screenshot review identified a clipped answer
+field in phone landscape; the corrected equation, input including focus outline,
+and keypad now fit with at least 12 CSS px below them and 44 px minimum keypad
+targets. All 18 affected Chromium/WebKit landscape checks and build/lint passed
+after that CSS correction. Parent analytics and the learning/storage policies
+remain intact. See `stages/1.1/03-child.md` for actual artifacts and limitations.

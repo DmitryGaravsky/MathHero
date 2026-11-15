@@ -446,4 +446,29 @@ describe("IndexedDB and controller", () => {
     await controller.next();
     expect(controller.getSnapshot()).toMatchObject({ paused: false, session: { cursor: 1, phase: "question" } });
   });
+  it("rolls back automatic advance when the view suspends during its transaction", async () => {
+    const { db, repo } = repository();
+    const controller = new DiagnosticController(repo, clock, "child");
+    await controller.start();
+    const first = controller.getSnapshot().session!;
+    controller.reveal();
+    controller.setDraft(String(getFact(first.order[0]!).expectedAnswer));
+    await controller.submit();
+    const feedback = controller.getSnapshot().session!;
+    const suspend = vi.fn(() => { void controller.setActive(false); });
+    db.sessions.hook("updating", suspend);
+    try {
+      await controller.advanceCorrectFeedback(feedback);
+    } finally {
+      db.sessions.hook("updating").unsubscribe(suspend);
+    }
+    expect(suspend).toHaveBeenCalledOnce();
+    expect(await repo.get()).toEqual(feedback);
+    expect(await db.attempts.count()).toBe(1);
+    await controller.setActive(true);
+    const restored = controller.getSnapshot().session!;
+    await controller.advanceCorrectFeedback(restored);
+    expect(await repo.get()).toMatchObject({ phase: "question", cursor: 1, activeMs: 0, owner: "child" });
+    expect(await db.attempts.count()).toBe(1);
+  });
 });

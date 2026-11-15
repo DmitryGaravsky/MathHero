@@ -26,7 +26,7 @@ describe("foundation", () => {
     );
     expect(document.documentElement.lang).toBe("es");
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
-      "Una pequeña misión",
+      "¡Hola! ¿Practicamos?",
     );
     await user.click(screen.getByRole("button", { name: "Русский" }));
     await waitFor(() => expect(document.documentElement.lang).toBe("ru"));
@@ -34,7 +34,7 @@ describe("foundation", () => {
       screen.getByRole("link", { name: "Тренировка" }),
     ).toBeInTheDocument();
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
-      "Маленькая миссия",
+      "Привет! Потренируемся?",
     );
   });
   it("accepts keypad input, erases, submits once and clears for retry", async () => {
