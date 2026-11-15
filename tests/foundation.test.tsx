@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { AppProvider } from "../src/app/providers";
@@ -25,15 +25,15 @@ describe("foundation", () => {
       </AppProvider>,
     );
     expect(document.documentElement.lang).toBe("es");
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
       "Una pequeña misión",
     );
     await user.click(screen.getByRole("button", { name: "Русский" }));
     expect(document.documentElement.lang).toBe("ru");
     expect(
-      screen.getByRole("link", { name: "Тренировка" }),
+      screen.getByRole("link", { name: "Диагностика" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
       "Маленькая миссия",
     );
   });
@@ -44,17 +44,23 @@ describe("foundation", () => {
         <Training />
       </AppProvider>,
     );
-    expect(screen.getByRole("button", { name: es.confirm })).toBeDisabled();
+    await user.click(await screen.findByRole("button", { name: es.start }));
+    expect(
+      await screen.findByRole("button", { name: es.confirm }),
+    ).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "5" }));
     await user.click(screen.getByRole("button", { name: "7" }));
     await user.click(screen.getByRole("button", { name: es.erase }));
     await user.click(screen.getByRole("button", { name: "6" }));
     expect(screen.getByRole("textbox")).toHaveValue("56");
     await user.click(screen.getByRole("button", { name: es.confirm }));
-    expect(screen.getAllByRole("status")).toHaveLength(1);
-    expect(screen.getByRole("status")).toHaveTextContent("Has escrito 56");
-    await user.click(screen.getByRole("button", { name: es.tryAgain }));
-    expect(screen.getByRole("textbox")).toHaveValue("");
+    expect(await screen.findAllByRole("status")).toHaveLength(1);
+    expect(screen.getByRole("textbox")).toHaveValue("56");
+    expect(screen.getByRole("status")).toHaveTextContent(
+      /¡Correcto!|La respuesta correcta/,
+    );
+    await user.click(screen.getByRole("button", { name: es.next }));
+    await waitFor(() => expect(screen.getByRole("textbox")).toHaveValue(""));
   });
   it("does not double physical input and preserves value across keyboard modes", async () => {
     const user = userEvent.setup();
@@ -63,7 +69,8 @@ describe("foundation", () => {
         <Training />
       </AppProvider>,
     );
-    await user.click(screen.getByRole("textbox"));
+    await user.click(await screen.findByRole("button", { name: es.start }));
+    await user.click(await screen.findByRole("textbox"));
     await user.keyboard("56{Backspace}4");
     expect(screen.getByRole("textbox")).toHaveValue("54");
     await user.click(screen.getByRole("button", { name: es.systemKeyboard }));
@@ -73,7 +80,9 @@ describe("foundation", () => {
     ).not.toBeInTheDocument();
     expect(screen.getByRole("textbox")).toHaveValue("54");
     await user.keyboard("{Enter}");
-    expect(screen.getByRole("status")).toHaveTextContent("Has escrito 54");
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      /¡Correcto!|La respuesta correcta/,
+    );
   });
   it("limits input to three ASCII digits, including pasted text", () => {
     expect(normalizeAnswer("a1.4-4xyz9")).toBe("144");
@@ -87,7 +96,7 @@ describe("foundation", () => {
         <Settings />
       </AppProvider>,
     );
-    const toggle = screen.getByRole("switch", { name: es.animations });
+    const toggle = await screen.findByRole("switch", { name: es.animations });
     expect(toggle).toHaveAttribute("aria-checked", "true");
     await user.click(toggle);
     expect(toggle).toHaveAttribute("aria-checked", "false");

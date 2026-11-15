@@ -692,3 +692,8 @@ main {
     scroll-behavior: auto !important;
   }
 }
+
+.result-value {
+  font-size: 2rem;
+  color: var(--purple);
+}

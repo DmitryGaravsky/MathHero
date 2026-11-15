@@ -43,6 +43,7 @@ test("keypad, physical keyboard, native input path and empty submit", async ({
   page,
 }) => {
   await page.goto("./#training");
+  await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   const input = page.getByRole("textbox", { name: "Tu respuesta" });
   await expect(
     page.getByRole("button", { name: "Confirmar respuesta" }),
@@ -63,8 +64,10 @@ test("keypad, physical keyboard, native input path and empty submit", async ({
   await page.keyboard.press("6");
   await expect(input).toHaveValue("56");
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("status")).toContainText("Has escrito 56");
-  await page.getByRole("button", { name: "Probar otra vez" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    /¡Correcto!|La respuesta correcta/,
+  );
+  await page.getByRole("button", { name: "Siguiente" }).click();
   await page
     .getByRole("button", { name: "Usar teclado del dispositivo" })
     .click();
@@ -78,13 +81,17 @@ test("keypad, physical keyboard, native input path and empty submit", async ({
   await page.getByRole("button", { name: "Usar teclado de Math Hero" }).click();
   await expect(input).toHaveValue("144");
   await page.getByRole("button", { name: "Confirmar respuesta" }).click();
-  await expect(page.getByRole("status")).toContainText("Has escrito 144");
-  await page.getByRole("button", { name: "Probar otra vez" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    /¡Correcto!|La respuesta correcta/,
+  );
+  await page.getByRole("button", { name: "Siguiente" }).click();
   await page.getByRole("button", { name: "5", exact: true }).focus();
   await page.keyboard.type("56");
   await expect(input).toHaveValue("56");
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("status")).toContainText("Has escrito 56");
+  await expect(page.getByRole("status")).toContainText(
+    /¡Correcto!|La respuesta correcta/,
+  );
 });
 
 test("preview has no invented progress, supports back and reduced motion", async ({
@@ -93,7 +100,9 @@ test("preview has no invented progress, supports back and reduced motion", async
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./");
   await expect(
-    page.getByText("todavía no se guarda progreso.", { exact: false }),
+    page.getByText("Ya puedes completar y guardar el diagnóstico.", {
+      exact: false,
+    }),
   ).toBeVisible();
   expect(
     await page
@@ -102,7 +111,7 @@ test("preview has no invented progress, supports back and reduced motion", async
   ).toBe("none");
   await page.locator('nav a[href="#results"]').click();
   await expect(
-    page.getByText("Aún no hay sesiones guardadas.", { exact: false }),
+    page.getByText("Aún no hay respuestas guardadas.", { exact: false }),
   ).toBeVisible();
   await page.locator('nav a[href="#map"]').click();
   await expect(page.locator(".map-cell")).toHaveCount(144);
@@ -116,14 +125,26 @@ test("captures the foundation for visual review", async ({
   page,
 }, testInfo) => {
   await page.goto("./");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.screenshot({
     path: testInfo.outputPath("home.png"),
     fullPage: true,
   });
   await page.goto("./#training");
+  await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
+  await expect(page.locator(".equation")).toBeVisible();
+  await expect(page.getByRole("textbox")).toBeEnabled();
   await page.screenshot({
     path: testInfo.outputPath("training.png"),
     fullPage: true,
   });
+  await page.getByRole("button", { name: "Русский", exact: true }).click();
+  await page.getByRole("textbox").fill("0");
+  await page.getByRole("textbox").press("Enter");
+  await expect(page.getByRole("status")).toContainText("Правильный ответ");
+  await page.screenshot({ path: testInfo.outputPath("feedback-ru.png"), fullPage: true });
+  await page.locator('nav a[href="#results"]').click();
+  await expect(page.getByText("Правильно: 0 из 1.", { exact: false })).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath("results-ru.png"), fullPage: true });
 });

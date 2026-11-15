@@ -1,4 +1,4 @@
-/** Pure domain contracts. Implementations arrive in stage 2; no React imports here. */
+/** Pure domain contracts. Only multiplication is implemented in this MVP. */
 export type OperationType =
   | "multiplication"
   | "division"

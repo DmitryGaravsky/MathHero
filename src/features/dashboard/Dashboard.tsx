@@ -1,9 +1,11 @@
 import { useApp } from "../../app/AppContext";
 import { Mascot } from "../../components/mascot/Mascot";
 import { Icon } from "../../components/ui/Icon";
+import { useDiagnosticData } from "../../database/useDiagnosticData";
 
 export function Dashboard() {
   const { t } = useApp();
+  const { session, loading, error } = useDiagnosticData();
   return (
     <>
       <section className="hero">
@@ -11,10 +13,28 @@ export function Dashboard() {
           <p className="eyebrow">{t("hello")}</p>
           <h1>{t("heroTitle")}</h1>
           <p>{t("heroDescription")}</p>
-          <a href="#training" className="button primary">
-            {t("start")}
+          <a
+            href={
+              session?.completedAt !== null && session
+                ? "#results"
+                : "#training"
+            }
+            className="button primary"
+          >
+            {t(
+              session?.completedAt !== null && session
+                ? "viewResults"
+                : session
+                  ? "resume"
+                  : "start",
+            )}
             <Icon name="arrow" />
           </a>
+          {loading && <p role="status">{t("loading")}</p>}
+          {error && <p role="alert">{t("storageError")}</p>}
+          {session && (
+            <p>{t("savedProgress", { count: String(session.cursor) })}</p>
+          )}
         </div>
         <div className="hero-art">
           <span className="orbit orbit-one" />
