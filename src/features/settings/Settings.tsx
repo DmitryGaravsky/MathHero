@@ -1,4 +1,5 @@
 import { BackupControls } from "./BackupControls";
+import { OfflineSettings } from "./OfflineSettings";
 import { useApp } from "../../app/AppContext";
 import { LanguageSwitcher } from "../../components/layout/LanguageSwitcher";
 import { PageHeading } from "../../components/ui/PageHeading";
@@ -62,6 +63,7 @@ export function Settings() {
         </div>
       </section>
       <BackupControls />
+      <OfflineSettings />
       <section className="privacy">
         <h2>{t("privacyTitle")}</h2>
         <p>{t("privacy")}</p>

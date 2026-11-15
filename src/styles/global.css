@@ -868,3 +868,10 @@ meter {
 .map-training-link {
   margin-bottom: 24px;
 }
+/* Installation guidance remains outside the timed practice screen. */
+.offline-card {
+  margin-top: 24px;
+}
+.offline-card p {
+  line-height: 1.6;
+}

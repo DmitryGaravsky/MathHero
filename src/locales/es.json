@@ -162,5 +162,12 @@
   "replaceWarning": "Esta acción sustituye todo el progreso y los ajustes actuales. Descarga primero una copia si quieres conservarlos. No se combinan dos historiales.",
   "backupPreview": "Copia verificada: {attempts} respuestas y {sessions} sesiones.",
   "cancel": "Cancelar",
-  "confirmRestore": "Reemplazar y restaurar"
+  "confirmRestore": "Reemplazar y restaurar",
+  "offlinePreparing": "Preparando el acceso sin conexión. Mantén la aplicación abierta con internet.",
+  "offlineTitle": "Instalar y practicar sin conexión",
+  "offlineReady": "Lista para practicar sin conexión.",
+  "offlineUnavailable": "No se ha podido preparar el acceso sin conexión. Vuelve a abrir la aplicación con internet en un navegador compatible.",
+  "offlineInstall": "En Safari, abre Compartir y elige Añadir a pantalla de inicio. En otros navegadores, usa la opción de instalar la aplicación si está disponible.",
+  "offlineUpdate": "Hay una actualización preparada. Se aplicará cuando cierres todas las ventanas de Math Hero y vuelvas a abrirla.",
+  "offlineUpdateHint": "Para actualizar, pausa la práctica, cierra todas las pestañas y ventanas de Math Hero (también la de inicio) y vuelve a abrirla. El borrador guardado se conserva. No borramos tus datos al actualizar."
 }

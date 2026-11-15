@@ -27,7 +27,7 @@ there is no promise of unattended continuation after shutdown or a finished chat
 | 2. Engine and diagnosis | 144 directions, 78 pairs, independent engine, resumable 6 x 24 diagnosis | Complete products and canonical IDs, no omissions/duplicates, active timing, transactional persistence | Accepted / 01a1df5b-f451-77c1-a445-ed3dab9722e4 |
 | 3. Adaptation | Difficulty priority, error repetition, intervals, mastery | Reproducible A/B/C profiles, slow-correct distinction, stability across days, diversity | Accepted / 01a1df6d-fae1-7953-a48a-e6d5a357b668 |
 | 4. Progress and data | Analytics, 12 x 12 map, rewards, complete storage and backups | History, valid/corrupt import, rollback, migration, no duplicate rewards | Accepted / 01a1df84-bbcf-7481-a4c9-ee99f74ca714 |
-| 5. PWA and release | Manifest/icons, offline worker, CI/Pages, English documentation | Full regression, deployed HTTPS/base path, offline/update behavior, documentation/comment audit; device checklist | Not started |
+| 5. PWA and release | Manifest/icons, offline worker, CI/Pages, English documentation | Full regression, deployed HTTPS/base path, offline/update behavior, documentation/comment audit; device checklist | Local implementation accepted; deployment pending / 01a1df9d-1db5-7cf2-a535-7e9a9eca8c9b |
 
 The five stages follow the original specification. Minimal IndexedDB persistence
 was brought forward to stage 2 to make diagnosis resumable; complete data tools
@@ -110,7 +110,7 @@ Reproducible 90-day profiles: A mastered 78 pairs; B remained accurate but slow
 without mastery; C's three gaps received priority while the other 75 pairs
 reached mastery. See the English stage handoff for parameters and actual metrics.
 
-### Stage 4
+### Stage 4 — commit a2d97f2
 
 Reviewed map accessibility, analytics, the reward ledger, backup validation and
 v3 migration. Fixed reward processing to avoid lifetime-history replay on each
@@ -123,7 +123,23 @@ rollback, repeat restore, draft resume, stale owners and v1/v2 migration. The
 fake IndexedDB timing is not a physical-device performance claim. Older stage
 reports and this delivery log have been translated to English.
 
-## MVP Definition of Done — 13 of 16 verified so far
+### Stage 5 — local acceptance
+
+Reviewed the scoped, versioned worker, natural waiting lifecycle, manifest/icons,
+distribution allowlist, pinned Actions workflow and full English specification.
+Fixed template substitution before testing. Clean npm ci, build/types/lint,
+54 unit/repository tests, 114 browser tests (6 intentional skips), and 10 PWA
+tests passed. PWA evidence includes offline new-window resume, multiple tabs,
+failed first installation/update recovery, preserved drafts and other-app caches.
+The 18-section specification and nine original technical blocks were preserved;
+the documentation/comment language audit passed. Desktop loopback startup samples
+were 64–337 ms; physical-device startup remains unverified.
+
+GitHub Pages was configured using build_type=workflow. The API returned public
+hosting and enforced HTTPS at https://dmitrygaravsky.github.io/MathHero/.
+Actual Linux CI, publication and deployed-origin browser checks are pending.
+
+## MVP Definition of Done — 14 of 16 verified so far
 
 - [x] All 144 directed exercises exist.
 - [x] Transposed factors share canonical identities and pair evidence.
@@ -138,8 +154,8 @@ reports and this delivery log have been translated to English.
 - [x] Interactive 12 x 12 table map works.
 - [x] Data persists in IndexedDB; new entities require regression coverage.
 - [x] Backup export/import works.
-- [ ] PWA caching supports offline operation.
+- [x] PWA caching supports offline operation.
 - [ ] Physical iPhone and iPad acceptance completed by the user.
 - [ ] GitHub Actions automatically publishes the app.
 
-Additional final gate: all repository documentation and code comments are English.
+Additional final gate: all repository documentation and code comments are English — passed.

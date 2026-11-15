@@ -1,162 +1,162 @@
-Техническое задание: Math Hero — тренажёр математического автоматизма
+Technical specification: Math Hero — a mathematical fluency trainer
 
-MVPiPhone / iPadРусский / Español
+MVP · iPhone / iPad · Russian / Español
 
-Я предлагаю немного изменить первоначальную концепцию. Мы делаем не детскую игру с математическими заданиями, а серьёзный адаптивный тренажёр с игровой оболочкой.
+I propose a slight change to the original concept. We are building a serious adaptive trainer with a game-like presentation, rather than a children's game containing math problems.
 
-Его главная задача — довести таблицу умножения до устойчивого автоматизма, чтобы ребёнок перестал тратить рабочую память на вычисление простых произведений и мог сосредоточиться на более сложных операциях.
+Its main purpose is to develop stable automatic recall of the multiplication table, so that a child stops using working memory to calculate simple products and can concentrate on more complex operations.
 
-При этом архитектура должна позволить в будущем добавить:
+At the same time, the architecture must allow the following additions in the future:
 
-* деление;
-* умножение двузначных и трёхзначных чисел;
-* деление многозначных чисел;
-* вычисления в столбик;
-* смешанные арифметические упражнения.
+* division;
+* multiplication of two-digit and three-digit numbers;
+* division of multi-digit numbers;
+* column arithmetic;
+* mixed arithmetic exercises.
 
-Но сейчас мы полностью закрываем только одну задачу: автоматическое воспроизведение результатов таблицы умножения от 1 до 12.
+For now, however, we are fully addressing just one task: automatic recall of multiplication-table results from 1 to 12.
 
-Ни голосового ввода, ни текстовых задач, ни сложной игровой механики в первой версии не будет.
+The first version will have no voice input, word problems, or complex game mechanics.
 
-1. Концепция продукта
+1. Product concept
 
-1.1. Для кого приложение
+1.1. Who the application is for
 
-Основной пользователь:
+Primary user:
 
-* ребёнок 8–9 лет;
-* родной язык — русский;
-* обучение в испаноязычной образовательной среде;
-* знает таблицу умножения, но недостаточно быстро вспоминает ответы;
-* занимается на iPad или iPhone.
+* a child aged 8–9;
+* a native Russian speaker;
+* studying in a Spanish-speaking educational environment;
+* knows the multiplication table but does not recall answers quickly enough;
+* practices on an iPad or iPhone.
 
-Второй пользователь — родитель, который:
+The second user is a parent who:
 
-* запускает приложение;
-* видит прогресс;
-* может оценить слабые места;
-* понимает, действительно ли формируется автоматизм.
+* launches the application;
+* sees progress;
+* can assess weaknesses;
+* understands whether automatic recall is actually developing.
 
-1.2. Основная образовательная цель
+1.2. Main educational goal
 
-Не просто научить ребёнка правильно отвечать на примеры.
+The goal is more than teaching a child to answer exercises correctly.
 
-Нужно добиться следующего результата:
+We need to achieve the following result:
 
-* Ребёнок видит пример.
-* Правильный ответ извлекается из памяти без последовательного сложения.
-* Ответ воспроизводится быстро.
-* Навык сохраняется через несколько дней.
-* Навык работает в перемешанном порядке, а не только внутри одной таблицы.
+* The child sees an exercise.
+* The correct answer is retrieved from memory without repeated addition.
+* The answer is produced quickly.
+* The skill is retained after several days.
+* The skill works in mixed order, not only within a single times table.
 
-Это и будет критерием успешности продукта.
+This will be the criterion for product success.
 
-1.3. Принципы разработки
+1.3. Development principles
 
-Принцип	Решение
-Простота	Минимум экранов и действий
-Мобильность	Сначала проектируем под iPhone и iPad
-Обучение	Retrieval practice + spaced practice
-Адаптация	Индивидуальная сложность для каждого примера
-Мотивация	Персонаж, опыт, достижения
-Двуязычность	Русский и испанский интерфейс
-Автономность	Без сервера и регистрации
-Расширяемость	Математические операции как отдельные модули
+Principle	Decision
+Simplicity	A minimum of screens and actions
+Mobility	Design for iPhone and iPad first
+Learning	Retrieval practice + spaced practice
+Adaptation	Individual difficulty for each exercise
+Motivation	A character, experience, achievements
+Bilingualism	Russian and Spanish interfaces
+Independence	No server or registration
+Extensibility	Mathematical operations as separate modules
 
-2. Технологический стек
+2. Technology stack
 
-Я рекомендую сразу отказаться от идеи одного большого HTML-файла.
+I recommend abandoning the idea of a single large HTML file from the outset.
 
-Для первого прототипа это допустимо, но для проекта, который будет развиваться, правильнее использовать нормальную структуру React-приложения.
+That is acceptable for an initial prototype, but a project that will evolve should use a proper React application structure.
 
-Архитектура технологий
+Technology architecture
 
 React
 
-Компоненты интерфейса
+Interface components
 
 TypeScript
 
-Типизация и логика
+Types and logic
 
 CSS
 
-Адаптивный дизайн
+Responsive design
 
 Vite
 
-Сборка приложения
+Application build
 
 IndexedDB
 
-История и прогресс
+History and progress
 
 GitHub Pages
 
-Статический хостинг
+Static hosting
 
-Почему IndexedDB вместо localStorage:
+Why IndexedDB instead of localStorage:
 
-* больше возможностей для структурированного хранения;
-* история большого количества попыток;
-* отдельные записи для каждого математического факта;
-* возможность добавлять новые типы упражнений;
-* более удобная миграция структуры данных.
+* more options for structured storage;
+* a history of many attempts;
+* separate records for each mathematical fact;
+* the ability to add new exercise types;
+* easier data-structure migration.
 
-Никакого backend, авторизации и облачной базы в MVP не требуется.
+The MVP requires no backend, authentication, or cloud database.
 
-Важное ограничение: данные останутся на конкретном устройстве и в конкретном браузере. При очистке данных Safari они могут потеряться. Поэтому в MVP обязательно предусмотрим экспорт и импорт резервной копии.
+An important limitation: data will remain on a particular device in a particular browser. Clearing Safari data may cause it to be lost. Therefore, the MVP must include backup export and import.
 
-3. Функциональный состав MVP
+3. MVP functionality
 
-В первой версии будет пять основных разделов.
+The first version will have five main sections.
 
-Структура приложения
+Application structure
 
-Главная
+Home
 
-Персонаж, прогресс, начало тренировки
+Character, progress, start practice
 
-Тренировка
+Practice
 
-Один пример, ввод ответа, обратная связь
+One exercise, answer input, feedback
 
-Результаты
+Results
 
-Динамика и уровень автоматизма
+Trends and level of automatic recall
 
-Карта таблицы
+Table map
 
-Все факты и проблемные места
+All facts and areas of difficulty
 
-3.1. Главный экран
+3.1. Home screen
 
-На главном экране:
+The home screen contains:
 
-* персонаж — например, маленький космический лис;
-* приветствие;
-* количество заработанных звёзд;
-* процент освоенных примеров;
-* кнопка «Начать тренировку»;
-* кнопка «Мои трудные примеры»;
-* кнопка «Мои результаты»;
-* переключение языка RU / ES.
+* a character — for example, a small space fox;
+* a greeting;
+* the number of stars earned;
+* the percentage of mastered exercises;
+* a “Start practice” button;
+* a “My difficult exercises” button;
+* a “My results” button;
+* RU / ES language switching.
 
-Не нужно делать большое меню с десятками режимов.
+There is no need for a large menu with dozens of modes.
 
-3.2. Экран тренировки
+3.2. Practice screen
 
-Основной экран должен содержать:
+The main screen must contain:
 
-* Один пример крупным шрифтом.
-* Большое поле ввода ответа.
-* Цифровую клавиатуру.
-* Кнопку подтверждения.
-* Индикатор прогресса занятия.
-* Персонажа с короткими реакциями.
-* Небольшую информацию о результате.
+* One exercise in large type.
+* A large answer input field.
+* A numeric keypad.
+* A confirmation button.
+* A session progress indicator.
+* The character with short reactions.
+* A small amount of result information.
 
-Пример:
+Example:
 
 MISIÓN MATEMÁTICA
 
@@ -170,7 +170,7 @@ MISIÓN MATEMÁTICA
 
 56
 
-Пример состояния после ввода
+Example state after input
 
 1
 
@@ -196,202 +196,202 @@ MISIÓN MATEMÁTICA
 
 ✓
 
-Макет интерфейса, а не работающая клавиатура
+An interface mockup, not a working keypad
 
-Критически важные UX-требования для iPhone и iPad:
+Critical UX requirements for iPhone and iPad:
 
-* крупные интерактивные элементы;
-* минимальная высота основных кнопок — 52–56 px;
-* поддержка портретной и альбомной ориентации;
-* отсутствие горизонтальной прокрутки;
-* поддержка системной цифровой клавиатуры;
-* собственная экранная цифровая клавиатура как основной вариант;
-* корректная работа с безопасными областями экрана iPhone;
-* отсутствие мелких текстовых элементов во время занятий.
+* large interactive elements;
+* a minimum height of 52–56 px for primary buttons;
+* portrait and landscape orientation support;
+* no horizontal scrolling;
+* support for the system numeric keyboard;
+* a custom on-screen numeric keypad as the primary option;
+* correct handling of iPhone safe areas;
+* no small text elements during practice.
 
-Я рекомендую собственную цифровую клавиатуру: она обеспечивает одинаковый интерфейс на iPhone и iPad, не зависит от появления системной клавиатуры и позволяет контролировать расположение элементов.
+I recommend a custom numeric keypad: it provides a consistent interface on iPhone and iPad, does not depend on the system keyboard appearing, and allows control over element placement.
 
-3.3. Экран результатов
+3.3. Results screen
 
-Ребёнок видит:
+The child sees:
 
-* сколько примеров решил;
-* сколько было правильных ответов;
-* сколько примеров стало лучше;
-* сколько звёзд получил;
-* какое достижение открыл.
+* how many exercises they solved;
+* how many answers were correct;
+* how many exercises improved;
+* how many stars they received;
+* which achievement they unlocked.
 
-Родитель дополнительно видит:
+The parent additionally sees:
 
-* среднее время ответа;
-* точность;
-* самые сложные примеры;
-* изменение скорости по дням;
-* сколько примеров устойчиво освоено.
+* mean response time;
+* accuracy;
+* the most difficult exercises;
+* changes in speed by day;
+* how many exercises are reliably mastered.
 
-Не нужно показывать ребёнку длинные таблицы статистики. Подробная аналитика — отдельная часть интерфейса для взрослого.
+Do not show the child long statistical tables. Detailed analytics belong in a separate part of the interface for the adult.
 
-3.4. Карта таблицы умножения
+3.4. Multiplication-table map
 
-В приложении должна быть сетка 12 × 12.
+The application must have a 12 × 12 grid.
 
-Каждая ячейка имеет цветовой статус:
+Each cell has a color status:
 
-Цвет	Значение
-Серый	Ещё не проверялся
-Красный	Есть ошибки или затруднения
-Жёлтый	Формируется навык
-Голубой	Хорошая скорость и точность
-Зелёный	Устойчивый автоматизм
+Color	Meaning
+Gray	Not yet assessed
+Red	Errors or difficulties
+Yellow	Skill developing
+Light blue	Good speed and accuracy
+Green	Stable automatic recall
 
-При нажатии на ячейку можно посмотреть историю конкретного примера и потренировать его отдельно.
+Tapping a cell lets the user view the history of that particular exercise and practice it separately.
 
-Особенность: математически 7 × 8 и 8 × 7 дают один и тот же факт благодаря переместительному свойству. Но оба направления должны встречаться в заданиях. Внутренний учёт мастерства будет учитывать это обстоятельство, чтобы не создавать искусственно двойную нагрузку.
+A special consideration: mathematically, 7 × 8 and 8 × 7 represent the same fact because of commutativity. However, both directions must appear in exercises. Internal mastery tracking will account for this to avoid artificially doubling the workload.
 
-4. Методика формирования автоматизма
+4. Method for developing automatic recall
 
-Это центральная часть проекта. Её нельзя оставлять внутри React-компонентов или реализовывать несколькими случайными условиями.
+This is the central part of the project. It must not be left inside React components or implemented as a handful of random conditions.
 
-Нужен самостоятельный модуль training-engine.
+A separate training-engine module is needed.
 
-4.1. Состав математического материала
+4.1. Mathematical content
 
-Таблица включает:
+The table includes:
 
-* множители от 1 до 12;
-* множимое от 1 до 12;
-* 144 направленных задания;
-* 78 уникальных пар с учётом переместительного свойства.
+* multipliers from 1 to 12;
+* multiplicands from 1 to 12;
+* 144 directed exercises;
+* 78 unique pairs when commutativity is taken into account.
 
-Каждый направленный пример может появляться в обеих ориентациях.
+Each directed exercise can appear in both orientations.
 
-Например:
+For example:
 
 * 7 × 8 = 56;
 * 8 × 7 = 56.
 
-В базе сохраняются данные об обоих направлениях, но общий уровень мастерства учитывает и совокупную историю пары.
+The database stores data for both directions, while overall mastery also takes the combined history of the pair into account.
 
-4.2. Этап 1 — начальная диагностика
+4.2. Step 1 — initial diagnosis
 
-При первом запуске предлагается пройти диагностику.
+On the first launch, the user is offered a diagnostic assessment.
 
-Она должна:
+It must:
 
-* включать все 144 направления;
-* перемешивать задания;
-* не показывать таймер обратного отсчёта;
-* фиксировать точность;
-* измерять время ответа;
-* сохранять ошибки.
+* include all 144 directions;
+* shuffle the exercises;
+* show no countdown timer;
+* record accuracy;
+* measure response time;
+* save errors.
 
-Диагностика должна быть разделена на несколько коротких частей, например по 24 задания.
+The diagnosis must be divided into several short parts, for example, 24 exercises each.
 
-Ребёнок может остановиться и продолжить позже.
+The child can stop and continue later.
 
-Задача диагностики — не выставить оценку, а получить исходную модель знаний.
+The purpose of diagnosis is to obtain an initial knowledge model, not to assign a grade.
 
-Важно: на первом прохождении не следует сразу считать медленный правильный ответ освоенным фактом.
+Important: a slow correct answer on the first pass must not immediately count as a mastered fact.
 
-4.3. Этап 2 — адаптивная тренировка
+4.3. Step 2 — adaptive practice
 
-Это основной режим, который ребёнок будет использовать ежедневно.
+This is the main mode the child will use daily.
 
-Принцип подбора:
+Selection principle:
 
-Состояние примера	Частота
-Не проверялся	Высокая
-Есть ошибки	Очень высокая
-Правильный, но медленный	Высокая
-Правильный и достаточно быстрый	Средняя
-Устойчивый автоматизм	Низкая
+Exercise state	Frequency
+Not assessed	High
+Has errors	Very high
+Correct but slow	High
+Correct and sufficiently fast	Medium
+Stable automatic recall	Low
 
-При этом примеры должны перемешиваться.
+Exercises must also be mixed.
 
-Не допускается:
+The following are not allowed:
 
-* постоянное повторение одного примера;
-* длинные серии только одной таблицы;
-* последовательное отображение 2 × 1, 2 × 2, 2 × 3;
-* слишком частое повторение уже освоенных фактов.
+* constant repetition of a single exercise;
+* long runs from just one times table;
+* sequential presentation of 2 × 1, 2 × 2, 2 × 3;
+* overly frequent repetition of already mastered facts.
 
-4.4. Этап 3 — интервальное повторение
+4.4. Step 3 — spaced repetition
 
-У каждого математического факта будет собственный интервал повторения.
+Each mathematical fact will have its own review interval.
 
-Предлагаемая стартовая модель:
+Proposed starting model:
 
-Уровень	Следующая проверка
-Ошибка	Через 2–4 задания
-Первый успешный ответ	В текущей тренировке позднее
-Несколько успешных ответов	Через 1 день
-Устойчивый навык	Через 2–4 дня
-Хорошо закреплён	Через 7 дней
-Долгосрочное закрепление	Через 14–30 дней
+Level	Next check
+Error	After 2–4 exercises
+First successful answer	Later in the current practice session
+Several successful answers	After 1 day
+Stable skill	After 2–4 days
+Well consolidated	After 7 days
+Long-term consolidation	After 14–30 days
 
-Интервалы должны корректироваться на основании последующих результатов.
+Intervals must be adjusted based on subsequent results.
 
-Это не жёсткая схема, а начальные параметры алгоритма.
+This is not a rigid scheme, but the algorithm's initial parameters.
 
-4.5. Этап 4 — контроль автоматизма
+4.5. Step 4 — checking automatic recall
 
-Предлагаю использовать три критерия:
+I propose using three criteria:
 
-Точность: ребёнок должен правильно воспроизводить ответ.
+Accuracy: the child must recall the answer correctly.
 
-Скорость: ответ должен приходить без длительного вычисления.
+Speed: the answer must come without lengthy calculation.
 
-Устойчивость: успешный результат должен повторяться в разные дни.
+Stability: a successful result must recur on different days.
 
-Нельзя присваивать статус мастера после трёх правильных ответов подряд в одном занятии.
+Master status must not be awarded after three consecutive correct answers in a single session.
 
-Для MVP предлагаю следующие предварительные условия:
+For the MVP, I propose the following preliminary conditions:
 
-* не менее 5 успешных воспроизведений;
-* минимум в 3 разных дня;
-* точность последних попыток не ниже 95%;
-* медианное время ответа до 3 секунд;
-* отсутствие недавних ошибок.
+* at least 5 successful recalls;
+* on at least 3 different days;
+* accuracy of recent attempts at least 95%;
+* median response time up to 3 seconds;
+* no recent errors.
 
-Пороговые значения должны быть настраиваемыми. Они являются рабочей гипотезой для пилотирования, а не медицинским или педагогическим нормативом.
+The thresholds must be configurable. They are a working hypothesis for piloting, not a medical or educational standard.
 
-Важный момент о времени ответа
+An important point about response time
 
-Нужно измерять время от момента появления задания до подтверждения ответа.
+Measure the time from the exercise appearing to confirmation of the answer.
 
-При этом:
+At the same time:
 
-* первое время не показывать ребёнку;
-* учитывать только правильные ответы при расчёте скорости;
-* отдельно учитывать ошибки;
-* не награждать за скорость, если страдает точность;
-* использовать медиану, а не только среднее значение.
+* do not show the time to the child initially;
+* include only correct answers when calculating speed;
+* track errors separately;
+* do not reward speed at the expense of accuracy;
+* use the median, not only the mean.
 
-Медиана устойчивее к случайным отвлечениям.
+The median is more robust to occasional distractions.
 
-4.6. Как должна выглядеть одна тренировка
+4.6. What one practice session should look like
 
-Я предлагаю стандартное занятие на 8–10 минут.
+I propose a standard session of 8–10 minutes.
 
-Этап	Длительность
-Разминка знакомыми примерами	1 минута
-Основная адаптивная тренировка	5–6 минут
-Повторение сложных примеров	1–2 минуты
-Завершение и награды	30 секунд
+Stage	Duration
+Warm-up with familiar exercises	1 minute
+Main adaptive practice	5–6 minutes
+Review of difficult exercises	1–2 minutes
+Finish and rewards	30 seconds
 
-В одном занятии ориентировочно 20–30 заданий. Количество не должно быть обязательной нормой: ребёнок может закончить раньше.
+A session contains approximately 20–30 exercises. This number must not be a mandatory quota: the child can finish earlier.
 
-Спринт на скорость можно оставить дополнительным режимом, но не делать его основой обучения.
+A speed sprint may remain an additional mode, but should not be the basis of learning.
 
-5. Алгоритм адаптивного подбора заданий
+5. Adaptive exercise-selection algorithm
 
-Предлагаю использовать собственный упрощённый алгоритм, похожий по принципам на spaced repetition, но адаптированный именно под математические факты.
+I propose using a simplified custom algorithm similar in principle to spaced repetition, but adapted specifically to mathematical facts.
 
-Не нужно внедрять полноценный SM-2: он изначально предназначен для более общего интервального повторения и не учитывает все особенности формирования вычислительной беглости.
+There is no need to implement full SM-2: it was originally intended for more general spaced repetition and does not account for every aspect of developing computational fluency.
 
-5.1. Какие параметры хранить
+5.1. Parameters to store
 
-Для каждого примера:
+For each exercise:
 
 interface FactProgress {
   factId: string;
@@ -406,166 +406,166 @@ interface FactProgress {
   masteredAt: number | null;
 }
 
-responseTimes — ограниченная история последних 10–15 корректных ответов. Полную историю попыток лучше хранить отдельно.
+responseTimes is a limited history of the most recent 10–15 correct answers. The complete attempt history is better stored separately.
 
-5.2. Распределение заданий
+5.2. Exercise distribution
 
-Каждому примеру присваивается вес.
+Each exercise is assigned a weight.
 
-Пример начальной модели:
+Example starting model:
 
-Состояние	Вес
-Неизвестный	5
-С ошибками	7
-Медленный	5
-Формирующийся навык	3
-Хорошо освоенный	1
-Устойчивый автоматизм	0,3
+State	Weight
+Unknown	5
+With errors	7
+Slow	5
+Developing skill	3
+Well learned	1
+Stable automatic recall	0.3
 
-Это не проценты и не вероятности. Это относительные веса для случайного выбора.
+These are neither percentages nor probabilities. They are relative weights for random selection.
 
-Дополнительные правила:
+Additional rules:
 
-* не показывать одинаковый пример дважды подряд;
-* не показывать один и тот же пример чаще одного раза в 3–5 заданий, кроме целевого повторения ошибки;
-* не допускать длинных однотипных серий;
-* учитывать давность последнего показа;
-* приоритетно возвращать примеры с истёкшим интервалом повторения.
+* do not show an identical exercise twice in a row;
+* do not show the same exercise more often than once every 3–5 exercises, except for targeted error review;
+* avoid long runs of the same type;
+* take time since the last presentation into account;
+* prioritize returning exercises whose review interval has expired.
 
-5.3. Обработка ошибок
+5.3. Handling errors
 
-Пример:
+Example:
 
-Ребёнок видит 7 × 8 и отвечает 54.
+The child sees 7 × 8 and answers 54.
 
-Тренажёр:
+The trainer:
 
-* Показывает правильный ответ 56.
-* Спокойно сообщает: «Правильный ответ — 56. Попробуем ещё раз позже».
-* Не снижает весь общий прогресс.
-* Увеличивает приоритет этой пары.
-* Возвращает её через несколько других заданий.
-* Позже повторяет в следующем занятии.
+* Shows the correct answer, 56.
+* Calmly says: “The correct answer is 56. We will try again later.”
+* Does not reduce overall progress across the board.
+* Increases this pair's priority.
+* Returns it after several other exercises.
+* Reviews it again in the next session.
 
-Нельзя сразу выдавать серию одинаковых примеров: ребёнок может просто запомнить ответ на конкретный экран, а не укрепить связь в памяти.
+Do not immediately present a series of identical exercises: the child may simply remember the answer to that particular screen, rather than strengthen the association in memory.
 
-5.4. Обработка правильных ответов
+5.4. Handling correct answers
 
-Пример:
+Example:
 
-Ребёнок правильно отвечает на 7 × 8 за 2,1 секунды.
+The child answers 7 × 8 correctly in 2.1 seconds.
 
-Система:
+The system:
 
-* записывает время;
-* обновляет точность;
-* увеличивает счётчик успешных попыток;
-* проверяет историю предыдущих дней;
-* при необходимости повышает уровень мастерства;
-* рассчитывает следующую дату повторения.
+* records the time;
+* updates accuracy;
+* increments the successful-attempt counter;
+* checks the history from previous days;
+* raises the mastery level if appropriate;
+* calculates the next review date.
 
-Время не должно быть единственным условием повышения уровня.
+Time must not be the only condition for increasing a level.
 
-5.5. Отдельная логика для диагностики
+5.5. Separate diagnostic logic
 
-Диагностика не должна смешиваться с обычной тренировкой.
+Diagnosis must not be mixed with ordinary practice.
 
-Она нужна для получения исходных данных, поэтому:
+It provides baseline data, so it:
 
-* не выдаёт штрафы;
-* не должна искусственно менять уровни освоения после одной попытки;
-* сохраняет результаты отдельно;
-* после завершения создаёт первоначальный профиль сложности.
+* imposes no penalties;
+* must not artificially change mastery levels after a single attempt;
+* saves its results separately;
+* creates an initial difficulty profile upon completion.
 
-6. Интерфейс и локализация RU / ES
+6. Interface and RU / ES localization
 
-Учитывая образовательную среду, я рекомендую сделать испанский и русский полноценными языками интерфейса с возможностью переключения.
+Given the educational environment, I recommend making Spanish and Russian fully supported interface languages with switching available.
 
-По умолчанию можно установить испанский, но выбор языка должен быть доступен родителю.
+Spanish can be the default, but the parent must have access to language selection.
 
-Важно: сами математические примеры от языка не зависят.
+Important: the mathematical exercises themselves are language-independent.
 
-Пример локализации:
+Localization example (Russian column translated into English here):
 
-Русский	Español
-Начать тренировку	Empezar a practicar
-Умная тренировка	Práctica inteligente
-Правильно!	¡Correcto!
-Попробуй ещё раз	¡Inténtalo de nuevo!
-Мои результаты	Mis resultados
-Сложные примеры	Operaciones difíciles
-Освоено	Dominado
-Продолжить	Continuar
-Завершить	Terminar
-Звёзды	Estrellas
+Russian text, English translation	Español
+Start practice	Empezar a practicar
+Smart practice	Práctica inteligente
+Correct!	¡Correcto!
+Try again	¡Inténtalo de nuevo!
+My results	Mis resultados
+Difficult exercises	Operaciones difíciles
+Mastered	Dominado
+Continue	Continuar
+Finish	Terminar
+Stars	Estrellas
 
-Все надписи должны храниться в отдельных языковых файлах, а не внутри компонентов.
+All labels must be stored in separate language files, not inside components.
 
-Предлагаемая структура:
+Proposed structure:
 
 src/
   locales/
     ru.json
     es.json
 
-В дальнейшем можно будет добавлять другие языки без изменения математического движка.
+Other languages can then be added without changing the mathematical engine.
 
-7. Игровая механика
+7. Game mechanics
 
-Здесь важно соблюдать баланс.
+Maintaining balance is important here.
 
-Игра должна поддерживать интерес, но не отвлекать от математической задачи.
+The game must sustain interest without distracting from the mathematical task.
 
-7.1. Персонаж
+7.1. Character
 
-Основной персонаж — космический лис.
+The main character is a space fox.
 
-У персонажа четыре состояния:
+The character has four states:
 
-* приветствие;
-* размышление;
-* радость при правильном ответе;
-* поддержка после ошибки.
+* greeting;
+* thinking;
+* joy at a correct answer;
+* encouragement after an error.
 
-Не нужно анимировать персонажа после каждого нажатия сложными эффектами.
+There is no need to animate the character with complex effects after every tap.
 
-7.2. Система наград
+7.2. Reward system
 
-Предлагаю простую систему:
+I propose a simple system:
 
-Событие	Награда
-Правильный ответ	1 звезда
-Серия из 5 правильных	Дополнительная звезда
-Завершение занятия	2 звезды
-Освоение нового факта	3 звезды
-Сохранение навыка через несколько дней	5 звёзд
+Event	Reward
+Correct answer	1 star
+A streak of 5 correct answers	An additional star
+Completing a session	2 stars
+Mastering a new fact	3 stars
+Retaining a skill after several days	5 stars
 
-Скорость ответа не должна напрямую определять основную награду.
+Response speed must not directly determine the main reward.
 
-Иначе ребёнок начнёт торопиться и допускать больше ошибок.
+Otherwise, the child will start rushing and make more mistakes.
 
-7.3. Достижения
+7.3. Achievements
 
-На первом этапе достаточно шести:
+Six are enough for the first stage:
 
-* Первые 10 правильных ответов.
-* 25 освоенных фактов.
-* 50 освоенных фактов.
-* 100 освоенных фактов.
-* Первая неделя занятий.
-* Вся таблица освоена.
+* First 10 correct answers.
+* 25 mastered facts.
+* 50 mastered facts.
+* 100 mastered facts.
+* First week of practice.
+* The entire table mastered.
 
-Достижения должны быть основаны на реальном прогрессе, а не на количестве открытий приложения.
+Achievements must be based on real progress, not on the number of times the application is opened.
 
-8. Архитектура программного обеспечения
+8. Software architecture
 
-Это второй важнейший раздел после методики.
+This is the second most important section after the learning methodology.
 
-Мы должны разделить интерфейс, математическую модель и механизм обучения.
+We must separate the interface, the mathematical model, and the learning mechanism.
 
-Нельзя писать всю логику в App.tsx.
+Do not write all the logic in App.tsx.
 
-Предлагаю следующую структуру проекта:
+I propose the following project structure:
 
 math-hero/
 │
@@ -659,11 +659,11 @@ math-hero/
 ├── README.md
 └── .gitignore
 
-8.1. Почему такая структура
+8.1. Why this structure
 
-В будущем мы добавим новую математическую операцию, например деление.
+In the future, we will add a new mathematical operation, for example, division.
 
-Тогда появится:
+This will introduce:
 
 engine/
   division/
@@ -671,9 +671,9 @@ engine/
     divisionEvaluator.ts
     divisionFacts.ts
 
-А общий движок останется прежним.
+The shared engine will remain unchanged.
 
-То же самое с умножением многозначных чисел:
+The same applies to multi-digit multiplication:
 
 engine/
   multiplication/
@@ -685,11 +685,11 @@ features/
     column/
     multiDigit/
 
-Это позволит не переписывать приложение при расширении.
+This will allow expansion without rewriting the application.
 
-8.2. Общий интерфейс математического упражнения
+8.2. Shared mathematical exercise interface
 
-Предлагаю использовать типизированную модель:
+I propose a typed model:
 
 export type OperationType =
   | 'multiplication'
@@ -707,7 +707,7 @@ export interface Exercise {
   difficulty: number;
 }
 
-И общий интерфейс движка:
+And a shared engine interface:
 
 export interface ExerciseEngine {
   generate(): Exercise;
@@ -717,19 +717,19 @@ export interface ExerciseEngine {
   ): boolean;
 }
 
-Это архитектурный контракт для будущих операций. В MVP реализуется только multiplication.
+This is an architectural contract for future operations. Only multiplication is implemented in the MVP.
 
-9. Модель хранения данных
+9. Data storage model
 
-Для проекта предлагаю IndexedDB с библиотекой Dexie.js.
+For the project, I propose IndexedDB with the Dexie.js library.
 
-Она упрощает работу с IndexedDB, поддерживает индексы и версионирование схемы.
+It simplifies IndexedDB access and supports indexes and schema versioning.
 
-В базе будут четыре основные таблицы.
+The database will have four main tables.
 
-9.1. Facts — математические факты
+9.1. Facts — mathematical facts
 
-Хранение состояния каждого примера.
+Stores the state of each exercise.
 
 interface MathFact {
   id: string;
@@ -746,11 +746,11 @@ interface MathFact {
   masteredAt: number | null;
 }
 
-canonicalId позволяет связывать перемножения с переставленными множителями.
+canonicalId links multiplications whose factors are reversed.
 
-Например, mul:7:8 будет идентификатором и для 7 × 8, и для 8 × 7.
+For example, mul:7:8 will be the identifier for both 7 × 8 and 8 × 7.
 
-9.2. Attempts — история ответов
+9.2. Attempts — answer history
 
 interface Attempt {
   id: string;
@@ -761,9 +761,9 @@ interface Attempt {
   sessionId: string;
 }
 
-История нужна для аналитики и возможности в дальнейшем улучшать алгоритм.
+History is needed for analytics and to enable future algorithm improvements.
 
-9.3. Sessions — занятия
+9.3. Sessions — practice sessions
 
 interface TrainingSession {
   id: string;
@@ -775,7 +775,7 @@ interface TrainingSession {
   durationMs: number;
 }
 
-9.4. Settings — настройки
+9.4. Settings — preferences
 
 interface AppSettings {
   language: 'ru' | 'es';
@@ -784,107 +784,107 @@ interface AppSettings {
   animationsEnabled: boolean;
 }
 
-По умолчанию:
+Defaults:
 
-* язык — испанский;
-* звуки выключены;
-* продолжительность цели — 10 минут;
-* анимации включены.
+* language — Spanish;
+* sounds off;
+* goal duration — 10 minutes;
+* animations on.
 
-9.5. Резервное копирование
+9.5. Backups
 
-Обязательно предусмотреть:
+The following are required:
 
-* экспорт всей базы в JSON;
-* импорт резервной копии;
-* проверку версии формата;
-* защиту от повреждённого файла;
-* предупреждение перед заменой существующих данных.
+* export of the entire database as JSON;
+* backup import;
+* format-version checking;
+* protection against a corrupted file;
+* a warning before replacing existing data.
 
-Это особенно важно, поскольку GitHub Pages не предоставляет синхронизацию между устройствами.
+This is especially important because GitHub Pages does not provide synchronization between devices.
 
-10. Требования к адаптации под Apple
+10. Apple adaptation requirements
 
-Это отдельная часть ТЗ, потому что iOS Safari имеет свои особенности.
+This is a separate part of the specification because iOS Safari has its own particular behavior.
 
-10.1. Поддерживаемые устройства
+10.1. Supported devices
 
-* iPhone с актуальной версией iOS;
-* iPad с актуальной версией iPadOS;
-* Safari как основной браузер;
-* возможность запуска через иконку на домашнем экране.
+* iPhone with a current version of iOS;
+* iPad with a current version of iPadOS;
+* Safari as the primary browser;
+* the ability to launch from a Home Screen icon.
 
-10.2. Адаптивность
+10.2. Responsive behavior
 
-Предлагаемые точки адаптации:
+Proposed responsive breakpoints:
 
-Устройство	Интерфейс
-iPhone	Одна колонка
-iPad portrait	Одна широкая колонка
-iPad landscape	Центральная зона с боковой панелью прогресса
+Device	Interface
+iPhone	One column
+iPad portrait	One wide column
+iPad landscape	Central area with a progress sidebar
 
-Не нужно создавать три отдельных интерфейса. Используем один адаптивный дизайн.
+There is no need to create three separate interfaces. Use one responsive design.
 
-10.3. Особенности iOS
+10.3. iOS specifics
 
-Обязательные требования:
+Mandatory requirements:
 
-* корректный viewport;
+* a correct viewport;
 * viewport-fit=cover;
-* учёт env(safe-area-inset-*);
-* запрет случайного выделения текста на кнопках;
-* отсутствие масштабирования страницы при работе с элементами ввода;
-* поддержка touch-событий;
-* проверка сохранения IndexedDB после перезапуска Safari;
-* корректная работа при переходе приложения в фон;
-* восстановление незавершённой сессии после возврата.
+* handling of env(safe-area-inset-*);
+* prevention of accidental text selection on buttons;
+* no page zoom while interacting with inputs;
+* touch-event support;
+* verification that IndexedDB persists after restarting Safari;
+* correct behavior when the application enters the background;
+* restoration of an unfinished session on return.
 
-Отдельно: приложение не должно считать время, проведённое в фоне, временем ответа на математическое задание.
+Separately: the application must not count time spent in the background as response time for a mathematical exercise.
 
-Если ребёнок свернул Safari, текущий вопрос нужно приостановить и восстановить без штрафа.
+If the child minimizes Safari, pause the current question and restore it without penalty.
 
 10.4. PWA
 
-В первую версию включить минимальную поддержку установки на домашний экран:
+Include minimal Home Screen installation support in the first version:
 
 * manifest.webmanifest;
-* иконки;
-* название приложения;
-* цвет темы;
+* icons;
+* application name;
+* theme color;
 * standalone display mode.
 
-Service Worker и полноценное офлайн-кэширование можно сделать отдельным этапом. Но структура проекта должна позволять это добавить без переделки.
+A Service Worker and full offline caching can be implemented as a separate stage. However, the project structure must allow them to be added without reworking the application.
 
-11. Нефункциональные требования
+11. Nonfunctional requirements
 
-Требование	Критерий
-Скорость запуска	До 3 секунд на нормальном соединении
-Реакция на ответ	Мгновенная
-Работа офлайн	После первой загрузки при включённом PWA-кэшировании
-Хранение	Локальное
-Потеря прогресса	Предотвращать автоматическим сохранением
-Доступность	Хорошая контрастность и крупные элементы
-Ориентация	Portrait и landscape
-Языки	Русский и испанский
-Совместимость	iPhone и iPad
-Развёртывание	GitHub Pages
+Requirement	Criterion
+Startup speed	Up to 3 seconds on a normal connection
+Response to an answer	Immediate
+Offline operation	After the first load with PWA caching enabled
+Storage	Local
+Loss of progress	Prevent through automatic saving
+Accessibility	Good contrast and large elements
+Orientation	Portrait and landscape
+Languages	Russian and Spanish
+Compatibility	iPhone and iPad
+Deployment	GitHub Pages
 
-Для офлайн-работы после первой загрузки PWA-кэширование должно быть частью готового MVP, а не только будущей идеей. Это позволит заниматься даже без интернета.
+For offline use after the first load, PWA caching must be part of the completed MVP, not merely a future idea. This will allow practice even without internet access.
 
-12. GitHub и развёртывание
+12. GitHub and deployment
 
-Предлагаю использовать обычный GitHub-репозиторий с автоматической публикацией через GitHub Actions.
+I propose using a regular GitHub repository with automatic publishing through GitHub Actions.
 
-Порядок работы:
+Workflow:
 
-* Создаём репозиторий math-hero.
-* Локально создаём проект через Vite.
-* Разрабатываем и тестируем приложение на компьютере.
-* Загружаем исходный код в GitHub.
-* GitHub Actions собирает приложение.
-* Результат автоматически публикуется на GitHub Pages.
+* Create a repository named math-hero.
+* Create the project locally using Vite.
+* Develop and test the application on the computer.
+* Upload the source code to GitHub.
+* GitHub Actions builds the application.
+* The result is automatically published to GitHub Pages.
 
-Пример конфигурации Vite:
+Example Vite configuration:
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -893,7 +893,7 @@ export default defineConfig({
   base: '/math-hero/',
 });
 
-Если репозиторий будет называться иначе, base нужно изменить соответственно.
+If the repository has a different name, change base accordingly.
 
 GitHub Actions:
 
@@ -933,186 +933,186 @@ jobs:
       - uses: actions/deploy-pages@v4
         id: deployment
 
-В настройках репозитория GitHub Pages выбираем источник GitHub Actions.
+In the repository's GitHub Pages settings, select GitHub Actions as the source.
 
-Важное правило: GitHub Pages должен публиковать только собранную папку dist, а не исходники из src.
+Important rule: GitHub Pages must publish only the built dist folder, not the source files from src.
 
-Версии GitHub Actions в конфигурации зафиксированы для примера; перед публикацией стоит проверить актуальные поддерживаемые версии.
+The GitHub Actions versions in this configuration are fixed for illustration; check currently supported versions before publishing.
 
-13. Тестирование и критерии готовности
+13. Testing and readiness criteria
 
-Недостаточно, чтобы приложение просто отображало примеры. Нужно убедиться, что алгоритм действительно работает корректно.
+It is not enough for the application simply to display exercises. We must ensure that the algorithm actually works correctly.
 
-13.1. Тесты математического движка
+13.1. Mathematical engine tests
 
-Обязательно проверить:
+The following must be checked:
 
-* генерируются все 144 направленных примера;
-* нет примеров вне диапазона 1–12;
-* произведения рассчитываются правильно;
-* 7 × 8 и 8 × 7 связываются общим canonical ID;
-* правильные ответы обновляют статистику;
-* неправильные ответы повышают приоритет повторения;
-* мастерство не присваивается после одного занятия;
-* освоенные примеры продолжают периодически проверяться;
-* повторение не зацикливается на одном примере.
+* all 144 directed exercises are generated;
+* no exercises fall outside the 1–12 range;
+* products are calculated correctly;
+* 7 × 8 and 8 × 7 are linked by a shared canonical ID;
+* correct answers update statistics;
+* incorrect answers increase review priority;
+* mastery is not awarded after a single session;
+* mastered exercises continue to be checked periodically;
+* repetition does not become stuck on one exercise.
 
-13.2. Тесты адаптивного алгоритма
+13.2. Adaptive algorithm tests
 
-Смоделировать три профиля:
+Simulate three profiles:
 
-Профиль A — всё знает хорошо.
+Profile A — knows everything well.
 
-Ребёнок отвечает правильно и быстро. Алгоритм постепенно увеличивает интервалы.
+The child answers correctly and quickly. The algorithm gradually increases intervals.
 
-Профиль B — знает таблицу, но долго думает.
+Profile B — knows the table but thinks for a long time.
 
-Ответы правильные, но медленные. Алгоритм чаще возвращает соответствующие примеры, не объявляя их ошибочными.
+Answers are correct but slow. The algorithm returns the corresponding exercises more often without classifying them as errors.
 
-Профиль C — отдельные пробелы.
+Profile C — specific gaps.
 
-Ошибки на 6 × 7, 7 × 8, 8 × 9. Именно эти факты должны получать повышенный приоритет.
+Errors on 6 × 7, 7 × 8, 8 × 9. These particular facts must receive increased priority.
 
-13.3. Приёмочные испытания на iPhone и iPad
+13.3. Acceptance tests on iPhone and iPad
 
-* Открытие по HTTPS.
-* Прохождение полной диагностики.
-* Проведение тренировки.
-* Перезагрузка браузера.
-* Проверка сохранности прогресса.
-* Экспорт и импорт данных.
-* Переключение RU / ES.
-* Поворот устройства.
-* Сворачивание Safari и возврат.
-* Установка на домашний экран.
-* Работа без интернета после первой загрузки.
+* Open over HTTPS.
+* Complete the full diagnosis.
+* Complete a practice session.
+* Reload the browser.
+* Verify that progress is preserved.
+* Export and import data.
+* Switch RU / ES.
+* Rotate the device.
+* Minimize Safari and return.
+* Install on the Home Screen.
+* Work without internet after the first load.
 
-13.4. Критерии завершения MVP
+13.4. MVP completion criteria
 
 Definition of Done
 
-Готовность MVP
+MVP readiness
 
 0 / 16
 
-Все 144 направленных примера реализованы
+All 144 directed exercises implemented
 
-Реализована связь переставленных множителей
+Reversed factors linked
 
-Начальная диагностика работает
+Initial diagnosis works
 
-Адаптивная тренировка работает
+Adaptive practice works
 
-Повторение ошибок работает
+Error repetition works
 
-Интервальное повторение работает
+Spaced repetition works
 
-Скорость и точность учитываются отдельно
+Speed and accuracy tracked separately
 
-Реализован статус мастерства
+Mastery status implemented
 
-Работают RU и ES
+RU and ES work
 
-Работает экран статистики
+Statistics screen works
 
-Реализована карта таблицы 12 × 12
+12 × 12 table map implemented
 
-Данные сохраняются в IndexedDB
+Data persists in IndexedDB
 
-Есть экспорт и импорт резервной копии
+Backup export and import available
 
-Реализован PWA-кэш для офлайн-работы
+PWA cache implemented for offline operation
 
-Приложение проверено на iPhone и iPad
+Application tested on iPhone and iPad
 
-GitHub Actions автоматически публикует приложение
+GitHub Actions publishes the application automatically
 
-14. План реализации
+14. Implementation plan
 
-Я бы разделил разработку на пять последовательных этапов.
+I would divide development into five sequential stages.
 
-Этап	Содержание	Результат
-1	Основа проекта, дизайн, локализация	Работающий интерфейс
-2	Математический движок, диагностика	Полная таблица 1–12
-3	Адаптивный алгоритм	Персональные тренировки
-4	Статистика, награды, IndexedDB	Полноценное приложение
-5	PWA, тестирование, GitHub Pages	Публикация
+Stage	Content	Result
+1	Project foundation, design, localization	Working interface
+2	Mathematical engine, diagnosis	Complete 1–12 table
+3	Adaptive algorithm	Personalized practice
+4	Statistics, rewards, IndexedDB	Complete application
+5	PWA, testing, GitHub Pages	Publication
 
-Не рекомендую начинать с анимаций и персонажа. Сначала нужно проверить математический движок и алгоритм. Если они работают хорошо, игровой интерфейс можно добавить без риска переписывать основную логику.
+I do not recommend starting with animations and the character. First verify the mathematical engine and algorithm. If they work well, the game interface can be added without risking a rewrite of the core logic.
 
-15. Что сознательно оставляем за пределами MVP
+15. Deliberate exclusions from the MVP
 
-Чтобы проект не разрастался, фиксируем ограничения.
+To prevent the project from expanding uncontrollably, establish these limits.
 
-Возможность	Решение
-Голосовой ввод	Не реализовывать
-Текстовые задачи	Не реализовывать
-Деление	Только архитектурная готовность
-Умножение в столбик	Только архитектурная готовность
-Многозначное деление	Только архитектурная готовность
-Облачная синхронизация	Не реализовывать
-Регистрация	Не нужна
-Родительский аккаунт	Не нужен
-Соревнования с другими детьми	Не нужны
-Реклама	Не нужна
+Feature	Decision
+Voice input	Do not implement
+Word problems	Do not implement
+Division	Architectural readiness only
+Column multiplication	Architectural readiness only
+Multi-digit division	Architectural readiness only
+Cloud synchronization	Do not implement
+Registration	Not needed
+Parent account	Not needed
+Competitions with other children	Not needed
+Advertising	Not needed
 
-16. Как я вижу дальнейшее развитие
+16. My view of further development
 
-После того как таблица умножения будет полноценно реализована и проверена, можно расширять приложение следующими модулями.
+Once the multiplication table has been fully implemented and verified, the application can be expanded with the following modules.
 
-Будущая математическая платформа
+Future mathematical platform
 
-Сейчас — MVP
+Now — MVP
 
-Умножение 1–12
+Multiplication 1–12
 
-Автоматизм базовых математических фактов
+Automatic recall of basic mathematical facts
 
-Деление
+Division
 
-Обратные математические факты
+Inverse mathematical facts
 
-Умножение в столбик
+Column multiplication
 
-Двузначные и трёхзначные числа
+Two-digit and three-digit numbers
 
-Деление в столбик
+Long division
 
-Деление многозначных чисел
+Division of multi-digit numbers
 
-Смешанные задания
+Mixed exercises
 
-Несколько операций в одном занятии
+Several operations in one session
 
-Здесь есть ещё один важный педагогический момент: при добавлении деления нужно будет связывать его с уже освоенными фактами умножения.
+There is another important educational point here: when adding division, link it to already mastered multiplication facts.
 
-Например, если ребёнок хорошо знает 7 × 8 = 56, то 56 ÷ 7 = 8 и 56 ÷ 8 = 7 должны постепенно осваиваться как связанные факты. Это позволит использовать уже сформированные знания, а не начинать обучение заново.
+For example, if the child knows 7 × 8 = 56 well, then 56 ÷ 7 = 8 and 56 ÷ 8 = 7 should gradually be learned as related facts. This allows existing knowledge to be used instead of starting learning from scratch.
 
-17. Моя итоговая рекомендация
+17. My final recommendation
 
-Я считаю, что оптимальная первая версия должна иметь три главных свойства:
+I believe the optimal first version should have three main qualities:
 
-* Качественный адаптивный движок. Он должен понимать разницу между ошибкой, медленным ответом и автоматическим воспроизведением.
-* Удобный интерфейс для iPhone и iPad. Большие цифры, собственная клавиатура, минимум отвлекающих элементов.
-* Надёжная история обучения. Приложение должно помнить результаты между занятиями, иначе интервальное повторение теряет смысл.
+* A high-quality adaptive engine. It must understand the difference between an error, a slow answer, and automatic recall.
+* A convenient interface for iPhone and iPad. Large digits, a custom keypad, and minimal distractions.
+* Reliable learning history. The application must remember results between sessions; otherwise, spaced repetition loses its purpose.
 
-И самое главное — я бы не ставил цель «закрыть все 144 ячейки зелёным цветом». Это не гарантирует реального навыка. Нужно добиться устойчивого быстрого воспроизведения с проверкой в разные дни.
+Most importantly, I would not set the goal of “turning all 144 cells green.” That does not guarantee real skill. The goal must be stable, fast recall verified on different days.
 
-18. С чего начать работу на компьютере
+18. How to start work on the computer
 
-Предлагаю следующий практический порядок:
+I propose the following practical sequence:
 
-* Установить Node.js LTS и Git.
-* Создать репозиторий math-hero на GitHub.
-* Создать локальный проект React + TypeScript + Vite.
-* Добавить структуру каталогов из ТЗ.
-* Реализовать сначала multiplicationFacts, masteryCalculator и scheduler.
-* Написать тесты движка.
-* Только после этого переходить к экранам и дизайну.
+* Install Node.js LTS and Git.
+* Create a math-hero repository on GitHub.
+* Create a local React + TypeScript + Vite project.
+* Add the directory structure from the specification.
+* Implement multiplicationFacts, masteryCalculator, and scheduler first.
+* Write engine tests.
+* Only then move on to screens and design.
 
-Мой совет: не пытаться поручить AI сразу весь проект одним запросом. Лучше разрабатывать по этапам, проверяя результат каждого этапа. Особенно важно отдельно протестировать алгоритм обучения на искусственных профилях ребёнка.
+My advice: do not try to give AI the entire project in a single request. It is better to develop in stages and check the result of each stage. Separately testing the learning algorithm on artificial child profiles is especially important.
 
-Для начала разработки можно использовать этот стартовый набор команд:
+This initial set of commands can be used to begin development:
 
 npm create vite@latest math-hero -- --template react-ts
 cd math-hero
@@ -1122,4 +1122,4 @@ npm install -D vitest @testing-library/react \
   @testing-library/jest-dom jsdom
 npm run dev
 
-В качестве следующего практического шага я рекомендую начать с Этапа 1 — создать полноценный GitHub-проект с правильной структурой, базовым дизайном, адаптивной оболочкой под iPhone/iPad и переключением RU/ES. После него отдельно реализовать и проверить математический движок. Так мы получим проект, который можно будет спокойно развивать, не превращая его в один большой файл с трудноизменяемой логикой.
+As the next practical step, I recommend starting with Stage 1: create a complete GitHub project with the correct structure, a basic design, a responsive iPhone/iPad shell, and RU/ES switching. Then implement and verify the mathematical engine separately. This will give us a project that can evolve comfortably without becoming one large file of hard-to-change logic.

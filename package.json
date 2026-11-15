@@ -8,14 +8,16 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "npm run typecheck && vite build",
+    "build": "npm run typecheck && vite build && node scripts/build-pwa.mjs && node scripts/check-dist.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "browsers:install": "playwright install chromium webkit"
+    "browsers:install": "playwright install chromium webkit",
+    "icons:generate": "node scripts/generate-icons.mjs",
+    "test:pwa": "playwright test --config playwright.pwa.config.ts"
   },
   "overrides": {
     "@typescript-eslint/typescript-estree": {

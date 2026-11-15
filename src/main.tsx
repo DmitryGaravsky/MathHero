@@ -4,6 +4,7 @@ import { App } from "./app/App";
 import { AppProvider } from "./app/providers";
 import "./styles/global.css";
 import "./styles/responsive.css";
+import { registerOffline } from "./pwa/register";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -12,3 +13,5 @@ createRoot(document.getElementById("root")!).render(
     </AppProvider>
   </StrictMode>,
 );
+
+void registerOffline();
