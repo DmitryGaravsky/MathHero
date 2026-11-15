@@ -7,7 +7,7 @@ test("all five screens and both locales fit the viewport", async ({ page }) => {
   await page.goto("./");
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Una pequeña misión",
+    "¡Hola! ¿Practicamos?",
   );
   await openParent(page);
   for (const language of ["ru", "es"]) {
@@ -102,7 +102,7 @@ test("preview has no invented progress, supports back and reduced motion", async
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./");
-  await expect(page.locator(".journey-card")).toContainText("0 / 78");
+  await expect(page.locator(".child-progress")).toContainText("0 / 78");
   expect(
     await page
       .locator(".hero .mascot")

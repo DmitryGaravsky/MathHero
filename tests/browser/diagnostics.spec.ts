@@ -54,6 +54,7 @@ test("completes a part, restores draft and feedback, records an error once and r
   page,
 }) => {
   test.setTimeout(90000);
+  await page.clock.install();
   await page.goto("./");
   await openParent(page);
   await page.getByRole("link", { name: "Empezar diagnóstico" }).click();
@@ -82,7 +83,7 @@ test("completes a part, restores draft and feedback, records an error once and r
   const seen = new Set([initial]);
   for (let i = 1; i < 24; i++) {
     seen.add(await answer(page));
-    await page.getByRole("button", { name: "Siguiente", exact: true }).click();
+    await page.clock.fastForward(800);
   }
   await expect(
     page.getByRole("heading", { name: "Parte 1 completada" }),
@@ -203,17 +204,13 @@ test("finishes all six parts and shows real diagnostic results", async ({
     "Full flow in Chromium/WebKit portrait; part flow covers all sizes.",
   );
   test.setTimeout(180000);
+  await page.clock.install();
   await page.goto("./#diagnostic");
   await openParent(page);
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   for (let i = 1; i <= 144; i++) {
     await answer(page);
-    await page
-      .getByRole("button", {
-        name: i === 144 ? "Ver resumen" : "Siguiente",
-        exact: true,
-      })
-      .click();
+    await page.clock.fastForward(800);
     if (i % 24 === 0 && i < 144)
       await page
         .getByRole("button", { name: "Empezar la siguiente parte" })

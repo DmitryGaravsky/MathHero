@@ -1,5 +1,7 @@
 import { AppShell } from "../components/layout/AppShell";
 import { useProgressData } from "../database/useProgressData";
+import { ChildAchievements } from "../features/child/ChildAchievements";
+import { ChildHome } from "../features/child/ChildHome";
 import { Dashboard } from "../features/dashboard/Dashboard";
 import { MultiplicationMap } from "../features/multiplication/MultiplicationMap";
 import { Settings } from "../features/settings/Settings";
@@ -29,9 +31,9 @@ function practice(mode: AppMode, screen: "training" | "weak" | "diagnostic", tar
 
 export function ChildShell({ covered, ...props }: ModeShellProps & { covered: boolean }) {
   const { screen, targetPair } = props;
-  const content = screen === "achievements" ? <AchievementsPage /> :
+  const content = screen === "achievements" ? <ChildAchievements /> :
     screen === "training" || screen === "weak" ? practice("child", screen, targetPair, covered) :
-      <Dashboard mode="child" />;
+      <ChildHome />;
   return <AppShell mode="child" {...props}>{content}</AppShell>;
 }
 

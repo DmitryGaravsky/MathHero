@@ -1,6 +1,7 @@
 import {
   useEffect,
   useLayoutEffect,
+  useRef,
   useState,
   useSyncExternalStore,
 } from "react";
@@ -9,7 +10,10 @@ import { DiagnosticController } from "./DiagnosticController";
 import type { Session } from "../../engine/learning/session";
 import { LearningRepository } from "../../database/learningRepository";
 import { diagnosticRepository } from "../../database/diagnosticRepository";
+import { observeSession } from "../../database/usePracticeData";
 import type { SessionMode } from "../../engine/sessions/diagnostic";
+
+const correctFeedbackMs = 800;
 
 export function useDiagnostic(
   mode: SessionMode = "diagnostic",
@@ -34,21 +38,21 @@ export function useDiagnostic(
     controller.subscribe,
     controller.getSnapshot,
   );
+  const pageAvailable = useRef(true);
   useLayoutEffect(() => {
     controller.attach(false);
     return () => { void controller.detach(); };
   }, [controller]);
   useLayoutEffect(() => {
-    let pageAvailable = true;
     const syncActivity = () => {
-      void controller.setActive(pageAvailable && !document.hidden && !covered);
+      void controller.setActive(pageAvailable.current && !document.hidden && !covered);
     };
     const leave = () => {
-      pageAvailable = false;
+      pageAvailable.current = false;
       syncActivity();
     };
     const show = () => {
-      pageAvailable = true;
+      pageAvailable.current = true;
       syncActivity();
     };
     syncActivity();
@@ -80,5 +84,28 @@ export function useDiagnostic(
     view.paused,
     view.busy,
   ]);
+  const { active, busy, error, loading, paused, session } = view;
+  useLayoutEffect(() => {
+    if (!session || !controller.canAdvanceAutomatically(session)) return;
+    const hash = window.location.hash;
+    const timeout = window.setTimeout(() => {
+      if (pageAvailable.current && !document.hidden && window.location.hash === hash) {
+        void controller.advanceCorrectFeedback(session);
+      }
+    }, correctFeedbackMs);
+    const subscription = observeSession(session.id).subscribe({
+      next: (saved) => {
+        if (saved?.owner === session.owner && saved.phase === session.phase &&
+          saved.cursor === session.cursor && saved.startedAt === session.startedAt) return;
+        window.clearTimeout(timeout);
+        if (controller.canAdvanceAutomatically(session)) void controller.load();
+      },
+      error: () => window.clearTimeout(timeout),
+    });
+    return () => {
+      window.clearTimeout(timeout);
+      subscription.unsubscribe();
+    };
+  }, [controller, active, busy, error, loading, paused, session]);
   return { controller, ...view };
 }

@@ -45,15 +45,15 @@ test("real stars, child results, parent history and interactive accessible map",
   const first = await page.locator(".equation").getAttribute("aria-label");
   for (let n = 0; n < 5; n++) {
     await answer(page);
-    if (n < 4) await page.getByRole("button", { name: "Siguiente" }).click();
+    if (n < 4) await expect(page.getByRole("textbox")).toBeEnabled();
   }
   await page.getByRole("button", { name: "Terminar esta práctica" }).click();
   await expect(page.getByText("Estrellas en esta práctica: 8.")).toBeVisible();
   await page.reload();
   await expect(page.getByText("Estrellas en esta práctica: 8.")).toBeVisible();
-  await page.locator('nav a[href="#home"]').click();
+  await openParent(page, "home");
   await expect(page.locator(".journey-card .metrics")).toContainText("8");
-  await openParent(page, "results");
+  await parentNav(page, "results").click();
   await page.getByText("Análisis para adultos", { exact: true }).click();
   await expect(page.locator(".parent-analytics")).toContainText(
     "Correctas: 5 de 5.",
@@ -109,7 +109,6 @@ test("downloads all data, rejects corruption, cancels unchanged and restores res
   await page.goto("./#training");
   await page.getByRole("button", { name: "Empezar a practicar" }).click();
   await answer(page);
-  await page.getByRole("button", { name: "Siguiente" }).click();
   await expect(page.getByRole("textbox")).toBeEnabled();
   const equation = await page.locator(".equation").getAttribute("aria-label");
   await page.getByRole("textbox").fill("42");
@@ -242,7 +241,7 @@ test("goal and animation settings persist in both locales and all four calm fox 
   await expect(page.locator('.mascot[data-state="thinking"]')).toBeVisible();
   await answer(page);
   await expect(page.locator('.mascot[data-state="happy"]')).toBeVisible();
-  await page.getByRole("button", { name: "Siguiente" }).click();
+  await expect(page.getByRole("textbox")).toBeEnabled();
   await page.getByRole("textbox").fill("0");
   await page.getByRole("textbox").press("Enter");
   await expect(page.locator('.mascot[data-state="support"]')).toBeVisible();

@@ -5,6 +5,9 @@ export type IconName =
   | "map"
   | "settings"
   | "arrow"
+  | "check"
+  | "calendar"
+  | "trophy"
   | "star"
   | "spark";
 const paths: Record<IconName, string> = {
@@ -15,6 +18,9 @@ const paths: Record<IconName, string> = {
   map: "M3 3h18v18H3ZM9 3v18M15 3v18M3 9h18M3 15h18",
   settings: "M4 7h16M4 17h16M8 4v6M16 14v6",
   arrow: "M4 12h16m-6-6 6 6-6 6",
+  check: "m5 12 5 5L20 7",
+  calendar: "M4 6h16v15H4ZM4 10h16M8 3v5m8-5v5m-8 7 2 2 5-5",
+  trophy: "M8 3h8v8a4 4 0 0 1-8 0Zm0 2H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4m-4 4v4m-4 2h8",
   star: "m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z",
   spark: "m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z",
 };
