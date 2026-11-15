@@ -1,0 +1,310 @@
+/* Loaded after the base styles. Portrait phones keep the answer and keypad together. */
+@media (min-width: 1100px) {
+  .app-shell .navigation {
+    justify-content: flex-start;
+  }
+  .app-shell main {
+    padding-top: 25px;
+  }
+}
+@media (max-width: 900px) {
+  .app-shell .navigation a {
+    padding: 0 15px;
+  }
+  .app-shell .hero {
+    padding: 30px;
+  }
+  .app-shell .hero h1 {
+    font-size: 2.5rem;
+  }
+  .app-shell .training-layout {
+    gap: 24px;
+    grid-template-columns: minmax(0, 500px) minmax(180px, 1fr);
+  }
+  .app-shell .exercise-card {
+    padding: 25px;
+  }
+  .app-shell .mission-card {
+    padding-right: 28px;
+  }
+  .app-shell .mission-icon {
+    display: none;
+  }
+  .app-shell .hero-art .orbit {
+    width: 240px;
+    height: 240px;
+  }
+  .app-shell .hero-art .orbit-two {
+    width: 300px;
+    height: 300px;
+  }
+}
+@media (max-width: 700px) {
+  .app-shell {
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+    padding-bottom: calc(84px + var(--safe-bottom));
+  }
+  .app-shell .app-header {
+    height: 86px;
+  }
+  .app-shell .brand {
+    font-size: 1.3rem;
+    gap: 8px;
+  }
+  .app-shell .brand-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+  }
+  .app-shell .navigation {
+    position: fixed;
+    z-index: 5;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    gap: 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    background: #fffffff5;
+    border-top: 1px solid var(--line);
+    padding: 8px max(8px, env(safe-area-inset-right, 0px))
+      calc(8px + var(--safe-bottom)) max(8px, env(safe-area-inset-left, 0px));
+    backdrop-filter: blur(16px);
+  }
+  .app-shell .navigation a {
+    flex-direction: column;
+    gap: 5px;
+    padding: 7px 1px;
+    font-size: 0.67rem;
+    min-height: 58px;
+    border-radius: 12px;
+  }
+  .app-shell .navigation svg {
+    width: 21px;
+    height: 21px;
+  }
+  .app-shell main {
+    padding-top: 22px;
+  }
+  .app-shell .hero {
+    display: flex;
+    flex-direction: column-reverse;
+    padding: 22px 24px 30px;
+    gap: 0;
+  }
+  .app-shell .hero-art {
+    height: 190px;
+  }
+  .app-shell .hero .mascot {
+    width: 210px;
+    max-height: 210px;
+  }
+  .app-shell .hero-art .orbit {
+    width: 185px;
+    height: 185px;
+  }
+  .app-shell .hero-art .orbit-two {
+    width: 240px;
+    height: 240px;
+  }
+  .app-shell .hero h1 {
+    font-size: 2.15rem;
+    margin-bottom: 16px;
+  }
+  .app-shell .hero .eyebrow {
+    font-size: 0.72rem;
+    margin-bottom: 13px;
+  }
+  .app-shell .hero-copy > p:not(.eyebrow) {
+    font-size: 0.95rem;
+    margin-bottom: 22px;
+  }
+  .app-shell .hero .button {
+    width: 100%;
+    padding: 14px 12px;
+    font-size: 0.95rem;
+  }
+  .app-shell .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 18px;
+  }
+  .app-shell .card {
+    padding: 24px;
+  }
+  .app-shell .preview-note {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .app-shell .page-heading {
+    margin: 0 0 22px;
+  }
+  .app-shell .page-heading h1 {
+    font-size: 1.85rem;
+  }
+  .app-shell .page-heading p {
+    font-size: 0.95rem;
+  }
+  .app-shell .training-layout {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .app-shell .practice-aside {
+    max-width: none;
+    padding: 0 12px;
+  }
+  .app-shell .practice-aside .mascot {
+    display: none;
+  }
+  .app-shell .practice-aside p {
+    font-size: 0.95rem;
+  }
+  .app-shell .practice-aside h2 {
+    font-size: 1.1rem;
+  }
+  .app-shell .analytics-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .app-shell .analytics-grid .card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 16px;
+  }
+  .app-shell .analytics-grid p {
+    grid-column: 1/-1;
+  }
+  .app-shell .analytics-grid h3 {
+    margin: 0;
+  }
+  .app-shell .empty-value {
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+  .app-shell .map-card {
+    padding: 14px 10px;
+  }
+  .app-shell .map-row {
+    gap: 3px;
+    margin-bottom: 3px;
+  }
+  .app-shell .map-row > span {
+    font-size: 0.65rem;
+  }
+  .app-shell .map-cell {
+    border-radius: 4px;
+  }
+  .app-shell .legend {
+    font-size: 0.73rem;
+    gap: 10px 14px;
+  }
+  .app-shell .map-hint {
+    padding: 0 8px;
+  }
+  .app-shell .setting-row {
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  .app-shell .settings-card {
+    padding: 0 22px;
+  }
+  .app-shell .setting-row > div:first-child {
+    flex: 1 1 180px;
+  }
+  .app-shell .setting-row .language-switch {
+    flex: none;
+  }
+  .app-shell .setting-row p {
+    font-size: 0.9rem;
+  }
+  .app-shell .app-footer {
+    padding-bottom: 12px;
+  }
+}
+@media (max-width: 380px) {
+  .app-shell {
+    padding-left: max(14px, env(safe-area-inset-left, 0px));
+    padding-right: max(14px, env(safe-area-inset-right, 0px));
+  }
+  .app-shell .hero {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .app-shell .hero h1 {
+    font-size: 1.9rem;
+  }
+  .app-shell .language-switch button {
+    min-width: 48px;
+  }
+  .app-shell .exercise-card {
+    padding: 20px;
+  }
+  .app-shell .navigation a {
+    font-size: 0.6rem;
+  }
+}
+@media (max-height: 550px) and (orientation: landscape) {
+  .app-shell .hero {
+    grid-template-columns: 1.2fr 1fr;
+  }
+  .app-shell .hero-art .mascot {
+    max-height: 230px;
+  }
+  .app-shell .training-layout {
+    grid-template-columns: minmax(0, 460px) minmax(180px, 1fr);
+  }
+  .app-shell .exercise-card {
+    padding: 20px;
+  }
+  .app-shell .keypad button {
+    height: 56px;
+  }
+}
+@media (max-width: 700px) {
+  .app-shell[data-screen="training"] .app-header {
+    height: 72px;
+  }
+  .app-shell[data-screen="training"] main {
+    padding-top: 14px;
+  }
+  .app-shell[data-screen="training"] .page-heading {
+    margin-bottom: 16px;
+  }
+  .app-shell[data-screen="training"] .page-heading h1 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+  .app-shell[data-screen="training"] .page-heading p {
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+  .app-shell .exercise-card {
+    padding: 16px 20px;
+  }
+  .app-shell .exercise-card .eyebrow {
+    margin-bottom: 8px;
+  }
+  .app-shell .equation {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+  .app-shell .answer-label {
+    margin-bottom: 6px;
+  }
+  .app-shell .answer-input {
+    height: 56px;
+  }
+  .app-shell .input-hint {
+    margin: 8px 0 12px;
+    line-height: 1.4;
+  }
+  .app-shell .keypad {
+    gap: 8px;
+  }
+  .app-shell .keypad button {
+    height: 56px;
+  }
+}
