@@ -241,3 +241,33 @@ Inherited limitations remain: 20 MB backup-picker limit, synchronous large-histo
 validation/migration, local-only storage with possible eviction, and possible loss
 of the newest uncommitted asynchronous checkpoint on abrupt process termination.
 Service worker updates do not change the established atomic answer/restore model.
+
+## Coordinator release acceptance
+
+After reviewing this handoff, the coordinator committed and pushed release
+`923d1f634047322e688eafb38679ad3dba66e1d7`. The actual Ubuntu 24.04 workflow
+[43726324618](https://github.com/DmitryGaravsky/MathHero/actions/runs/43726324618)
+passed verification (54 unit/repository, 114 browser, 10 PWA, six intentional
+diagnosis skips) and deployment. Verification took 4m3s; deployment took 11s.
+The site is live at https://dmitrygaravsky.github.io/MathHero/ with the same
+worker revision `7a73513eb82bcfc66d1d` verified locally and in CI.
+
+Independent Chromium and WebKit checks on that actual HTTPS origin passed:
+HTTP 200, manifest/scope and all nine cached assets, offline new-window draft
+resume, a correct answer and single reward retained after offline reload,
+localized RU/ES offline readiness, and no page errors. The live phone layout
+was visually inspected. These checks used fresh isolated browser contexts.
+New-version lifecycle and failure injection remain production-build local
+fixture tests; no second artificial public release was created solely for testing.
+
+Initial real-origin startup observations were 3293 ms (Chromium) and 696 ms
+(WebKit). Five follow-up fresh-context samples were 211/203/204/203/502 ms and
+711/316/310/312/310 ms respectively. Conditions: Windows desktop, 390×844 mobile
+viewport, actual HTTPS, empty browser-context storage/cache, no throttling.
+The first >3-second observation is retained. Its cause was not established;
+later samples do not prove the real-device startup target. Physical iPhone/iPad
+acceptance and measurements remain the only unchecked MVP gate.
+
+Final status and the device handoff are maintained in `docs/DELIVERY.md` and
+`docs/DEVICE-ACCEPTANCE.md`. The final documentation-only commit leaves the
+verified application artifact unchanged.

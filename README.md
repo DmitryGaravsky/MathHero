@@ -4,6 +4,9 @@ A multiplication fluency trainer for iPhone and iPad, covering factors 1–12.
 React, TypeScript and Vite; Russian and Spanish UI; local IndexedDB; no backend,
 accounts, child identifiers, telemetry or cloud synchronization. MIT licensed.
 
+[Open Math Hero](https://dmitrygaravsky.github.io/MathHero/) ·
+[Verified release](https://github.com/DmitryGaravsky/MathHero/actions/runs/43726324618)
+
 The application implements all 144 directed facts and 78 canonical pairs, a resumable
 6 × 24 diagnostic, adaptive and targeted practice, spaced review, mastery across
 multiple days, progress and achievements, an interactive map, parent analytics,
@@ -96,8 +99,8 @@ self-consistent history cannot be authenticated without an external authority.
 
 ## Installation, offline operation and updates
 
-The intended Pages address is
-[DmitryGaravsky.github.io/MathHero](https://DmitryGaravsky.github.io/MathHero/).
+The published application is available at
+[dmitrygaravsky.github.io/MathHero](https://dmitrygaravsky.github.io/MathHero/).
 See [delivery status](docs/DELIVERY.md) for actual publication evidence.
 Open it online once and wait until Settings says it is ready for offline practice.
 The complete app shell and bundled code, styles and icons are cached; practice,
@@ -176,8 +179,11 @@ Automated Chromium/WebKit runs do not establish behavior on physical Apple
 devices. The user will complete [DEVICE-ACCEPTANCE.md](docs/DEVICE-ACCEPTANCE.md),
 including actual keyboards, Safari/Home Screen storage, process restarts, safe
 areas and the three-second startup criterion under recorded conditions. Desktop
-loopback timings are synthetic evidence only. Actual CI and Pages deployment
-evidence belongs to the coordinator after review and push.
+loopback timings are synthetic evidence only. Linux CI, Pages deployment and
+live-origin Chromium/WebKit offline checks passed for release `923d1f6`;
+see [delivery evidence](docs/DELIVERY.md). The initial live Chromium launch took
+3.29 seconds; later fresh-context samples were below one second. Physical-device
+startup under a recorded normal connection remains an acceptance item.
 
 Large histories are read into memory; backup validation and migration are
 synchronous. The file picker limits imports to 20 MB. An abrupt termination

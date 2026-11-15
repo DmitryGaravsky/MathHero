@@ -27,7 +27,7 @@ there is no promise of unattended continuation after shutdown or a finished chat
 | 2. Engine and diagnosis | 144 directions, 78 pairs, independent engine, resumable 6 x 24 diagnosis | Complete products and canonical IDs, no omissions/duplicates, active timing, transactional persistence | Accepted / 01a1df5b-f451-77c1-a445-ed3dab9722e4 |
 | 3. Adaptation | Difficulty priority, error repetition, intervals, mastery | Reproducible A/B/C profiles, slow-correct distinction, stability across days, diversity | Accepted / 01a1df6d-fae1-7953-a48a-e6d5a357b668 |
 | 4. Progress and data | Analytics, 12 x 12 map, rewards, complete storage and backups | History, valid/corrupt import, rollback, migration, no duplicate rewards | Accepted / 01a1df84-bbcf-7481-a4c9-ee99f74ca714 |
-| 5. PWA and release | Manifest/icons, offline worker, CI/Pages, English documentation | Full regression, deployed HTTPS/base path, offline/update behavior, documentation/comment audit; device checklist | Local implementation accepted; deployment pending / 01a1df9d-1db5-7cf2-a535-7e9a9eca8c9b |
+| 5. PWA and release | Manifest/icons, offline worker, CI/Pages, English documentation | Full regression, deployed HTTPS/base path, offline/update behavior, documentation/comment audit; device checklist | Accepted and deployed; physical-device gate pending / 01a1df9d-1db5-7cf2-a535-7e9a9eca8c9b |
 
 The five stages follow the original specification. Minimal IndexedDB persistence
 was brought forward to stage 2 to make diagnosis resumable; complete data tools
@@ -123,7 +123,7 @@ rollback, repeat restore, draft resume, stale owners and v1/v2 migration. The
 fake IndexedDB timing is not a physical-device performance claim. Older stage
 reports and this delivery log have been translated to English.
 
-### Stage 5 — local acceptance
+### Stage 5 — release commit 923d1f6
 
 Reviewed the scoped, versioned worker, natural waiting lifecycle, manifest/icons,
 distribution allowlist, pinned Actions workflow and full English specification.
@@ -137,9 +137,30 @@ were 64–337 ms; physical-device startup remains unverified.
 
 GitHub Pages was configured using build_type=workflow. The API returned public
 hosting and enforced HTTPS at https://dmitrygaravsky.github.io/MathHero/.
-Actual Linux CI, publication and deployed-origin browser checks are pending.
+Linux verification and deployment both passed in
+[Actions run 43726324618](https://github.com/DmitryGaravsky/MathHero/actions/runs/43726324618)
+for full commit `923d1f634047322e688eafb38679ad3dba66e1d7`. CI confirmed 54 unit,
+114 browser (6 intentional skips), and 10 PWA passes. Verification took 4m3s;
+deployment took 11s. The published worker revision is `7a73513eb82bcfc66d1d`.
 
-## MVP Definition of Done — 14 of 16 verified so far
+Independent Chromium and WebKit checks against the actual HTTPS origin returned
+200, installed the correctly scoped worker and nine assets, resumed a saved draft
+in a new offline window, saved a correct answer/reward, preserved it after reload,
+and displayed both RU/ES offline states without page errors. The deployed phone
+layout was visually inspected. No personal browser profile or child data was used.
+
+Initial live-origin startup observations were 3293 ms in Chromium and 696 ms in
+WebKit. Five additional fresh-context samples were Chromium 211/203/204/203/502 ms
+and WebKit 711/316/310/312/310 ms (Windows desktop, phone viewport, actual HTTPS,
+no throttling). The initial >3-second sample is retained, not discarded. These
+observations do not establish the actual-device/normal-connection target; that
+measurement remains part of the user's physical-device checklist.
+
+The final documentation-only acceptance commit does not rebuild or redeploy the
+unchanged app. All implementation commits and source are in the public MIT repo.
+No further environment setup is required for the user to try the published app.
+
+## MVP Definition of Done — 15 of 16 verified
 
 - [x] All 144 directed exercises exist.
 - [x] Transposed factors share canonical identities and pair evidence.
@@ -156,6 +177,6 @@ Actual Linux CI, publication and deployed-origin browser checks are pending.
 - [x] Backup export/import works.
 - [x] PWA caching supports offline operation.
 - [ ] Physical iPhone and iPad acceptance completed by the user.
-- [ ] GitHub Actions automatically publishes the app.
+- [x] GitHub Actions automatically publishes the app.
 
 Additional final gate: all repository documentation and code comments are English — passed.
