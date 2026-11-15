@@ -1,5 +1,22 @@
 # Math Hero
 
+## Active release: MathHero 1.1
+
+Read `docs/DELIVERY-1.1.md` alongside the original delivery record. The user
+requested six sequential stage chats using Sol models, with coordinator review
+and stage PRs. Keep all work on the release integration branch until final
+acceptance; only a reviewed complete release may reach main and Pages.
+The user's latest decisions supersede the feedback document: use a simple
+default parent PIN of 1234 as a mode-switch confirmation, allow changing/resetting
+it without deleting learning data, and do not build a recovery-code system.
+Keep stored PIN verification data hashed; this local gate is not an account or
+security boundary. Correct answers advance automatically after brief feedback;
+incorrect-answer explanations wait for the child's action. Never advance a
+hidden/paused practice or count feedback time as response time.
+Preserve existing data and backup compatibility. Do not create further agents
+or chats from stage chats. The coordinator owns Git/PR operations and delivery
+records. All new documentation and comments must be English.
+
 ## Product and scope
 
 Read `docs/specification.txt` and `docs/DELIVERY.md` before implementing a stage.
