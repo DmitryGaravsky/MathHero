@@ -80,6 +80,9 @@
     min-height: 58px;
     border-radius: 12px;
   }
+  .app-shell[data-mode="child"] .navigation {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
   .app-shell .navigation svg {
     width: 21px;
     height: 21px;

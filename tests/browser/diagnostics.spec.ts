@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openParent, parentNav } from "../support/parentMode";
 
 async function databaseSnapshot(page: Page) {
   return page.evaluate(async () => {
@@ -54,6 +55,7 @@ test("completes a part, restores draft and feedback, records an error once and r
 }) => {
   test.setTimeout(90000);
   await page.goto("./");
+  await openParent(page);
   await page.getByRole("link", { name: "Empezar diagnóstico" }).click();
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   const initial = await page.locator(".equation").getAttribute("aria-label");
@@ -63,6 +65,7 @@ test("completes a part, restores draft and feedback, records an error once and r
     .toBe("12");
   const initialOrder = (await databaseSnapshot(page)).session.order;
   await page.reload();
+  await openParent(page);
   await expect(page.getByRole("heading", { name: "En pausa" })).toBeVisible();
   await page.getByRole("button", { name: "Continuar diagnóstico" }).click();
   await expect(page.locator(".equation")).toHaveAttribute(
@@ -72,6 +75,7 @@ test("completes a part, restores draft and feedback, records an error once and r
   await expect(page.getByRole("textbox")).toHaveValue("12");
   await answer(page, "0");
   await page.reload();
+  await openParent(page);
   await expect(page.getByRole("status")).toContainText("La respuesta correcta");
   expect((await databaseSnapshot(page)).attempts).toHaveLength(1);
   await page.getByRole("button", { name: "Siguiente", exact: true }).click();
@@ -89,6 +93,7 @@ test("completes a part, restores draft and feedback, records an error once and r
   expect(snapshot.attempts.filter((a) => a.correct)).toHaveLength(23);
   expect(snapshot.session.order).toEqual(initialOrder);
   await page.reload();
+  await openParent(page);
   await expect(
     page.getByRole("heading", { name: "Parte 1 completada" }),
   ).toBeVisible();
@@ -97,11 +102,11 @@ test("completes a part, restores draft and feedback, records an error once and r
     .click();
   await expect(page.getByText("PARTE 2 / 6 · 1 / 24")).toBeVisible();
   await page.getByRole("button", { name: "Pausar", exact: true }).click();
-  await page.locator('nav a[href="#home"]').click();
+  await parentNav(page, "home").click();
   await expect(
     page.getByRole("link", { name: "Continuar diagnóstico" }),
   ).toBeVisible();
-  await page.locator('nav a[href="#results"]').click();
+  await parentNav(page, "results").click();
   await expect(
     page.getByText("Correctas: 23 de 24.", { exact: false }),
   ).toBeVisible();
@@ -112,6 +117,7 @@ test("guards same-tick double submit and persists language and animation setting
   page,
 }) => {
   await page.goto("./#diagnostic");
+  await openParent(page);
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   await page.getByRole("textbox").fill("0");
   await page.locator("form").evaluate((form) => {
@@ -120,7 +126,7 @@ test("guards same-tick double submit and persists language and animation setting
   });
   await expect(page.getByRole("status")).toContainText("La respuesta correcta");
   expect((await databaseSnapshot(page)).attempts).toHaveLength(1);
-  await page.locator('nav a[href="#settings"]').click();
+  await parentNav(page, "settings").click();
   await page.getByRole("switch").click();
   await page
     .getByRole("button", { name: "Русский", exact: true })
@@ -148,6 +154,7 @@ test("guards same-tick double submit and persists language and animation setting
     )
     .toMatchObject({ language: "ru", animationsEnabled: false });
   await page.reload();
+  await openParent(page);
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
   await expect(page.getByRole("switch")).toHaveAttribute(
     "aria-checked",
@@ -159,6 +166,7 @@ test("hidden-page event pauses the question and requires explicit resume", async
   page,
 }) => {
   await page.goto("./#diagnostic");
+  await openParent(page);
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   await page.getByRole("textbox").fill("7");
   // Tests the visibility adapter; this is not a claim of real device background testing.
@@ -196,6 +204,7 @@ test("finishes all six parts and shows real diagnostic results", async ({
   );
   test.setTimeout(180000);
   await page.goto("./#diagnostic");
+  await openParent(page);
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   for (let i = 1; i <= 144; i++) {
     await answer(page);
@@ -222,6 +231,7 @@ test("finishes all six parts and shows real diagnostic results", async ({
   expect(attempts).toHaveLength(144);
   expect(new Set(attempts.map((a) => a.exerciseId)).size).toBe(144);
   await page.reload();
+  await openParent(page);
   await expect(
     page.getByText("Correctas: 144 de 144.", { exact: false }),
   ).toBeVisible();

@@ -17,7 +17,8 @@
     "test:e2e": "playwright test",
     "browsers:install": "playwright install chromium webkit",
     "icons:generate": "node scripts/generate-icons.mjs",
-    "test:pwa": "playwright test --config playwright.pwa.config.ts"
+    "test:pwa": "playwright test --config playwright.pwa.config.ts",
+    "test:upgrade": "node scripts/test-upgrade.mjs"
   },
   "overrides": {
     "@typescript-eslint/typescript-estree": {

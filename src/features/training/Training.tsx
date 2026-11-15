@@ -11,24 +11,30 @@ import { normalizeAnswer } from "./answerInput";
 import type { SessionMode } from "../../engine/sessions/diagnostic";
 import { sessionStage } from "../../engine/learning/scheduler";
 import { LearningSummary } from "./LearningSummary";
+import { routeHref, type AppMode } from "../../app/router";
 
 export function Training({
   mode = "diagnostic",
   targetPair,
+  covered = false,
+  appMode = "child",
 }: {
   mode?: SessionMode;
   targetPair?: string;
+  covered?: boolean;
+  appMode?: AppMode;
 }) {
   const { t } = useApp();
   const {
     controller,
+    active,
     session,
     paused,
     busy,
     loading,
     error,
     draft: answer,
-  } = useDiagnostic(mode, targetPair);
+  } = useDiagnostic(mode, targetPair, covered);
   const learning = session && session.mode !== "diagnostic" ? session : null;
   const isLearning = mode !== "diagnostic";
   const submitted = session?.phase === "feedback" ? session.lastAttempt : null;
@@ -38,13 +44,13 @@ export function Training({
   const input = useRef<HTMLInputElement>(null);
   const retry = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    if (submitted !== null) retry.current?.focus();
-  }, [submitted]);
+    if (active && submitted !== null) retry.current?.focus();
+  }, [active, submitted]);
   useEffect(() => {
-    if (session?.phase === "question" && !paused && !busy) {
+    if (active && session?.phase === "question" && !paused && !busy) {
       input.current?.focus({ preventScroll: true });
     }
-  }, [session?.phase, session?.cursor, paused, busy]);
+  }, [active, session?.phase, session?.cursor, paused, busy]);
 
   function handleKeyDown(event: KeyboardEvent<HTMLFormElement>) {
     if (
@@ -142,7 +148,7 @@ export function Training({
         >
           {t("newSession")}
         </button>
-        <a className="finish-link" href="#home">
+        <a className="finish-link" href={routeHref(appMode, "home")}>
           {t("finish")}
         </a>
       </>
@@ -154,7 +160,7 @@ export function Training({
         <section className="card empty-state">
           <h2>{t("diagnosticComplete")}</h2>
           <p>{t("noMastery")}</p>
-          <a href="#results" className="button primary">
+          <a href={routeHref(appMode, appMode === "parent" ? "results" : "achievements")} className="button primary">
             {t("viewResults")}
           </a>
         </section>
@@ -181,7 +187,7 @@ export function Training({
             {t("nextPart")}
           </button>
 
-          <a className="finish-link" href="#home">
+          <a className="finish-link" href={routeHref(appMode, "home")}>
             {t("finish")}
           </a>
         </section>
@@ -214,7 +220,7 @@ export function Training({
               {t("endSession")}
             </button>
           )}
-          <a className="finish-link" href="#home">
+          <a className="finish-link" href={routeHref(appMode, "home")}>
             {t("finish")}
           </a>
         </section>
@@ -363,7 +369,7 @@ export function Training({
               {t("endSession")}
             </button>
           )}
-          <a className="finish-link" href="#home">
+          <a className="finish-link" href={routeHref(appMode, "home")}>
             {t("finish")}
           </a>
         </section>

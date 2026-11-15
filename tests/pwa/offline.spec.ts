@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openParent } from "../support/parentMode";
 
 async function ready(page: Page) {
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
@@ -50,14 +51,14 @@ test("production manifest, scoped assets, offline learning and new-window resume
   const manifest = await page.evaluate(async () => (await fetch("manifest.webmanifest")).json());
   expect(manifest).toMatchObject({ id: "/MathHero/", scope: "/MathHero/", start_url: "/MathHero/", display: "standalone" });
   expect(manifest.icons).toHaveLength(3);
-  await page.locator('nav a[href="#settings"]').click();
+  await openParent(page, "settings");
   await expect(page.getByTestId("offline-status")).toHaveText("Lista para practicar sin conexión.");
   await page.screenshot({ path: info.outputPath("offline-settings-es.png"), fullPage: true });
   await page.getByRole("banner").getByRole("button", { name: "Русский", exact: true }).click();
   await expect(page.getByTestId("offline-status")).toHaveText("Можно заниматься без интернета.");
   await page.screenshot({ path: info.outputPath("offline-settings-ru.png"), fullPage: true });
   await page.getByRole("banner").getByRole("button", { name: "Español", exact: true }).click();
-  await page.locator('nav a[href="#home"]').click();
+  await page.getByRole("button", { name: "Modo infantil", exact: true }).click();
   await context.setOffline(true);
   await page.reload();
   await start(page);
@@ -93,6 +94,7 @@ test("an update waits for all tabs, preserves draft and paused time, then launch
   });
   const other = await context.newPage();
   await other.goto("./#settings");
+  await openParent(other);
   await ready(other);
   await start(page);
   await page.getByRole("textbox").fill("123");
@@ -136,6 +138,7 @@ test("an update waits for all tabs, preserves draft and paused time, then launch
 
 test("a failed update keeps the complete old release and retries after reconnection", async ({ page, request, context }) => {
   await page.goto("./#settings");
+  await openParent(page);
   await ready(page);
   await request.post("http://127.0.0.1:4174/__test/release?version=C&fail=true");
   await page.evaluate(async () => {
@@ -152,6 +155,7 @@ test("a failed update keeps the complete old release and retries after reconnect
   await context.setOffline(true);
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-release", "A");
+  await openParent(page);
   await expect(page.getByTestId("offline-status")).toHaveText("Lista para practicar sin conexión.");
   await request.post("http://127.0.0.1:4174/__test/release?version=C");
   await context.setOffline(false);
@@ -162,6 +166,7 @@ test("a failed update keeps the complete old release and retries after reconnect
 test("an incomplete first install reports unavailability and retries on reconnect", async ({ page, request, context }) => {
   await request.post("http://127.0.0.1:4174/__test/release?version=A&fail=icon");
   await page.goto("./#settings");
+  await openParent(page);
   await expect(page.getByTestId("offline-status")).toContainText("No se ha podido preparar");
   expect(await page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(false);
   expect((await page.evaluate(() => caches.keys())).filter((name) => name.startsWith("math-hero:/MathHero/:"))).toHaveLength(0);
@@ -172,6 +177,7 @@ test("an incomplete first install reports unavailability and retries on reconnec
   await expect(page.getByTestId("offline-status")).toHaveText("Lista para practicar sin conexión.");
   await context.setOffline(true);
   await page.reload();
+  await openParent(page);
   await expect(page.getByTestId("offline-status")).toHaveText("Lista para practicar sin conexión.");
 });
 

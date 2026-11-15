@@ -29,7 +29,7 @@ describe("foundation", () => {
       "Una pequeña misión",
     );
     await user.click(screen.getByRole("button", { name: "Русский" }));
-    expect(document.documentElement.lang).toBe("ru");
+    await waitFor(() => expect(document.documentElement.lang).toBe("ru"));
     expect(
       screen.getByRole("link", { name: "Тренировка" }),
     ).toBeInTheDocument();
@@ -99,7 +99,7 @@ describe("foundation", () => {
     const toggle = await screen.findByRole("switch", { name: es.animations });
     expect(toggle).toHaveAttribute("aria-checked", "true");
     await user.click(toggle);
-    expect(toggle).toHaveAttribute("aria-checked", "false");
+    await waitFor(() => expect(toggle).toHaveAttribute("aria-checked", "false"));
     expect(screen.getByText(es.soundHint)).toBeInTheDocument();
   });
 });

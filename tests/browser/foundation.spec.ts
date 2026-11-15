@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openParent, parentNav } from "../support/parentMode";
 
 test("all five screens and both locales fit the viewport", async ({ page }) => {
   const errors: string[] = [];
@@ -8,6 +9,7 @@ test("all five screens and both locales fit the viewport", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "Una pequeña misión",
   );
+  await openParent(page);
   for (const language of ["ru", "es"]) {
     await page
       .getByRole("button", {
@@ -17,8 +19,8 @@ test("all five screens and both locales fit the viewport", async ({ page }) => {
       .first()
       .click();
     for (const route of ["home", "training", "results", "map", "settings"]) {
-      await page.locator(`nav a[href="#${route}"]`).click();
-      await expect(page.locator(`nav a[href="#${route}"]`)).toHaveAttribute(
+      await parentNav(page, route).click();
+      await expect(parentNav(page, route)).toHaveAttribute(
         "aria-current",
         "page",
       );
@@ -43,6 +45,7 @@ test("keypad, physical keyboard, native input path and empty submit", async ({
   page,
 }) => {
   await page.goto("./#diagnostic");
+  await openParent(page);
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   const input = page.getByRole("textbox", { name: "Tu respuesta" });
   await expect(
@@ -105,11 +108,12 @@ test("preview has no invented progress, supports back and reduced motion", async
       .locator(".hero .mascot")
       .evaluate((element) => getComputedStyle(element).animationName),
   ).toBe("none");
-  await page.locator('nav a[href="#results"]').click();
+  await openParent(page);
+  await parentNav(page, "results").click();
   await expect(
     page.getByText("Aún no hay respuestas guardadas.", { exact: false }),
   ).toBeVisible();
-  await page.locator('nav a[href="#map"]').click();
+  await parentNav(page, "map").click();
   await expect(page.locator(".map-cell")).toHaveCount(144);
   await page.goBack();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
@@ -128,6 +132,7 @@ test("captures the foundation for visual review", async ({
     fullPage: true,
   });
   await page.goto("./#diagnostic");
+  await openParent(page);
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   await expect(page.locator(".equation")).toBeVisible();
   await expect(page.getByRole("textbox")).toBeEnabled();
@@ -143,7 +148,7 @@ test("captures the foundation for visual review", async ({
     path: testInfo.outputPath("feedback-ru.png"),
     fullPage: true,
   });
-  await page.locator('nav a[href="#results"]').click();
+  await parentNav(page, "results").click();
   await expect(
     page.getByText("Правильно: 0 из 1.", { exact: false }),
   ).toBeVisible();

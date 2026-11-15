@@ -1,0 +1,34 @@
+import { execFileSync } from "node:child_process";
+import { mkdirSync, mkdtempSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const commit = "923d1f634047322e688eafb38679ad3dba66e1d7";
+const workerRevision = "7a73513eb82bcfc66d1d";
+const root = fileURLToPath(new URL("../", import.meta.url));
+const cache = join(root, ".playwright");
+mkdirSync(cache, { recursive: true });
+const legacy = mkdtempSync(join(cache, "legacy-923d1f6-"));
+const archive = join(legacy, "source.tar");
+const npm = process.env.npm_execpath;
+if (!npm) throw new Error("Run the upgrade suite with npm run test:upgrade.");
+
+const run = (command, args, cwd, env = process.env) =>
+  execFileSync(command, args, { cwd, env, stdio: "inherit" });
+
+run("git", ["archive", `--output=${archive}`, commit], root);
+run("tar", ["-xf", archive, "-C", legacy], root);
+const lockfile = "package-lock.json";
+if (!readFileSync(join(legacy, lockfile)).equals(readFileSync(join(root, lockfile)))) {
+  run(process.execPath, [npm, "ci"], legacy);
+}
+run(process.execPath, [npm, "run", "build"], legacy);
+const dist = join(legacy, "dist");
+if (!readFileSync(join(dist, "sw.js"), "utf8").includes(`math-hero:/MathHero/:${workerRevision}`)) {
+  throw new Error(`The built service worker does not match the published revision ${workerRevision}.`);
+}
+console.log(`Upgrade fixture ${commit} / worker ${workerRevision}: ${dist}`);
+run(process.execPath, [
+  join(root, "node_modules", "@playwright", "test", "cli.js"),
+  "test", "--config", "playwright.upgrade.config.ts", ...process.argv.slice(2),
+], root, { ...process.env, MATH_HERO_LEGACY_DIST: dist });

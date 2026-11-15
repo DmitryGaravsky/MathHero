@@ -439,13 +439,19 @@ describe("transactional versioned backups", () => {
   it("rolls back all tables if replacement or ledger insertion fails", async () => {
     const db = database();
     await restoreBackup(fixture(), true, db);
+    const pin = { id: "parent", version: 1, salt: new Uint8Array(16), hash: new Uint8Array(32) } as const;
+    await db.parentGate.put(pin);
+    const beforePin = await db.parentGate.get("parent");
     const before = await exportBackup(db, start);
+    const legacy = fixture([0]);
+    const replacement: Backup = { ...legacy, version: 2, databaseVersion: 4 };
     const spy = vi
       .spyOn(db.rewards, "bulkAdd")
       .mockRejectedValueOnce(new Error("disk failure"));
-    await expect(restoreBackup(fixture([0]), true, db)).rejects.toThrow();
+    await expect(restoreBackup(replacement, true, db)).rejects.toThrow();
     spy.mockRestore();
     expect(await exportBackup(db, start)).toEqual(before);
+    expect(await db.parentGate.get("parent")).toEqual(beforePin);
     const repo = new LearningRepository(
       db,
       { now: () => start + 100 * DAY_MS },

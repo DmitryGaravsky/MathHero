@@ -1,76 +1,65 @@
-import { useEffect, useRef } from "react";
-import { useApp } from "./AppContext";
-import { useScreen } from "./router";
-import { Navigation } from "../components/layout/Navigation";
-import { LanguageSwitcher } from "../components/layout/LanguageSwitcher";
-import { Icon } from "../components/ui/Icon";
-import { Dashboard } from "../features/dashboard/Dashboard";
-import { Training } from "../features/training/Training";
-import { Statistics } from "../features/statistics/Statistics";
-import { MultiplicationMap } from "../features/multiplication/MultiplicationMap";
-import { Settings } from "../features/settings/Settings";
+import { useLayoutEffect, useRef, useState } from "react";
+import { replaceRoute, resolveRoute, routeHref, useHash, type AppMode } from "./router";
+import { ChildShell, ParentShell } from "./ModeShells";
+import { ParentPinDialog } from "../features/settings/ParentPinDialog";
 
-const pages = {
-  home: Dashboard,
-  results: Statistics,
-  map: MultiplicationMap,
-  settings: Settings,
-};
+interface GateRequest {
+  destination: string;
+  hash: string;
+}
+
 export function App() {
-  const { preferences, t } = useApp();
-  const { screen, targetPair } = useScreen();
-  const isTraining =
-    screen === "training" || screen === "weak" || screen === "diagnostic";
-  const Page = isTraining ? null : pages[screen];
-  const main = useRef<HTMLElement>(null);
-  useEffect(() => {
-    main.current?.focus({ preventScroll: true });
-    window.scrollTo(0, 0);
-  }, [screen]);
+  const [mode, setMode] = useState<AppMode>("child");
+  const [gate, setGate] = useState<GateRequest | null>(null);
+  const gateRequest = useRef<GateRequest | null>(null);
+  const childDestination = useRef(routeHref("child", "home"));
+  const hash = useHash();
+  const { screen, targetPair, parentDestination } = resolveRoute(hash, mode);
+
+  useLayoutEffect(() => {
+    if (mode === "child" && !parentDestination) {
+      childDestination.current = routeHref("child", screen, targetPair);
+    }
+  }, [mode, parentDestination, screen, targetPair]);
+
+  useLayoutEffect(() => {
+    const dismissOnNavigation = () => {
+      if (gateRequest.current && gateRequest.current.hash !== window.location.hash) {
+        gateRequest.current = null;
+        setGate(null);
+      }
+    };
+    window.addEventListener("hashchange", dismissOnNavigation);
+    return () => window.removeEventListener("hashchange", dismissOnNavigation);
+  }, []);
+
+  function closeGate() {
+    gateRequest.current = null;
+    setGate(null);
+  }
+
+  function unlock(request: GateRequest) {
+    if (gateRequest.current !== request || window.location.hash !== request.hash) return;
+    closeGate();
+    setMode("parent");
+    replaceRoute(request.destination);
+  }
+
+  if (mode === "parent") {
+    return <ParentShell screen={screen} targetPair={targetPair} onSwitchMode={() => {
+      setMode("child");
+      replaceRoute(childDestination.current);
+    }} />;
+  }
+
   return (
-    <div
-      className="app-shell"
-      data-animations={preferences.animationsEnabled}
-      data-screen={screen}
-    >
-      <a
-        className="skip-link"
-        href="#main-content"
-        onClick={(event) => {
-          event.preventDefault();
-          main.current?.focus();
-        }}
-      >
-        {t("skip")}
-      </a>
-      <header className="app-header">
-        <a href="#home" className="brand">
-          <span className="brand-icon">
-            <Icon name="spark" />
-          </span>
-          {t("appName")}
-        </a>
-        <LanguageSwitcher />
-      </header>
-      <Navigation screen={screen} />
-      <main id="main-content" tabIndex={-1} ref={main}>
-        {Page ? (
-          <Page />
-        ) : (
-          <Training
-            key={`${screen}:${targetPair ?? ""}`}
-            mode={
-              screen === "diagnostic"
-                ? "diagnostic"
-                : screen === "weak"
-                  ? "weak"
-                  : "adaptive"
-            }
-            targetPair={targetPair}
-          />
-        )}
-      </main>
-      <footer className="app-footer">{t("tagline")}</footer>
-    </div>
+    <>
+      <ChildShell screen={screen} targetPair={targetPair} covered={gate !== null} onSwitchMode={() => {
+        const request = { destination: parentDestination ?? routeHref("parent", "home"), hash };
+        gateRequest.current = request;
+        setGate(request);
+      }} />
+      {gate && <ParentPinDialog onDismiss={closeGate} onUnlock={() => unlock(gate)} />}
+    </>
   );
 }

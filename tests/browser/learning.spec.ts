@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openParent } from "../support/parentMode";
 
 async function snapshot(page: Page) {
   return page.evaluate(async () => {
@@ -115,7 +116,7 @@ test("completes a real daily session, repeats the error, restores feedback and s
     path: info.outputPath("daily-summary-ru.png"),
     fullPage: true,
   });
-  await page.locator('nav a[href="#results"]').click();
+  await openParent(page, "results");
   await expect(
     page.getByRole("heading", { name: "Последнее занятие" }),
   ).toBeVisible();
@@ -221,6 +222,7 @@ test("targeted weak practice uses the requested canonical pair with fillers, and
     targetPair: "mul:7:8",
   });
   await page.goto("./#diagnostic");
+  await openParent(page);
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   await answer(page, true);
   const after = await snapshot(page);
