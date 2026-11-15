@@ -1,3 +1,4 @@
+import { recordRewards, recordCompletion } from "./rewards";
 import type { Clock, RandomSource } from "../engine/core/Exercise";
 import { getFact } from "../engine/multiplication/facts";
 import {
@@ -47,9 +48,14 @@ export class LearningRepository {
   async start() {
     return this.database.transaction(
       "rw",
-      this.database.sessions,
-      this.database.progress,
-      this.database.attempts,
+      [
+        this.database.sessions,
+        this.database.progress,
+        this.database.attempts,
+        this.database.journal,
+        this.database.rewards,
+        this.database.rewardState,
+      ],
       async () => {
         // Re-query inside the serialized transaction, even when this instance has an old ID.
         this.id = undefined;
@@ -127,22 +133,35 @@ export class LearningRepository {
   submit(expected: LearningSession, answer: number, activeMs: number) {
     return this.database.transaction(
       "rw",
-      this.database.sessions,
-      this.database.attempts,
-      this.database.progress,
+      [
+        this.database.sessions,
+        this.database.attempts,
+        this.database.journal,
+        this.database.rewards,
+        this.database.rewardState,
+        this.database.progress,
+      ],
       async () => {
         const current = await this.current(expected);
         const pair = getFact(current.order[current.cursor]!).canonicalId;
+        const previous = await this.database.progress.get(pair);
         const result = answerLearning(
           current,
           answer,
           Math.max(current.activeMs, activeMs),
-          await this.database.progress.get(pair),
+          previous,
           this.clock,
         );
         await this.database.attempts.add(result.attempt);
         await this.database.progress.put(result.progress);
         await this.database.sessions.put(result.session);
+        await recordRewards(
+          this.database,
+          result.attempt,
+          result.session,
+          previous,
+          result.progress,
+        );
         return result.session;
       },
     );
@@ -150,9 +169,14 @@ export class LearningRepository {
   advance(expected: LearningSession) {
     return this.database.transaction(
       "rw",
-      this.database.sessions,
-      this.database.progress,
-      this.database.attempts,
+      [
+        this.database.sessions,
+        this.database.progress,
+        this.database.attempts,
+        this.database.journal,
+        this.database.rewards,
+        this.database.rewardState,
+      ],
       async () => {
         const next = advanceLearning(
           await this.current(expected),
@@ -170,18 +194,28 @@ export class LearningRepository {
     );
   }
   finish(expected: LearningSession) {
-    return this.database.transaction("rw", this.database.sessions, async () => {
-      const current = await this.current(expected);
-      const next: LearningSession = {
-        ...current,
-        phase: "completed",
-        completedAt: current.completedAt ?? this.clock.now(),
-        endReason: current.endReason ?? "early",
-        draft: "",
-        activeMs: 0,
-      };
-      await this.database.sessions.put(next);
-      return next;
-    });
+    return this.database.transaction(
+      "rw",
+      [
+        this.database.sessions,
+        this.database.attempts,
+        this.database.journal,
+        this.database.rewards,
+      ],
+      async () => {
+        const current = await this.current(expected);
+        const next: LearningSession = {
+          ...current,
+          phase: "completed",
+          completedAt: current.completedAt ?? this.clock.now(),
+          endReason: current.endReason ?? "early",
+          draft: "",
+          activeMs: 0,
+        };
+        await this.database.sessions.put(next);
+        await recordCompletion(this.database, next);
+        return next;
+      },
+    );
   }
 }

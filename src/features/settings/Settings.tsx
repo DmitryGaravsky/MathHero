@@ -1,9 +1,10 @@
+import { BackupControls } from "./BackupControls";
 import { useApp } from "../../app/AppContext";
 import { LanguageSwitcher } from "../../components/layout/LanguageSwitcher";
 import { PageHeading } from "../../components/ui/PageHeading";
 
 export function Settings() {
-  const { preferences, setAnimations, t } = useApp();
+  const { preferences, setAnimations, setDailyGoal, t } = useApp();
   return (
     <>
       <PageHeading
@@ -44,11 +45,23 @@ export function Settings() {
         </div>
         <div className="setting-row">
           <div>
-            <h2>{t("goal")}</h2>
+            <h2 id="goal-label">{t("goal")}</h2>
             <p>{t("goalHint")}</p>
           </div>
+          <select
+            aria-labelledby="goal-label"
+            value={preferences.dailyGoalMinutes}
+            onChange={(e) => setDailyGoal(Number(e.target.value))}
+          >
+            {[5, 10, 15].map((n) => (
+              <option value={n} key={n}>
+                {t("minutes", { count: String(n) })}
+              </option>
+            ))}
+          </select>
         </div>
       </section>
+      <BackupControls />
       <section className="privacy">
         <h2>{t("privacyTitle")}</h2>
         <p>{t("privacy")}</p>

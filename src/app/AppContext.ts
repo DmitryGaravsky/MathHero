@@ -16,6 +16,7 @@ export const defaultPreferences: Preferences = {
 export interface AppContextValue {
   preferences: Preferences;
   setLanguage: (language: Language) => void;
+  setDailyGoal: (minutes: number) => void;
   setAnimations: (enabled: boolean) => void;
   t: (key: MessageKey, values?: Record<string, string>) => string;
 }

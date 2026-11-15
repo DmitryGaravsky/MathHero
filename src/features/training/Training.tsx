@@ -112,7 +112,12 @@ export function Training({
       <>
         {heading}
         <section className="card empty-state">
-          <Mascot small />
+          <Mascot
+            small
+            state={
+              submitted ? (submitted.correct ? "happy" : "support") : "thinking"
+            }
+          />
           <h2>{t(isLearning ? "dailyTitle" : "diagnosticIntro")}</h2>
           <p>{t(isLearning ? "dailyPlan" : "diagnosticPlan")}</p>
           <button
@@ -160,7 +165,12 @@ export function Training({
       <>
         {heading}
         <section className="card empty-state">
-          <Mascot small />
+          <Mascot
+            small
+            state={
+              submitted ? (submitted.correct ? "happy" : "support") : "thinking"
+            }
+          />
           <h2>{t("partComplete", { part: String(session.cursor / 24) })}</h2>
           <p>{t("breakHint")}</p>
           <button
@@ -358,7 +368,12 @@ export function Training({
           </a>
         </section>
         <aside className="practice-aside">
-          <Mascot small />
+          <Mascot
+            small
+            state={
+              submitted ? (submitted.correct ? "happy" : "support") : "thinking"
+            }
+          />
           <h2>{t("practiceAsideTitle")}</h2>
           <p>{t("practiceAside")}</p>
         </aside>

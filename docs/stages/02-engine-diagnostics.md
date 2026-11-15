@@ -1,206 +1,200 @@
-# Этап 2 — математический движок и диагностика
+# Stage 2 — mathematical engine and diagnosis
 
-Дата: 15 ноября 2026, Europe/Paris.
-Статус исполнителя: реализовано; выполненные проверки ниже. Приёмка за координатором.
-Коммитов, push, публикации и дополнительных чатов/агентов не было.
-`docs/DELIVERY.md` исполнитель не редактировал: присутствующий diff принадлежит
-координатору и оставлен без изменений.
+Date: 15 November 2026, Europe/Paris.
+Worker status at handoff: implemented with the verification below; coordinator
+acceptance is recorded separately. No worker commits, push, deployment,
+additional chats or agents. DELIVERY.md changes belonged to the coordinator
+and were preserved.
 
-## Реализовано
+## Delivered
 
-- Независимый от React движок: 144 направленных произведения 1..12, 78
-  canonical-пар, проверка операндов и ответов, генератор с инъекцией RNG.
-  Другие операции представлены только расширяемым контрактом `OperationType`.
-- Настоящая диагностика: Fisher–Yates один раз при создании, 6 частей по 24,
-  каждый направленный факт ровно один раз. Сохраняются черновик, порядок,
-  позиция, обратная связь, межчастевой перерыв и завершение.
-- Главная предлагает начало/продолжение или результаты завершённой диагностики.
-  Экран процесса сохраняет три способа ввода. Ошибка спокойно показывает
-  правильный ответ; на обратной связи остаётся виден введённый ответ.
-  Фокус возвращается в поле следующего вопроса для физической клавиатуры.
-- Итоги текущей/завершённой диагностики: число ответов, число правильных,
-  точность, медиана и среднее активного времени **только правильных** ответов.
-  Нет ответов — точность `null`/«—»; нет правильных — скорость `null`/«—».
-- Dexie/IndexedDB хранит сессию, попытки и настройки (ES/RU, анимации и прочие
-  defaults). Defaults сохранены: ES, звук выключен, анимации включены, 10 минут.
-- Нет начисления звёзд, мастерства, повторов ошибок или адаптивного расписания.
-  Карта пока обозначает отсутствие оценки мастерства; текст не отрицает
-  существование сохранённой диагностики. Устаревшие утверждения о пробном вводе
-  и отсутствии хранения удалены из интерфейса и README.
+- React-independent multiplication engine: 144 directed products within 1..12,
+  78 canonical pairs, operand/answer validation, and an injectable RNG. Other
+  operations are represented only by the extensible OperationType contract.
+- Real diagnosis: Fisher-Yates shuffle once at creation, six parts of 24, each
+  directed fact exactly once. Draft, order, position, feedback, inter-part break
+  and completion are persisted.
+- Home offers start/resume or completed results. Practice retains all three
+  input paths. Errors calmly show the correct result; feedback retains the
+  entered answer. Focus returns to the next input for physical-keyboard use.
+- Partial/completed diagnostic results show answered/correct counts, accuracy,
+  median and mean active response time for correct answers only. With no answers,
+  accuracy is null/displayed as a dash; without correct answers, speed is null.
+- Dexie/IndexedDB stores the session, attempts and preferences. Defaults remain
+  Spanish, sound off, animations on, daily goal ten minutes.
+- No stars, mastery, error repetition or adaptive scheduling at this stage.
+  The map describes the absence of mastery assessment without denying saved
+  diagnostic history. Outdated playground/no-storage claims were removed from
+  the interface and README.
 
-## Контракт движка и идентификаторов
+## Engine and identifiers
 
-`engine/multiplication/facts.ts`: `multiplicationFact(a,b)`, неизменяемый каталог
-`multiplicationFacts`, `getFact(id)`, `evaluateMultiplication`, `MultiplicationEngine`.
-ID направления: `mul:a:b`. Canonical ID: `mul:min(a,b):max(a,b)`.
-`mul:7:8` и `mul:8:7` — разные направления, общая пара `mul:7:8`.
-Оценка пересчитывает произведение из операндов, не доверяет переданному
-`expectedAnswer`. Нецелые/NaN/Infinity ответы неверны; чужая операция запрещена.
-RNG обязан выдавать конечное число `[0,1)`; часы и RNG передаются в конструкторы.
+engine/multiplication/facts.ts provides multiplicationFact(a,b), the immutable
+multiplicationFacts catalog, getFact(id), evaluateMultiplication and
+MultiplicationEngine. Direction ID: mul:a:b. Canonical ID: mul:min(a,b):max(a,b).
+Thus mul:7:8 and mul:8:7 are separate directions sharing mul:7:8.
 
-`engine/sessions/diagnostic.ts` содержит чистые переходы:
-`createDiagnostic`, `answerDiagnostic`, `advanceDiagnostic`.
-`ActiveTimer` работает с внедрёнными монотонными часами, без React и DOM.
-`diagnosticStatistics` фильтрует `mode === diagnostic` и не выводит мастерство.
+Evaluation recalculates the product from operands rather than trusting an
+incoming expectedAnswer. Non-integer/NaN/Infinity answers are incorrect and
+unsupported operations are rejected. RNG must produce a finite value in [0,1).
+Clocks and random sources are constructor inputs.
 
-## Схема IndexedDB v1
+engine/sessions/diagnostic.ts implements pure createDiagnostic,
+answerDiagnostic and advanceDiagnostic transitions. ActiveTimer uses injected
+monotonic time without React/DOM. diagnosticStatistics selects diagnostic mode
+and does not infer mastery.
 
-Имя базы: `math-hero`; Dexie version **1**. Все записи локальны браузеру/origin.
+## IndexedDB version 1 contract
 
-| Таблица | Ключ и индексы | Данные |
+Database name: math-hero. All records are local to the browser/origin.
+
+| Table | Key and indexes | Data |
 | --- | --- | --- |
-| sessions | `id`, `mode`, `startedAt` | `DiagnosticSession` |
-| attempts | `id`, `sessionId`, `exerciseId`, `canonicalId`, `mode`, `[sessionId+ordinal]` | `Attempt` |
-| settings | `id` | `{ id: 'preferences', value: Preferences }` |
+| sessions | id, mode, startedAt | DiagnosticSession |
+| attempts | id, sessionId, exerciseId, canonicalId, mode, [sessionId+ordinal] | Attempt |
+| settings | id | { id: 'preferences', value: Preferences } |
 
-На этом этапе существует одна исходная диагностика с постоянным ID
-`diagnostic:baseline:v1`. Повторный `start()` возвращает её, не стирает историю
-и не перемешивает заново. Сброс/повторная диагностика интерфейсом не предлагается.
+There is one baseline diagnosis, ID diagnostic:baseline:v1. Calling start again
+returns it without deleting history or reshuffling. No reset/repeated-diagnosis
+UI was offered at this stage.
 
-`DiagnosticSession`:
+DiagnosticSession fields:
 
-- `schemaVersion: 1`, `id`, `mode: 'diagnostic'`;
-- `order: string[144]` — сохранённый порядок направлений;
-- `cursor` — число **зафиксированных** ответов, 0..144, также индекс следующего
-  неотвеченного вопроса;
-- `phase: question | feedback | break | completed`;
-- `draft` — 0..3 ASCII-цифры текущего вопроса;
-- `activeMs` — checkpoint накопленного активного времени текущего вопроса;
-- `owner` — случайный токен экземпляра контроллера, не идентификатор ребёнка;
-- `startedAt`, `completedAt` — Unix ms; `completedAt` устанавливается атомарно
-  с 144-м ответом, даже пока ещё показывается финальная обратная связь;
-- `lastAttempt` — копия последней попытки для точного восстановления feedback.
+- schemaVersion 1, id, diagnostic mode.
+- order: 144 saved direction IDs.
+- cursor: count of committed answers, 0..144, also the next unanswered index.
+- phase: question, feedback, break or completed.
+- draft: zero to three ASCII digits for the current question.
+- activeMs: checkpoint of accumulated active time for the current question.
+- owner: random controller-instance token, not a child identifier.
+- startedAt/completedAt: Unix milliseconds. completedAt is set atomically with
+  answer 144, even while final feedback remains visible.
+- lastAttempt: the last attempt copied for exact feedback restoration.
 
-`Attempt`: `id = sessionId + ':' + ordinal`, `ordinal` с нуля, `sessionId`,
-`mode`, `operation`, `exerciseId`, `canonicalId`, введённое число `answer`,
-`expectedAnswer`, `correct`, округлённое `responseTimeMs`, `createdAt` (Unix ms).
-Время хранится и для ошибок; в показатели скорости ошибки не входят.
+Attempt fields: id=sessionId+':'+ordinal, zero-based ordinal, sessionId, mode,
+operation, exerciseId, canonicalId, numeric answer, expectedAnswer, correct,
+rounded responseTimeMs and createdAt (Unix milliseconds). Incorrect attempts
+also retain time, but do not enter speed metrics.
 
-`question → submit → feedback` записывает попытку и увеличивает cursor в одной
-`rw` транзакции `attempts + sessions`. Только после commit UI показывает успех
-сохранения. После feedback: `question`, либо `break` на 24/48/72/96/120,
-либо `completed` на 144. После break требуется явное начало следующей части.
-На feedback/break время следующего вопроса не идёт.
+question -> submit -> feedback writes the attempt and advances the cursor in
+one read/write transaction over attempts and sessions. UI shows successful
+persistence only after commit. Feedback advances to question, break after
+24/48/72/96/120, or completed after 144. Starting the next part is explicit.
+Feedback and breaks do not count toward the next response.
 
-Защита от дублей: синхронный `busy` до первого await, проверка owner/cursor/phase
-внутри транзакции и уникальный primary key попытки. Ошибка записи откатывает и
-попытку, и сессию. Устаревшие checkpoint/submit отклоняются. Другая вкладка может
-явно продолжить сессию, получив новый owner; прежняя получает сообщение ошибки
-сохранения и должна перечитать данные. Совместное одновременное прохождение не
-предлагается. Простое чтение/загрузка экрана owner **не меняет**.
+Duplicate protection combines a synchronous busy guard before the first await,
+owner/cursor/phase verification inside the transaction, and a unique attempt key.
+Write failure rolls back both records. Stale checkpoint/submit writes are
+rejected. Another tab can explicitly resume and acquire ownership; the old tab
+then displays a save error and must reload current data. Concurrent cooperative
+practice is not offered. Merely loading/reading a screen does not change owner.
 
-## Время, восстановление и жизненный цикл
+## Timing, recovery and lifecycle
 
-- В браузере используется `performance.now()`. Таймер запускается после commit
-  DOM вопроса в layout effect. Время до готовности UI/ожидания базы не считается.
-- Pause, `visibilitychange` в hidden, `pagehide`, `beforeunload` и уход с экрана
-  останавливают таймер и запрашивают checkpoint. Возврат из фона требует
-  явного продолжения. Вопрос на reload всегда восстанавливается на паузе.
-- В БД нет wall-clock начала ответа: простой между закрытием и продолжением
-  никогда не прибавляется к `activeMs`. Feedback и break восстанавливаются
-  именно в соответствующей фазе, без повторной записи ответа.
-- Checkpoint каждые **250 ms** только для активного вопроса. Черновик и pause
-  инициируют принудительную запись. На долгой ручной паузе периодических записей нет.
-- При аварийном завершении процесса может потеряться отрезок активного времени
-  **после последнего успешно записанного checkpoint** и ещё не записанный ввод.
-  При обычной отзывчивой странице это примерно до 250 ms плюс задержка записи;
-  это **не жёсткий верхний предел** при блокировке event loop, медленной БД или
-  сбое устройства. Async запись при unload сама по себе не гарантируется.
-  Подтверждённая попытка и переход не могут сохраниться по отдельности.
-- `attach/detach`, generation token и проверка актуальности внутри `claim`
-  защищают от позднего завершения load/claim после ухода со страницы и от
-  StrictMode remount. Старый экран не перехватывает owner у нового.
-- Неудачная запись/чтение останавливает процесс с локализованной ошибкой и
-  кнопкой перечитать данные; фиктивное успешное сохранение не показывается.
+- performance.now() starts after the question DOM commits in a layout effect.
+  UI preparation and database waiting time do not count.
+- Pause, hidden visibilitychange, pagehide, beforeunload and leaving the screen
+  stop timing and request a checkpoint. Returning from background requires
+  explicit resume. Reloaded questions always start paused.
+- No wall-clock response-start timestamp is persisted; closed-app time is never
+  added to activeMs. Feedback/break phases restore without duplicate answers.
+- Checkpoints run every 250 ms only during an active question. Draft changes
+  and pausing force a write. Long manual pauses do not cause periodic writes.
+- Abrupt process termination can lose active time and draft input after the last
+  successful checkpoint. On a responsive page this is approximately 250 ms plus
+  write latency, not a hard bound under event-loop blockage, slow storage or
+  device failure. Async unload writes are not guaranteed. A committed attempt
+  and its cursor transition cannot be saved separately.
+- attach/detach, generation tokens and an in-transaction claim validity check
+  prevent late load/claim completion after navigation and StrictMode remount
+  from taking ownership away from the new screen.
+- Read/write failure pauses practice with a localized error and reload control;
+  no false successful save is shown.
 
-## Изменённые файлы
+## Added or changed files
 
-- `package.json`, `package-lock.json`, `README.md`.
-- `src/engine/core/Exercise.ts`, новые `engine/multiplication/facts.ts`,
-  `engine/sessions/{diagnostic.ts,ActiveTimer.ts,statistics.ts}`.
-- Новые `src/database/{db.ts,diagnosticRepository.ts,useDiagnosticData.ts}`.
-- `src/app/providers.tsx`.
-- `src/features/training/Training.tsx`, новые `DiagnosticController.ts`,
-  `useDiagnostic.ts` в той же папке.
-- `src/features/{dashboard/Dashboard.tsx,statistics/Statistics.tsx}`.
-- `src/locales/{es.json,ru.json}`, `src/styles/global.css`.
-- `tests/setup.ts`, `tests/foundation.test.tsx`, новый `tests/diagnostics.test.ts`.
-- `tests/browser/foundation.spec.ts`, новый `tests/browser/diagnostics.spec.ts`.
-- Этот отчёт `docs/stages/02-engine-diagnostics.md`.
+- package.json, package-lock.json, README.md.
+- src/engine/core/Exercise.ts; new multiplication/facts.ts;
+  sessions/diagnostic.ts, ActiveTimer.ts and statistics.ts.
+- New src/database/db.ts, diagnosticRepository.ts and useDiagnosticData.ts.
+- src/app/providers.tsx.
+- src/features/training/Training.tsx; new DiagnosticController.ts and
+  useDiagnostic.ts in the same directory.
+- src/features/dashboard/Dashboard.tsx and statistics/Statistics.tsx.
+- src/locales/es.json and ru.json; src/styles/global.css.
+- tests/setup.ts, foundation.test.tsx, new diagnostics.test.ts.
+- tests/browser/foundation.spec.ts and new diagnostics.spec.ts.
+- This handoff, docs/stages/02-engine-diagnostics.md.
 
-## Фактически выполненные проверки
+## Actually executed checks
 
-Среда: Windows PowerShell, Node 24.22.1 / npm 11.19.1.
+Environment: Windows PowerShell, Node 24.22.1 / npm 11.19.1.
 
-| Проверка | Результат |
+| Check | Result |
 | --- | --- |
-| `npm view dexie version engines peerDependencies --json`; аналогично fake-indexeddb | Dexie 4.4.7; fake-indexeddb 6.2.8 с Node >=18, совместим с Node 24 |
-| `npm install --save-exact dexie@4.4.7`; `npm install --save-dev --save-exact fake-indexeddb@6.2.8` | Lockfile обновлён; audit: 0 vulnerabilities |
-| `npm run typecheck` / typecheck внутри build | Успешно |
-| `npm run lint` | Успешно |
-| `npm test` | **22/22**, 2 файла |
-| `npm run build` | Успешно; HTML 0.57 kB, CSS 14.13 kB, JS 356.52 kB / gzip 112.19 kB |
-| `npm run test:e2e` | **58 passed, 6 skipped**, 1.6 min, без retries |
-| Дополнительный screenshot-прогон после ожидания готового вопроса | **8/8**, 11.0 s; новые снимки в `test-results/visual/` |
-| Финальный `npm run test:e2e -- --grep 'captures\|keypad, physical' --reporter=list --output=test-results/visual` | **16/16**, 20.2 s; после сохранения введённого ответа на feedback |
-| `git diff --check` | Без ошибок |
-| Проверка дерева dist и ссылок index.html | Только built HTML/CSS/JS/favicon, ссылки с `/MathHero/`; исходных документов нет |
+| Official npm metadata for Dexie/fake-indexeddb | Dexie 4.4.7; fake-indexeddb 6.2.8 requires Node >=18 and supports installed Node 24 |
+| Exact-version installation of both packages | Lockfile updated; zero audit vulnerabilities |
+| typecheck, including within build | Passed |
+| npm run lint | Passed |
+| npm test | 22/22 passed in two files |
+| npm run build | Passed; HTML 0.57 kB, CSS 14.13 kB, JS 356.52 kB / gzip 112.19 kB |
+| Full npm run test:e2e | 58 passed, 6 skipped; 1.6 minutes, zero retries |
+| Extra screenshots after waiting for the ready question | 8/8 passed, 11 seconds; artifacts in test-results/visual/ |
+| Final input/screenshot checks after retaining the entered answer in feedback | 16/16 passed |
+| git diff --check | Passed |
+| dist tree and index.html | Built HTML/CSS/JS/favicon only; /MathHero/ paths, no source documents |
 
-Матрица: Chromium/WebKit × 390×844, 844×390, 820×1180, 1180×820.
-Полная диагностика 144/144 пройдена **в обоих браузерах phone portrait**.
-Её дополнительные шесть повторов для остальных размеров намеренно skipped,
-не засчитаны как пройденные. Во всех восьми профилях пройдены часть 24,
-reload вопроса/черновика, reload feedback и break, неверный ответ, отсутствие
-дубля при двух submit в одном tick, продолжение следующей части, результаты,
-сохранение языка/анимаций. Проверка hidden использует синтетическое событие
-visibilitychange и не является сворачиванием Safari на настоящем устройстве.
-Foundation-проверки по-прежнему покрывают три пути ввода, RU/ES, Back,
-reduced motion, отсутствие горизонтальной прокрутки и кнопки минимум 52 px.
+Browser matrix: Chromium/WebKit at 390x844, 844x390, 820x1180, 1180x820.
+Both phone-portrait browsers completed all 144 answers. Six redundant complete
+flows for the other sizes were intentionally skipped, not counted as passing.
+Every profile passed a 24-question part, question/draft/feedback/break reload,
+wrong answer, same-tick duplicate submit protection, next-part resume, results,
+and persisted locale/animation settings. The hidden-page check synthesizes
+visibilitychange; it is not real Safari backgrounding.
 
-Unit/repository/controller: весь набор произведений, пары, RNG, все шесть частей,
-отдельная точность и скорость, нечётная/чётная медиана, пустая статистика,
-пауза/reload/feedback без лишнего времени, параллельный start/submit, откат при
-инъекции ошибки записи, stale owner/checkpoint, закрытие/открытие БД после
-каждой из 144 попыток, быстрый уход во время load/claim и StrictMode remount.
+Foundation coverage still includes all input paths, RU/ES, Back, reduced motion,
+no horizontal overflow and buttons at least 52 px high. Unit/repository/controller
+checks cover all products/pairs, RNG, six parts, independent accuracy/speed,
+odd/even median, empty statistics, pause/reload/feedback timing, concurrent
+start/submit, injected write-failure rollback, stale owners/checkpoints,
+database close/reopen after each of 144 attempts, late load/claim after navigation,
+and StrictMode remount.
 
-Первый browser-прогон: 47 passed / 11 failed / 6 skipped. Помощник нового теста
-читал предыдущую equation до завершения async перехода; добавлено ожидание
-enabled textbox. Тест настроек теперь ожидает commit IndexedDB до reload.
-Один промежуточный запуск не стартовал из-за опечатки в тестовом выражении;
-исправлено до успешного полного прогона. Эти запуски не заявлены успешными.
-Screenshot-сценарий также исправлен: ожидание equation и enabled textbox
-перед съёмкой; первоначальные промежуточные снимки не использованы для приёмки.
-После полного прогона сделано последнее UI-уточнение: введённое число остаётся
-видно на feedback. Для него повторно прошли typecheck/lint/build, все 22 unit/
-component-теста и 16 соответствующих browser-сценариев ввода/снимков. В component-
-тестах тоже добавлено ожидание async commit вместо немедленной проверки status.
+The first browser run had 47 passes, 11 failures and six skips. A new test helper
+read the previous equation before the async transition finished; it was changed
+to wait for an enabled textbox. The settings test now waits for IndexedDB commit
+before reload. An intermediate run did not start because of a test-expression
+typo, corrected before the successful complete run. Those runs are not counted
+as successful. Screenshot tests similarly now wait for the equation and enabled
+input; intermediate loading screenshots were not acceptance evidence.
 
-Визуально просмотрены обновлённые WebKit phone portrait (реальный вопрос и RU
-результаты), Chromium tablet landscape (RU ошибка). При нуле правильных ответов
-видны 0% точности и «—» скорости. На длинных экранах требуется вертикальная
-прокрутка; full-page PNG показывает fixed навигацию на границе исходного viewport.
+Visually inspected refreshed WebKit phone portrait (actual question and Russian
+results) and Chromium tablet landscape (Russian incorrect-answer feedback).
+With no correct answers, accuracy displays 0% and speed a dash. Tall layouts may
+scroll vertically; full-page screenshots place fixed navigation at the initial
+viewport boundary.
 
-Зависимости и запуск браузеров использовали штатное `require_escalated`.
-`npm ci` на этом этапе не запускался; preview после тестов завершён.
-Для форматирования разово применён Prettier 3.10.1 (Node >=14), без добавления
-в runtime/dev dependencies. Использована [документация транзакций Dexie](https://dexie.org/docs/Dexie/Dexie.transaction()).
+Dependency/browser operations used standard require_escalated. npm ci was not
+run in this stage; preview was stopped after tests. Formatting used the already
+available Prettier 3.10.1 once, without adding a runtime/dev dependency.
+Reference: [Dexie transactions](https://dexie.org/docs/Dexie/Dexie.transaction()).
 
-## Подключение этапов 3–4 и остающиеся критерии
+## Integration and remaining acceptance
 
-1. Источник начальной сложности — реальные `Attempt` диагностики: ошибки и
-   медленные правильные ответы разделять. Начальную модель адаптации вычислять
-   отдельно; диагностические ответы не считать доказательством мастерства.
-2. Добавить адаптивный движок в `engine/learning` без React. Для новых занятий
-   использовать новые session ID и `mode: adaptive/weak`, не переиспользовать
-   baseline ID. Расширить таблицу sessions union-типом; схему изменять версионно.
-3. Направления учитывать по `exerciseId`, общую историю пары — по `canonicalId`.
-   `mode` обязателен при аналитике/обновлении прогресса. Все 144 факта уже доступны.
-4. Переиспользовать ActiveTimer, транзакционный принцип submit и проверенный
-   ввод. Добавить хранение scheduler/mastery в одной транзакции с попыткой.
-5. Полная карта/аналитика, награды, backup с валидацией и миграциями — этап 4.
-   В v1 нет facts/progress/rewards таблиц, импорт не реализован.
-6. PWA/offline, Actions/Pages, измерение старта ≤3 s — этап 5.
-   Реальные iPhone/iPad, системная клавиатура/viewport, ненулевые safe areas,
-   реальное сворачивание/возврат и аварийное завершение Safari **не проверены**.
-7. Для закрытия этапа требуется ревью и запись приёмки координатором в DELIVERY;
-   исполнитель следующий этап не начинал.
+1. Use actual diagnostic attempts for initial difficulty, separating errors from
+   slow correct responses. Derive adaptation separately; diagnostic answers are
+   not evidence of mastery.
+2. Add React-independent engine/learning. New sessions need separate IDs and
+   adaptive/weak modes, never the baseline ID. Extend sessions with a union and
+   versioned schema changes.
+3. Track directions by exerciseId and shared pairs by canonicalId. Include mode
+   when computing analytics/progress. All 144 facts already exist.
+4. Reuse ActiveTimer, transactional submit and input. Save scheduler/mastery in
+   the same transaction as attempts.
+5. Complete map/analytics, rewards, backup validation and migrations belong to
+   stage 4. Version 1 has no progress/reward tables or import implementation.
+6. PWA/offline, Actions/Pages and startup measurement belong to stage 5. Physical
+   devices, actual native keyboard/viewport, nonzero safe areas, real Safari
+   backgrounding and abrupt termination have not been verified.
+7. The coordinator owns review, DELIVERY acceptance and Git checkpoints. The
+   worker did not start the next stage. This report is a historical stage record.

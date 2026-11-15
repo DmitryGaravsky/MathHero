@@ -27,14 +27,12 @@ describe("learning repository and shared session lifecycle", () => {
   it("migrates real v1 stores without touching settings, diagnostic session, or attempts", async () => {
     const name = `v1-${crypto.randomUUID()}`;
     const old = new Dexie(name);
-    old
-      .version(1)
-      .stores({
-        sessions: "id, mode, startedAt",
-        attempts:
-          "id, sessionId, exerciseId, canonicalId, mode, [sessionId+ordinal]",
-        settings: "id",
-      });
+    old.version(1).stores({
+      sessions: "id, mode, startedAt",
+      attempts:
+        "id, sessionId, exerciseId, canonicalId, mode, [sessionId+ordinal]",
+      settings: "id",
+    });
     const diagnostic = answerDiagnostic(
       createDiagnostic("diagnostic:baseline:v1", clock, random),
       0,
@@ -57,7 +55,7 @@ describe("learning repository and shared session lifecycle", () => {
     const migrated = new MathHeroDB(name);
     databases.push(migrated);
     await migrated.open();
-    expect(migrated.verno).toBe(2);
+    expect(migrated.verno).toBe(3);
     expect(await migrated.sessions.get(diagnostic.session.id)).toEqual(
       diagnostic.session,
     );

@@ -724,3 +724,147 @@ a.weak-link {
   text-decoration: none;
   color: inherit;
 }
+
+/* Dense map cells have equivalent large factor selectors above the map. */
+button.map-cell {
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  aspect-ratio: 1;
+  border: 1px solid transparent;
+  font-size: clamp(0.6rem, 2vw, 1rem);
+  color: #253149 !important;
+}
+.map-cell[aria-pressed="true"] {
+  outline: 3px solid #4436b5;
+  outline-offset: 1px;
+}
+.map-cell.difficult {
+  background: #f1c2bd;
+}
+.map-cell.developing {
+  background: #f1dda0;
+}
+.map-cell.fluent {
+  background: #b5dced;
+}
+.map-cell.stable {
+  background: #b0d9be;
+}
+.factor-picker {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 28px;
+}
+.factor-picker label {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9rem;
+}
+select {
+  min-height: 56px;
+  min-width: 80px;
+  max-width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #8b8da5;
+  border-radius: 12px;
+  background: white;
+  color: var(--ink);
+  font: inherit;
+}
+.factor-picker select {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+}
+.fact-detail,
+.backup-card,
+.achievements,
+.parent-analytics {
+  margin-top: 24px;
+}
+summary {
+  min-height: 56px;
+  padding: 16px 0;
+  cursor: pointer;
+  font-weight: 600;
+}
+.history-list,
+.daily-trend {
+  list-style: none;
+  padding: 0;
+}
+.history-list li,
+.daily-trend li {
+  display: grid;
+  gap: 7px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+.history-list span {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.achievements ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  list-style: none;
+  padding: 0;
+  gap: 16px;
+}
+.achievements li > span:first-child {
+  font-size: 1.4rem;
+  color: #8a620b;
+}
+.achievements li > span:last-child {
+  display: block;
+}
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+dialog {
+  max-width: min(540px, calc(100% - 32px));
+  max-height: 85dvh;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 24px;
+  color: var(--ink);
+}
+dialog::backdrop {
+  background: #24203977;
+}
+.difficult-list {
+  list-style: none;
+  padding: 0;
+}
+.difficult-list li {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.difficult-list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 56px;
+  min-width: 90px;
+}
+progress,
+meter {
+  width: 100%;
+  max-width: 450px;
+  height: 18px;
+  accent-color: var(--purple);
+}
+.session-history {
+  border-top: 1px solid var(--line);
+}
+
+.map-training-link {
+  margin-bottom: 24px;
+}

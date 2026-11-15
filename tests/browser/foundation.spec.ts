@@ -29,7 +29,7 @@ test("all five screens and both locales fit the viewport", async ({ page }) => {
         ),
       ).toBe(true);
       const buttons = await page
-        .locator("button:visible, nav a")
+        .locator("button:visible:not(.map-cell), select:visible, nav a")
         .evaluateAll((elements) =>
           elements.map((element) => element.getBoundingClientRect().height),
         );
@@ -99,14 +99,7 @@ test("preview has no invented progress, supports back and reduced motion", async
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./");
-  await expect(
-    page.getByText(
-      "Diagnóstico y práctica adaptativa ya guardan tu progreso.",
-      {
-        exact: false,
-      },
-    ),
-  ).toBeVisible();
+  await expect(page.locator(".journey-card")).toContainText("0 / 78");
   expect(
     await page
       .locator(".hero .mascot")

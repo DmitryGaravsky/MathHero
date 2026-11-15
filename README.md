@@ -1,29 +1,31 @@
 # Math Hero
 
-Тренажёр таблицы умножения 1–12 для iPhone и iPad. React + TypeScript + Vite,
-RU/ES, без backend и аккаунтов. Лицензия MIT.
+A multiplication fluency trainer for iPhone and iPad, covering factors 1–12.
+React, TypeScript and Vite; Russian and Spanish UI; local IndexedDB; no backend,
+accounts, child identifiers, telemetry or cloud synchronization. MIT licensed.
 
-Реализованы **диагностика и адаптивное обучение**: все 144 направления / 78 пар,
-диагностика 6 × 24, ежедневные и weak-занятия по 24 задания, интервальные повторы,
-мастерство по evidence в разные дни, пауза, раннее завершение, восстановление
-после перезагрузки и реальные итоги. Диагностика задаёт исходную сложность,
-но не присваивает мастерство или награды.
-Статус всей разработки ведёт координатор в [docs/DELIVERY.md](docs/DELIVERY.md).
+Stages 1–4 implement all 144 directed facts and 78 canonical pairs, a resumable
+6 × 24 diagnostic, adaptive and targeted practice, spaced review, mastery across
+multiple days, progress and achievements, an interactive map, parent analytics,
+and validated JSON backup/restore. Diagnosis establishes baseline difficulty;
+it never grants mastery, stars or achievements. The coordinator tracks acceptance
+in [DELIVERY.md](docs/DELIVERY.md).
 
-## Локальный запуск
+## Local development
 
-Требуется Node.js 24 (не ниже 24.15), npm. Проверено с Node 24.22.1 / npm 11.19.1.
-Проектная `.npmrc` задаёт официальный registry, не меняя глобальные настройки.
+Requires Node.js 24 (at least 24.15) and npm. Preparation verified Node 24.22.1 and
+npm 11.19.1. The project `.npmrc` selects the public registry without changing
+global settings for other repositories.
 
 ```powershell
 npm ci
 npm run dev
 ```
 
-Открыть `http://127.0.0.1:5173/MathHero/`. Навигация использует hash, поэтому
-будущему статическому GitHub Pages не нужны серверные rewrite-правила.
+Open `http://127.0.0.1:5173/MathHero/`. Hash navigation needs no server rewrites.
+Do not run `npm ci` while a preview process is using the installed dependencies.
 
-## Проверки
+## Checks
 
 ```powershell
 npm run typecheck
@@ -34,43 +36,65 @@ npm run browsers:install
 npm run test:e2e
 ```
 
-Playwright сам запускает preview готовой сборки на порту 4173. Перед ним
-нужно выполнить `npm run build`. Проверяются Chromium и WebKit, четыре размера
-viewport в каждом, RU/ES, навигация, ввод, диагностика, адаптация и восстановление. Это эмуляция,
-а не приёмка на реальных iPhone/iPad. HTML-отчёт — `playwright-report/index.html`,
-снимки — `test-results/` (оба каталога исключены из Git).
+Playwright starts the built preview on port 4173. Build first. The browser matrix
+covers Chromium and WebKit at four phone/tablet viewport sizes, in both locales.
+It tests input, diagnostics, adaptive sessions, persistence, map navigation,
+JSON downloads and imports, and responsive layout. This is browser emulation,
+not physical iPhone/iPad acceptance. Reports and screenshots are in the ignored
+`playwright-report/` and `test-results/` directories.
 
-## Структура
+## Data and backups
 
-- `src/app` — оболочка, hash-навигация, настройки IndexedDB и локализация.
-- `src/components` — общие элементы, клавиатура и SVG-лис.
-- `src/features` — главная, тренировка, статистика, карта, настройки.
-- `src/engine/core` — чистые контракты упражнения, движка, часов и RNG.
-- `src/engine/multiplication` — факты, canonical ID, генерация и оценка.
-- `src/engine/sessions` — диагностика, активное время и расчёт итогов.
-- `src/engine/learning` — scheduler, difficulty/mastery, интервалы и learning-сессии.
-- `src/database` — Dexie v2, транзакции attempts/sessions/progress, настройки.
-- `src/locales` — все тексты интерфейса.
-- `tests` — component/unit и browser acceptance.
-- `docs/stages` — фактические результаты этапов и точки передачи.
+Dexie schema v3 stores sessions, attempts, pair progress, preferences, the ordered
+attempt journal, reward events, and a reward counter/day index. Answers and their
+rewards commit atomically. Stars are computed from unique reward events. Current
+mastery and previously earned achievements are distinct.
 
-Контракты и ограничения диагностики: [отчёт этапа 2](docs/stages/02-engine-diagnostics.md).
-Контракты адаптации: [отчёт этапа 3](docs/stages/03-adaptive-learning.md).
-Полное хранение и аналитика — в этапе 4,
-PWA и GitHub Pages — в этапе 5. Не подключайте React к `engine`.
+Settings exports a versioned JSON file with every table, including incomplete
+sessions and drafts. Import validates the entire file and reconstructs derived
+progress, statistics and rewards before offering replacement. Confirmation
+replaces the whole local history in one transaction; cancellation and failed
+transactions preserve the previous database. Restore clears session ownership
+so an old tab cannot overwrite the restored session. Import is replacement,
+not merging; keep a current backup before replacing data.
 
-## Зависимости и публикация
+Keep copies outside browser storage. Clearing Safari data can remove everything
+stored here. Backups contain learning history but no child identity or account.
+A consistency check is not a digital signature: a deliberately rewritten,
+self-consistent history cannot be authenticated without an external authority.
 
-Прямые зависимости закреплены точными версиями, lockfile включён. TypeScript
-6.0.3 выбран по peer-диапазону typescript-eslint (`<6.1.0`). Scoped override
-`@typescript-eslint/typescript-estree → minimatch 11.0.1` устраняет
-[GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249)
-в lint-инструментах. При обновлении typescript-eslint проверить, нужен ли override.
+## Project structure
 
-Production build — только `dist/`, base **`/MathHero/`**. Спецификация и прочие
-исходные документы туда не копируются. GitHub Actions и PWA на этапах 1–3 не
-создаются; совместимость версий Actions необходимо проверить на этапе 5.
+- `src/app`: shell, hash navigation, live preferences and localization.
+- `src/components`: shared controls, keypad and four SVG fox expressions.
+- `src/features`: home, training, results, interactive map and settings.
+- `src/engine/core`: exercise, clock and random-source contracts.
+- `src/engine/multiplication`: directed facts, canonical pairs and evaluation.
+- `src/engine/sessions`: diagnosis, active timing and baseline statistics.
+- `src/engine/learning`: scheduler, intervals, mastery, analytics and reward replay.
+- `src/database`: Dexie v3, atomic repositories, incremental rewards, backup validation.
+- `src/locales`: all RU/ES interface text.
+- `tests`: engine/component/repository and browser acceptance tests.
+- `docs/stages`: implementation evidence and handoffs.
 
-Сведения о совместимости инструментов: [Vite](https://vite.dev/guide/),
+The engine has no React or DOM dependency. See the
+[diagnostic contract](docs/stages/02-engine-diagnostics.md),
+[learning contract](docs/stages/03-adaptive-learning.md), and
+[progress and backup contract](docs/stages/04-progress-backup.md).
+
+## Dependencies and deployment
+
+Direct dependency versions and the lockfile are pinned. TypeScript 6.0.3 fits
+the typescript-eslint peer range (`<6.1.0`). The scoped
+`@typescript-eslint/typescript-estree → minimatch 11.0.1` override addresses
+[GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249) in lint tools;
+review the override when updating typescript-eslint.
+
+Only built `dist/` assets will be deployed, with the case-sensitive base
+**`/MathHero/`**. Source documents are not copied into the build. PWA caching,
+GitHub Actions compatibility checks and GitHub Pages publishing belong to stage 5;
+stage 4 does not implement or claim offline availability or deployment.
+
+Tool references: [Vite](https://vite.dev/guide/),
 [Vitest](https://vitest.dev/guide/),
-[браузеры Playwright](https://playwright.dev/docs/browsers).
+[Playwright browsers](https://playwright.dev/docs/browsers).

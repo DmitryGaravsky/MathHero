@@ -1,6 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { AppContext, defaultPreferences } from "./AppContext";
 import { translate } from "./i18n";
+import { liveQuery } from "dexie";
+import type { Preferences } from "./AppContext";
 import { db } from "../database/db";
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -8,28 +10,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [storageError, setStorageError] = useState(false);
   useEffect(() => {
-    let live = true;
-    void db.settings
-      .get("preferences")
-      .then((row) => {
-        if (live && row) setPreferences(row.value);
-      })
-      .catch(() => {
-        if (live) setStorageError(true);
-      })
-      .finally(() => {
-        if (live) setReady(true);
-      });
-    return () => {
-      live = false;
-    };
+    const subscription = liveQuery(() =>
+      db.settings.get("preferences"),
+    ).subscribe({
+      next: (row) => {
+        setPreferences(row?.value ?? defaultPreferences);
+        setReady(true);
+      },
+      error: () => {
+        setStorageError(true);
+        setReady(true);
+      },
+    });
+    return () => subscription.unsubscribe();
   }, []);
-  useEffect(() => {
-    if (ready)
-      void db.settings
-        .put({ id: "preferences", value: preferences })
-        .catch(() => setStorageError(true));
-  }, [preferences, ready]);
+  const save = (patch: Partial<Preferences>) => {
+    setPreferences((p) => ({ ...p, ...patch }));
+    void db
+      .transaction("rw", db.settings, async () => {
+        const current = await db.settings.get("preferences");
+        await db.settings.put({
+          id: "preferences",
+          value: { ...(current?.value ?? defaultPreferences), ...patch },
+        });
+      })
+      .catch(() => setStorageError(true));
+  };
   useEffect(() => {
     document.documentElement.lang = preferences.language;
   }, [preferences.language]);
@@ -37,9 +43,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <AppContext.Provider
       value={{
         preferences,
-        setLanguage: (language) => setPreferences((p) => ({ ...p, language })),
-        setAnimations: (animationsEnabled) =>
-          setPreferences((p) => ({ ...p, animationsEnabled })),
+        setLanguage: (language) => save({ language }),
+        setAnimations: (animationsEnabled) => save({ animationsEnabled }),
+        setDailyGoal: (dailyGoalMinutes) => save({ dailyGoalMinutes }),
         t: (key, values) => translate(preferences.language, key, values),
       }}
     >

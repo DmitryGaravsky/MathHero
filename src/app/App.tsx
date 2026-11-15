@@ -69,10 +69,6 @@ export function App() {
             targetPair={targetPair}
           />
         )}
-        <div className="preview-note">
-          <span className="badge">{t("foundation")}</span>
-          <p>{t("foundationNotice")}</p>
-        </div>
       </main>
       <footer className="app-footer">{t("tagline")}</footer>
     </div>

@@ -87,6 +87,7 @@ export class DiagnosticRepository {
       "rw",
       this.database.sessions,
       this.database.attempts,
+      this.database.journal,
       async () => {
         const current = await this.current(expected);
         const result = answerDiagnostic(
@@ -96,6 +97,11 @@ export class DiagnosticRepository {
           this.clock,
         );
         await this.database.attempts.add(result.attempt);
+        const last = await this.database.journal.orderBy("sequence").last();
+        await this.database.journal.add({
+          id: result.attempt.id,
+          sequence: (last?.sequence ?? 0) + 1,
+        });
         await this.database.sessions.put(result.session);
         return result.session;
       },

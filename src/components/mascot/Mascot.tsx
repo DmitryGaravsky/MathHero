@@ -1,12 +1,27 @@
 import { useApp } from "../../app/AppContext";
 
-export function Mascot({ small = false }: { small?: boolean }) {
+export function Mascot({
+  small = false,
+  state = "greeting",
+}: {
+  small?: boolean;
+  state?: "greeting" | "thinking" | "happy" | "support";
+}) {
   const { t } = useApp();
   return (
     <svg
       className={`mascot ${small ? "mascot-small" : ""}`}
       role="img"
-      aria-label={t("foxAlt")}
+      aria-label={t(
+        state === "greeting"
+          ? "foxAlt"
+          : state === "thinking"
+            ? "foxThinking"
+            : state === "happy"
+              ? "foxHappy"
+              : "foxSupport",
+      )}
+      data-state={state}
       viewBox="0 0 300 300"
     >
       <ellipse cx="151" cy="275" rx="65" ry="10" fill="#ccd1e6" opacity=".5" />
@@ -58,7 +73,15 @@ export function Mascot({ small = false }: { small?: boolean }) {
         fill="#fff3df"
       />
       <path
-        d="M115 121q8-9 15 0m40 0q8-9 15 0"
+        d={
+          state === "thinking"
+            ? "M115 121h15m40 0q8-4 15 0"
+            : state === "support"
+              ? "M115 119q8 5 15 0m40 0q8 5 15 0"
+              : state === "happy"
+                ? "M115 123q8-14 15 0m40 0q8-14 15 0"
+                : "M115 121q8-9 15 0m40 0q8-9 15 0"
+        }
         fill="none"
         stroke="#3e3549"
         strokeWidth="5"
@@ -66,7 +89,15 @@ export function Mascot({ small = false }: { small?: boolean }) {
       />
       <path d="m144 144 12 0q-6 12-12 0" fill="#3e3549" />
       <path
-        d="M150 152q-1 9-10 7m10-7q1 9 10 7"
+        d={
+          state === "happy"
+            ? "M140 153q10 19 20 0"
+            : state === "thinking"
+              ? "M143 158h14"
+              : state === "support"
+                ? "M140 155q10 8 20 0"
+                : "M150 152q-1 9-10 7m10-7q1 9 10 7"
+        }
         fill="none"
         stroke="#3e3549"
         strokeWidth="3"

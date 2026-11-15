@@ -1,3 +1,6 @@
+import { ParentAnalytics } from "./ParentAnalytics";
+import { Achievements } from "./Achievements";
+import { useProgressData } from "../../database/useProgressData";
 import { useApp } from "../../app/AppContext";
 import { Mascot } from "../../components/mascot/Mascot";
 import { PageHeading } from "../../components/ui/PageHeading";
@@ -11,6 +14,7 @@ export function Statistics() {
   const { session, attempts, loading, error } = useDiagnosticData();
   const stats = diagnosticStatistics(attempts);
   const learning = useLearningData();
+  const progress = useProgressData();
   const format = new Intl.NumberFormat(preferences.language, {
     maximumFractionDigits: 1,
   });
@@ -29,6 +33,8 @@ export function Statistics() {
           <LearningSummary session={learning.latest} />
         </>
       )}
+      <Achievements rewards={progress.rewards} />
+      <ParentAnalytics />
       <h2 className="section-title">{t("diagnosticLink")}</h2>
       {loading ? (
         <p role="status">{t("loading")}</p>

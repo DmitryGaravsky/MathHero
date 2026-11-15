@@ -1,11 +1,17 @@
+import { useProgressData } from "../../database/useProgressData";
+import { Achievements } from "../statistics/Achievements";
+import { calendarDay, learningPolicy } from "../../engine/learning/progress";
 import { useApp } from "../../app/AppContext";
 import { Mascot } from "../../components/mascot/Mascot";
 import { Icon } from "../../components/ui/Icon";
 import { useDiagnosticData } from "../../database/useDiagnosticData";
 import { useLearningData } from "../../database/useLearningData";
-
 export function Dashboard() {
-  const { t } = useApp();
+  const { t, preferences } = useApp();
+  const progress = useProgressData();
+  const today = progress.stats.daily.find(
+    (d) => d.day === calendarDay(progress.now, learningPolicy.timeZone),
+  );
   const { session, loading, error } = useDiagnosticData();
   const learning = useLearningData();
   return (
@@ -64,13 +70,19 @@ export function Dashboard() {
           <h2>{t("missionTitle")}</h2>
           <p>{t("missionDescription")}</p>
           <p className="small-text">{t("duration")}</p>
+          <p>
+            {t("dailyGoalProgress", {
+              minutes: String(Math.floor((today?.activeMs ?? 0) / 60000)),
+              goal: String(preferences.dailyGoalMinutes),
+            })}
+          </p>
         </section>
         <section className="card journey-card">
           <h2>{t("journey")}</h2>
           <div className="metrics">
             <div>
               <Icon name="star" />
-              <strong>0</strong>
+              <strong>{progress.stars}</strong>
               <span>{t("stars")}</span>
             </div>
             <div>
@@ -79,6 +91,17 @@ export function Dashboard() {
               <span>{t("masteredPairs")}</span>
             </div>
           </div>
+          <p>
+            {t("directionsCount", {
+              count: String(progress.stats.masteredDirections),
+            })}{" "}
+            · {Math.round((progress.stats.masteredDirections / 144) * 100)}%
+          </p>
+          <progress
+            max={144}
+            value={progress.stats.masteredDirections}
+            aria-label={t("masteredDirections")}
+          />
           <p>{t("progressHint")}</p>
           <a className="text-link" href="#results">
             {t("viewResults")}
@@ -86,6 +109,7 @@ export function Dashboard() {
           </a>
         </section>
       </div>
+      <Achievements rewards={progress.rewards} />
       <a href="#weak" className="weak-link">
         <Icon name="map" />
         <div>
