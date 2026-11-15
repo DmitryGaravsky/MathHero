@@ -39,7 +39,7 @@ attachment itself as a website asset.
 
 | Stage | Deliverable | State / chat / PR |
 | --- | --- | --- |
-| 1. Audit | Screens, documents, algorithms, debt, baseline and release requirements | Starting |
+| 1. Audit | Screens, documents, algorithms, debt, baseline and release requirements | Accepted / 01a1dfe4-77de-7401-aa39-e23055253c8f |
 | 2. Architecture | Central settings, modes, parent gate, storage boundaries/migrations | Pending |
 | 3. Child experience | Short entry flow, exercises, automatic feedback, results, achievements | Pending |
 | 4. Parent experience and themes | Complete management, light/dark/system, localization and terminology | Pending |
@@ -70,3 +70,12 @@ attachment itself as a website asset.
 
 Actual stage evidence, review findings, PRs and release checks will be added here.
 Physical-device tests remain distinct from Chromium/WebKit mobile emulation.
+
+## Stage 1 acceptance
+
+Reviewed the English 12-section requirements and all 19 verification mappings,
+screen/document inventory, policy/storage contracts and migration recipe.
+Baseline build/types/lint, 54 unit, 114 browser and 10 PWA checks passed; six
+intentional redundant full-diagnosis skips remain. No product changes. Key review
+focus for stage 2: shell/overlay timing and asynchronous session ownership,
+settings repository boundaries, legacy backup decoding and native v3 upgrade.
