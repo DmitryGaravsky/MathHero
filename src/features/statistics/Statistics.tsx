@@ -3,11 +3,14 @@ import { Mascot } from "../../components/mascot/Mascot";
 import { PageHeading } from "../../components/ui/PageHeading";
 import { useDiagnosticData } from "../../database/useDiagnosticData";
 import { diagnosticStatistics } from "../../engine/sessions/statistics";
+import { useLearningData } from "../../database/useLearningData";
+import { LearningSummary } from "../training/LearningSummary";
 
 export function Statistics() {
   const { t, preferences } = useApp();
   const { session, attempts, loading, error } = useDiagnosticData();
   const stats = diagnosticStatistics(attempts);
+  const learning = useLearningData();
   const format = new Intl.NumberFormat(preferences.language, {
     maximumFractionDigits: 1,
   });
@@ -19,6 +22,14 @@ export function Statistics() {
         title={t("resultsTitle")}
         description={t("resultsDescription")}
       />
+      {learning.error && <p role="alert">{t("storageError")}</p>}
+      {learning.latest && (
+        <>
+          <h2 className="section-title">{t("latestPractice")}</h2>
+          <LearningSummary session={learning.latest} />
+        </>
+      )}
+      <h2 className="section-title">{t("diagnosticLink")}</h2>
       {loading ? (
         <p role="status">{t("loading")}</p>
       ) : error ? (
@@ -46,7 +57,7 @@ export function Statistics() {
             </p>
             <p>{t("noMastery")}</p>
             {!session?.completedAt && (
-              <a href="#training" className="button primary">
+              <a href="#diagnostic" className="button primary">
                 {t(session ? "resume" : "start")}
               </a>
             )}

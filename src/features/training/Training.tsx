@@ -8,7 +8,17 @@ import { useDiagnostic } from "./useDiagnostic";
 import { getFact } from "../../engine/multiplication/facts";
 import { normalizeAnswer } from "./answerInput";
 
-export function Training() {
+import type { SessionMode } from "../../engine/sessions/diagnostic";
+import { sessionStage } from "../../engine/learning/scheduler";
+import { LearningSummary } from "./LearningSummary";
+
+export function Training({
+  mode = "diagnostic",
+  targetPair,
+}: {
+  mode?: SessionMode;
+  targetPair?: string;
+}) {
   const { t } = useApp();
   const {
     controller,
@@ -18,7 +28,9 @@ export function Training() {
     loading,
     error,
     draft: answer,
-  } = useDiagnostic();
+  } = useDiagnostic(mode, targetPair);
+  const learning = session && session.mode !== "diagnostic" ? session : null;
+  const isLearning = mode !== "diagnostic";
   const submitted = session?.phase === "feedback" ? session.lastAttempt : null;
   const setAnswer = (value: string | ((previous: string) => string)) =>
     controller.setDraft(typeof value === "function" ? value(answer) : value);
@@ -63,8 +75,14 @@ export function Training() {
 
   const heading = (
     <PageHeading
-      title={t("practiceTitle")}
-      description={t("practiceDescription")}
+      title={t(
+        isLearning
+          ? mode === "weak"
+            ? "weak"
+            : "dailyTitle"
+          : "practiceTitle",
+      )}
+      description={t(isLearning ? "dailyPlan" : "practiceDescription")}
     />
   );
   if (loading)
@@ -95,16 +113,33 @@ export function Training() {
         {heading}
         <section className="card empty-state">
           <Mascot small />
-          <h2>{t("diagnosticIntro")}</h2>
-          <p>{t("diagnosticPlan")}</p>
+          <h2>{t(isLearning ? "dailyTitle" : "diagnosticIntro")}</h2>
+          <p>{t(isLearning ? "dailyPlan" : "diagnosticPlan")}</p>
           <button
             className="button primary"
             disabled={busy}
             onClick={() => void controller.start()}
           >
-            {t("start")}
+            {t(isLearning ? "startLearning" : "start")}
           </button>
         </section>
+      </>
+    );
+  if (learning?.phase === "completed")
+    return (
+      <>
+        {heading}
+        <LearningSummary session={learning} />
+        <button
+          className="button primary"
+          disabled={busy}
+          onClick={() => void controller.start()}
+        >
+          {t("newSession")}
+        </button>
+        <a className="finish-link" href="#home">
+          {t("finish")}
+        </a>
       </>
     );
   if (session.phase === "completed")
@@ -135,6 +170,7 @@ export function Training() {
           >
             {t("nextPart")}
           </button>
+
           <a className="finish-link" href="#home">
             {t("finish")}
           </a>
@@ -147,14 +183,27 @@ export function Training() {
         {heading}
         <section className="card empty-state">
           <h2>{t("paused")}</h2>
-          <p>{t("savedProgress", { count: String(session.cursor) })}</p>
+          <p>
+            {t(isLearning ? "learningSaved" : "savedProgress", {
+              count: String(session.cursor),
+            })}
+          </p>
           <button
             className="button primary"
             disabled={busy}
             onClick={() => void controller.resume()}
           >
-            {t("resume")}
+            {t(isLearning ? "resumeLearning" : "resume")}
           </button>
+          {learning && (
+            <button
+              className="keyboard-mode full-width"
+              disabled={busy}
+              onClick={() => void controller.finish()}
+            >
+              {t("endSession")}
+            </button>
+          )}
           <a className="finish-link" href="#home">
             {t("finish")}
           </a>
@@ -166,16 +215,28 @@ export function Training() {
   return (
     <>
       <PageHeading
-        title={t("practiceTitle")}
-        description={t("practiceDescription")}
+        title={t(
+          isLearning
+            ? mode === "weak"
+              ? "weak"
+              : "dailyTitle"
+            : "practiceTitle",
+        )}
+        description={t(isLearning ? "dailyPlan" : "practiceDescription")}
       />
       <div className="training-layout">
         <section className="card exercise-card">
           <p className="eyebrow">
-            {t("diagnosticProgress", {
-              part: String(Math.ceil(questionNumber / 24)),
-              question: String(((questionNumber - 1) % 24) + 1),
-            })}
+            {learning
+              ? t("learningProgress", {
+                  question: String(questionNumber),
+                  total: String(learning.total),
+                  stage: t(sessionStage(questionNumber - 1, learning.total)),
+                })
+              : t("diagnosticProgress", {
+                  part: String(Math.ceil(questionNumber / 24)),
+                  question: String(((questionNumber - 1) % 24) + 1),
+                })}
           </p>
           <div
             className="equation"
@@ -264,7 +325,11 @@ export function Training() {
                     void controller.next();
                   }}
                 >
-                  {t(session.cursor === 144 ? "viewSummary" : "next")}
+                  {t(
+                    session.cursor === (learning?.total ?? 144)
+                      ? "viewSummary"
+                      : "next",
+                  )}
                 </button>
               </div>
             )}
@@ -277,6 +342,15 @@ export function Training() {
               onClick={() => void controller.pause()}
             >
               {t("pause")}
+            </button>
+          )}
+          {learning && (
+            <button
+              className="keyboard-mode full-width"
+              disabled={busy}
+              onClick={() => void controller.finish()}
+            >
+              {t("endSession")}
             </button>
           )}
           <a className="finish-link" href="#home">

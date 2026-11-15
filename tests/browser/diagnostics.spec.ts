@@ -111,7 +111,7 @@ test("completes a part, restores draft and feedback, records an error once and r
 test("guards same-tick double submit and persists language and animation settings", async ({
   page,
 }) => {
-  await page.goto("./#training");
+  await page.goto("./#diagnostic");
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   await page.getByRole("textbox").fill("0");
   await page.locator("form").evaluate((form) => {
@@ -126,14 +126,27 @@ test("guards same-tick double submit and persists language and animation setting
     .getByRole("button", { name: "Русский", exact: true })
     .first()
     .click();
-  await expect.poll(() => page.evaluate(async () => {
-    const request = indexedDB.open('math-hero');
-    const database = await new Promise<IDBDatabase>(resolve => { request.onsuccess = () => resolve(request.result); });
-    const get = database.transaction('settings').objectStore('settings').get('preferences');
-    const row = await new Promise<{ value: { language: string; animationsEnabled: boolean } }>(resolve => { get.onsuccess = () => resolve(get.result); });
-    database.close();
-    return row.value;
-  })).toMatchObject({ language: 'ru', animationsEnabled: false });
+  await expect
+    .poll(() =>
+      page.evaluate(async () => {
+        const request = indexedDB.open("math-hero");
+        const database = await new Promise<IDBDatabase>((resolve) => {
+          request.onsuccess = () => resolve(request.result);
+        });
+        const get = database
+          .transaction("settings")
+          .objectStore("settings")
+          .get("preferences");
+        const row = await new Promise<{
+          value: { language: string; animationsEnabled: boolean };
+        }>((resolve) => {
+          get.onsuccess = () => resolve(get.result);
+        });
+        database.close();
+        return row.value;
+      }),
+    )
+    .toMatchObject({ language: "ru", animationsEnabled: false });
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
   await expect(page.getByRole("switch")).toHaveAttribute(
@@ -145,7 +158,7 @@ test("guards same-tick double submit and persists language and animation setting
 test("hidden-page event pauses the question and requires explicit resume", async ({
   page,
 }) => {
-  await page.goto("./#training");
+  await page.goto("./#diagnostic");
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   await page.getByRole("textbox").fill("7");
   // Tests the visibility adapter; this is not a claim of real device background testing.
@@ -182,7 +195,7 @@ test("finishes all six parts and shows real diagnostic results", async ({
     "Full flow in Chromium/WebKit portrait; part flow covers all sizes.",
   );
   test.setTimeout(180000);
-  await page.goto("./#training");
+  await page.goto("./#diagnostic");
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   for (let i = 1; i <= 144; i++) {
     await answer(page);

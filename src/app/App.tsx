@@ -12,15 +12,16 @@ import { Settings } from "../features/settings/Settings";
 
 const pages = {
   home: Dashboard,
-  training: Training,
   results: Statistics,
   map: MultiplicationMap,
   settings: Settings,
 };
 export function App() {
   const { preferences, t } = useApp();
-  const screen = useScreen();
-  const Page = pages[screen];
+  const { screen, targetPair } = useScreen();
+  const isTraining =
+    screen === "training" || screen === "weak" || screen === "diagnostic";
+  const Page = isTraining ? null : pages[screen];
   const main = useRef<HTMLElement>(null);
   useEffect(() => {
     main.current?.focus({ preventScroll: true });
@@ -53,7 +54,21 @@ export function App() {
       </header>
       <Navigation screen={screen} />
       <main id="main-content" tabIndex={-1} ref={main}>
-        <Page />
+        {Page ? (
+          <Page />
+        ) : (
+          <Training
+            key={`${screen}:${targetPair ?? ""}`}
+            mode={
+              screen === "diagnostic"
+                ? "diagnostic"
+                : screen === "weak"
+                  ? "weak"
+                  : "adaptive"
+            }
+            targetPair={targetPair}
+          />
+        )}
         <div className="preview-note">
           <span className="badge">{t("foundation")}</span>
           <p>{t("foundationNotice")}</p>

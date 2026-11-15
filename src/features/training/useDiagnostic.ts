@@ -6,8 +6,29 @@ import {
 } from "react";
 import { DiagnosticController } from "./DiagnosticController";
 
-export function useDiagnostic() {
-  const [controller] = useState(() => new DiagnosticController());
+import type { Session } from "../../engine/learning/session";
+import { LearningRepository } from "../../database/learningRepository";
+import { diagnosticRepository } from "../../database/diagnosticRepository";
+import type { SessionMode } from "../../engine/sessions/diagnostic";
+
+export function useDiagnostic(
+  mode: SessionMode = "diagnostic",
+  targetPair?: string,
+) {
+  const [controller] = useState(
+    () =>
+      new DiagnosticController<Session>(
+        mode === "diagnostic"
+          ? diagnosticRepository
+          : new LearningRepository(
+              undefined,
+              undefined,
+              undefined,
+              mode,
+              targetPair,
+            ),
+      ),
+  );
   const view = useSyncExternalStore(
     controller.subscribe,
     controller.getSnapshot,

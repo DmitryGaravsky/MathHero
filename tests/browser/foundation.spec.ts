@@ -42,7 +42,7 @@ test("all five screens and both locales fit the viewport", async ({ page }) => {
 test("keypad, physical keyboard, native input path and empty submit", async ({
   page,
 }) => {
-  await page.goto("./#training");
+  await page.goto("./#diagnostic");
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   const input = page.getByRole("textbox", { name: "Tu respuesta" });
   await expect(
@@ -100,9 +100,12 @@ test("preview has no invented progress, supports back and reduced motion", async
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./");
   await expect(
-    page.getByText("Ya puedes completar y guardar el diagnóstico.", {
-      exact: false,
-    }),
+    page.getByText(
+      "Diagnóstico y práctica adaptativa ya guardan tu progreso.",
+      {
+        exact: false,
+      },
+    ),
   ).toBeVisible();
   expect(
     await page
@@ -131,7 +134,7 @@ test("captures the foundation for visual review", async ({
     path: testInfo.outputPath("home.png"),
     fullPage: true,
   });
-  await page.goto("./#training");
+  await page.goto("./#diagnostic");
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   await expect(page.locator(".equation")).toBeVisible();
   await expect(page.getByRole("textbox")).toBeEnabled();
@@ -143,8 +146,16 @@ test("captures the foundation for visual review", async ({
   await page.getByRole("textbox").fill("0");
   await page.getByRole("textbox").press("Enter");
   await expect(page.getByRole("status")).toContainText("Правильный ответ");
-  await page.screenshot({ path: testInfo.outputPath("feedback-ru.png"), fullPage: true });
+  await page.screenshot({
+    path: testInfo.outputPath("feedback-ru.png"),
+    fullPage: true,
+  });
   await page.locator('nav a[href="#results"]').click();
-  await expect(page.getByText("Правильно: 0 из 1.", { exact: false })).toBeVisible();
-  await page.screenshot({ path: testInfo.outputPath("results-ru.png"), fullPage: true });
+  await expect(
+    page.getByText("Правильно: 0 из 1.", { exact: false }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: testInfo.outputPath("results-ru.png"),
+    fullPage: true,
+  });
 });

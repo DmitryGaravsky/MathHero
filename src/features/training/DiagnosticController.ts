@@ -1,22 +1,30 @@
 import type { Clock } from "../../engine/core/Exercise";
 import { ActiveTimer } from "../../engine/sessions/ActiveTimer";
 import type { DiagnosticSession } from "../../engine/sessions/diagnostic";
-import {
-  DiagnosticRepository,
-  diagnosticRepository,
-} from "../../database/diagnosticRepository";
+import { diagnosticRepository } from "../../database/diagnosticRepository";
 
-export interface DiagnosticView {
+import type { Session } from "../../engine/learning/session";
+
+export interface SessionRepository<S extends Session> {
+  get(): Promise<S | undefined>;
+  start(): Promise<S>;
+  claim(owner: string, expected?: S, isActive?: () => boolean): Promise<S>;
+  checkpoint(expected: S, activeMs: number, draft: string): Promise<void>;
+  submit(expected: S, answer: number, activeMs: number): Promise<S>;
+  advance(expected: S): Promise<S>;
+  finish?(expected: S): Promise<S>;
+}
+export interface DiagnosticView<S extends Session = DiagnosticSession> {
   loading: boolean;
-  session: DiagnosticSession | null;
+  session: S | null;
   paused: boolean;
   busy: boolean;
   error: boolean;
   draft: string;
 }
 /** Application controller: no React, DOM or wall-clock timing dependencies. */
-export class DiagnosticController {
-  private view: DiagnosticView = {
+export class DiagnosticController<S extends Session = DiagnosticSession> {
+  private view: DiagnosticView<S> = {
     loading: true,
     session: null,
     paused: true,
@@ -31,7 +39,7 @@ export class DiagnosticController {
   private generation = 0;
   private attached = true;
   constructor(
-    private readonly repository: DiagnosticRepository = diagnosticRepository,
+    private readonly repository: SessionRepository<S> = diagnosticRepository as unknown as SessionRepository<S>,
     private readonly clock: Clock = { now: () => performance.now() },
     owner: string = crypto.randomUUID(),
   ) {
@@ -56,11 +64,11 @@ export class DiagnosticController {
       this.listeners.delete(listener);
     };
   };
-  private update(patch: Partial<DiagnosticView>) {
+  private update(patch: Partial<DiagnosticView<S>>) {
     this.view = { ...this.view, ...patch };
     this.listeners.forEach((listener) => listener());
   }
-  private accept(session: DiagnosticSession | null, paused = true) {
+  private accept(session: S | null, paused = true) {
     this.timer = new ActiveTimer(this.clock, session?.activeMs ?? 0);
     this.update({
       loading: false,
@@ -104,8 +112,10 @@ export class DiagnosticController {
     const generation = this.generation;
     this.update({ busy: true });
     try {
-      const session = await this.repository.claim(this.owner, undefined, () =>
-        this.valid(generation),
+      const session = await this.repository.claim(
+        this.owner,
+        this.view.session ?? undefined,
+        () => this.valid(generation),
       );
       if (this.valid(generation)) this.accept(session, false);
     } catch {
@@ -144,10 +154,11 @@ export class DiagnosticController {
     )
       return;
     this.checkpointPending = true;
+    const generation = this.generation;
     try {
       await this.repository.checkpoint(session, this.timer.read(), draft);
     } catch {
-      this.fail();
+      if (this.valid(generation)) this.fail();
     } finally {
       this.checkpointPending = false;
     }
@@ -169,13 +180,17 @@ export class DiagnosticController {
     )
       return;
     const elapsed = this.timer.pause();
+    const generation = this.generation;
     this.update({ busy: true }); // Synchronous guard, before the first await.
     try {
-      this.accept(
-        await this.repository.submit(session, Number(draft), elapsed),
+      const next = await this.repository.submit(
+        session,
+        Number(draft),
+        elapsed,
       );
+      if (this.valid(generation)) this.accept(next);
     } catch {
-      this.fail();
+      if (this.valid(generation)) this.fail();
     }
   }
   async next() {
@@ -190,6 +205,23 @@ export class DiagnosticController {
       if (!this.valid(generation)) return;
       const next = await this.repository.advance(claimed);
       if (this.valid(generation)) this.accept(next, false);
+    } catch {
+      if (this.valid(generation)) this.fail();
+    }
+  }
+  async finish() {
+    const { session, busy, error } = this.view;
+    if (!session || busy || error || !this.repository.finish) return;
+    const generation = this.generation;
+    this.timer.pause();
+    this.update({ busy: true });
+    try {
+      const claimed = await this.repository.claim(this.owner, session, () =>
+        this.valid(generation),
+      );
+      if (!this.valid(generation)) return;
+      const completed = await this.repository.finish(claimed);
+      if (this.valid(generation)) this.accept(completed);
     } catch {
       if (this.valid(generation)) this.fail();
     }

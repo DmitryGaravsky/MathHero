@@ -697,3 +697,30 @@ main {
   font-size: 2rem;
   color: var(--purple);
 }
+.diagnostic-link {
+  display: flex;
+  width: fit-content;
+  margin-top: 12px;
+  min-height: 52px;
+  align-items: center;
+}
+.session-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px 32px;
+  margin: 24px 0;
+}
+.session-metrics dd {
+  margin: 6px 0 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--purple);
+}
+.session-metrics dt {
+  color: var(--muted);
+}
+a.weak-link {
+  text-decoration: none;
+  color: inherit;
+}

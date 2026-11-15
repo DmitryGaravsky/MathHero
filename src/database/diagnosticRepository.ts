@@ -15,8 +15,9 @@ export class DiagnosticRepository {
     private readonly clock: Clock = { now: () => Date.now() },
     private readonly random: RandomSource = { next: () => Math.random() },
   ) {}
-  get() {
-    return this.database.sessions.get(DIAGNOSTIC_ID);
+  async get() {
+    const session = await this.database.sessions.get(DIAGNOSTIC_ID);
+    return session?.mode === "diagnostic" ? session : undefined;
   }
   attempts() {
     return this.database.attempts

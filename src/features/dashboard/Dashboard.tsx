@@ -2,10 +2,12 @@ import { useApp } from "../../app/AppContext";
 import { Mascot } from "../../components/mascot/Mascot";
 import { Icon } from "../../components/ui/Icon";
 import { useDiagnosticData } from "../../database/useDiagnosticData";
+import { useLearningData } from "../../database/useLearningData";
 
 export function Dashboard() {
   const { t } = useApp();
   const { session, loading, error } = useDiagnosticData();
+  const learning = useLearningData();
   return (
     <>
       <section className="hero">
@@ -13,13 +15,17 @@ export function Dashboard() {
           <p className="eyebrow">{t("hello")}</p>
           <h1>{t("heroTitle")}</h1>
           <p>{t("heroDescription")}</p>
+          <a href="#training" className="button primary">
+            {t(learning.pending ? "resumeLearning" : "startLearning")}
+            <Icon name="arrow" />
+          </a>
           <a
             href={
               session?.completedAt !== null && session
                 ? "#results"
-                : "#training"
+                : "#diagnostic"
             }
-            className="button primary"
+            className="text-link diagnostic-link"
           >
             {t(
               session?.completedAt !== null && session
@@ -30,8 +36,13 @@ export function Dashboard() {
             )}
             <Icon name="arrow" />
           </a>
+          {session?.completedAt != null && (
+            <a href="#diagnostic" className="text-link diagnostic-link">
+              {t("diagnosticLink")}
+            </a>
+          )}
           {loading && <p role="status">{t("loading")}</p>}
-          {error && <p role="alert">{t("storageError")}</p>}
+          {(error || learning.error) && <p role="alert">{t("storageError")}</p>}
           {session && (
             <p>{t("savedProgress", { count: String(session.cursor) })}</p>
           )}
@@ -64,8 +75,8 @@ export function Dashboard() {
             </div>
             <div>
               <Icon name="spark" />
-              <strong>—</strong>
-              <span>{t("mastered")}</span>
+              <strong>{learning.mastered} / 78</strong>
+              <span>{t("masteredPairs")}</span>
             </div>
           </div>
           <p>{t("progressHint")}</p>
@@ -75,14 +86,14 @@ export function Dashboard() {
           </a>
         </section>
       </div>
-      <div className="weak-link">
+      <a href="#weak" className="weak-link">
         <Icon name="map" />
         <div>
           <strong>{t("weak")}</strong>
-          <p>{t("previewOnly")}</p>
+          <p>{t("weakHint")}</p>
         </div>
-        <span aria-hidden="true">—</span>
-      </div>
+        <Icon name="arrow" />
+      </a>
     </>
   );
 }

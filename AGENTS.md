@@ -7,6 +7,11 @@ This is a React + TypeScript + Vite PWA for multiplication fluency, with RU/ES,
 local IndexedDB storage, and GitHub Pages deployment. No backend or accounts.
 The original specification is the source of product requirements; explicit
 subsequent user decisions take precedence. Record resolved ambiguities.
+The user additionally requires ALL repository documentation and source-code
+comments to be in English when work is complete. Write new documentation and
+comments in English now; translate existing Russian docs in the final stage,
+including the specification, stage reports, README and delivery log. Preserve
+product UI localization in RU/ES; locale strings are not code comments.
 
 ## Stage coordination
 
