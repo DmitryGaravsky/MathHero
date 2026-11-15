@@ -2,7 +2,7 @@ import Dexie, { type Table } from "dexie";
 import type { Attempt } from "../engine/sessions/diagnostic";
 import type { Session } from "../engine/learning/session";
 import type { PairProgress } from "../engine/learning/progress";
-import type { Preferences } from "../app/AppContext";
+import type { StoredPreferences } from "../settings/preferences";
 import {
   replayLearning,
   type JournalEntry,
@@ -10,14 +10,22 @@ import {
   type RewardState,
 } from "../engine/learning/rewards";
 
+export interface ParentPinVerifier {
+  id: "parent";
+  version: 1;
+  salt: Uint8Array<ArrayBuffer>;
+  hash: Uint8Array<ArrayBuffer>;
+}
+
 export class MathHeroDB extends Dexie {
   sessions!: Table<Session, string>;
   progress!: Table<PairProgress, string>;
   attempts!: Table<Attempt, string>;
-  settings!: Table<{ id: string; value: Preferences }, string>;
+  settings!: Table<{ id: string; value: StoredPreferences }, string>;
   journal!: Table<JournalEntry, string>;
   rewards!: Table<Reward, string>;
   rewardState!: Table<RewardState, string>;
+  parentGate!: Table<ParentPinVerifier, "parent">;
   constructor(name = "math-hero") {
     super(name);
     this.version(1).stores({
@@ -74,6 +82,7 @@ export class MathHeroDB extends Dexie {
         await tx.table("rewards").bulkPut(replay.rewards);
         await tx.table("rewardState").put(replay.state);
       });
+    this.version(4).stores({ parentGate: "id" });
   }
 }
 export const db = new MathHeroDB();

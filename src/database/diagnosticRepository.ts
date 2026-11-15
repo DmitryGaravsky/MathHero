@@ -6,6 +6,7 @@ import {
   type DiagnosticSession,
 } from "../engine/sessions/diagnostic";
 import { db, type MathHeroDB } from "./db";
+import { sessionTransaction } from "./sessionTransaction";
 
 // One baseline diagnostic. Future training uses independent session IDs and modes.
 export const DIAGNOSTIC_ID = "diagnostic:baseline:v1";
@@ -25,8 +26,8 @@ export class DiagnosticRepository {
       .equals(DIAGNOSTIC_ID)
       .toArray();
   }
-  async start() {
-    return this.database.transaction("rw", this.database.sessions, async () => {
+  async start(signal?: AbortSignal) {
+    return sessionTransaction(this.database, [this.database.sessions], signal, async () => {
       const existing = await this.get();
       if (existing) return existing;
       const session = createDiagnostic(DIAGNOSTIC_ID, this.clock, this.random);
@@ -37,15 +38,15 @@ export class DiagnosticRepository {
   async claim(
     owner: string,
     expected?: DiagnosticSession,
-    isActive: () => boolean = () => true,
+    signal?: AbortSignal,
   ): Promise<DiagnosticSession> {
-    return this.database.transaction("rw", this.database.sessions, async () => {
+    return sessionTransaction(this.database, [this.database.sessions], signal, async () => {
       const session = await this.get();
       if (!session) throw new Error("Missing diagnostic");
-      if (!isActive()) throw new Error("View disposed");
       if (
         expected &&
-        (session.cursor !== expected.cursor || session.phase !== expected.phase)
+        (session.cursor !== expected.cursor || session.phase !== expected.phase ||
+          session.owner !== expected.owner || session.startedAt !== expected.startedAt)
       )
         throw new Error("Session changed in another view");
       const claimed = { ...session, owner };
@@ -57,9 +58,11 @@ export class DiagnosticRepository {
     const current = await this.get();
     if (
       !current ||
+      expected.owner === null ||
       current.owner !== expected.owner ||
       current.cursor !== expected.cursor ||
-      current.phase !== expected.phase
+      current.phase !== expected.phase ||
+      current.startedAt !== expected.startedAt
     ) {
       throw new Error("Session changed in another view");
     }
@@ -82,12 +85,11 @@ export class DiagnosticRepository {
       });
     });
   }
-  submit(expected: DiagnosticSession, answer: number, activeMs: number) {
-    return this.database.transaction(
-      "rw",
-      this.database.sessions,
-      this.database.attempts,
-      this.database.journal,
+  submit(expected: DiagnosticSession, answer: number, activeMs: number, signal?: AbortSignal) {
+    return sessionTransaction(
+      this.database,
+      [this.database.sessions, this.database.attempts, this.database.journal],
+      signal,
       async () => {
         const current = await this.current(expected);
         const result = answerDiagnostic(
@@ -107,8 +109,8 @@ export class DiagnosticRepository {
       },
     );
   }
-  advance(expected: DiagnosticSession) {
-    return this.database.transaction("rw", this.database.sessions, async () => {
+  advance(expected: DiagnosticSession, signal?: AbortSignal) {
+    return sessionTransaction(this.database, [this.database.sessions], signal, async () => {
       const next = advanceDiagnostic(await this.current(expected));
       await this.database.sessions.put(next);
       return next;

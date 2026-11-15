@@ -14,6 +14,7 @@ import type { SessionMode } from "../../engine/sessions/diagnostic";
 export function useDiagnostic(
   mode: SessionMode = "diagnostic",
   targetPair?: string,
+  covered = false,
 ) {
   const [controller] = useState(
     () =>
@@ -33,34 +34,47 @@ export function useDiagnostic(
     controller.subscribe,
     controller.getSnapshot,
   );
-  useEffect(() => {
-    controller.attach();
-    void controller.load();
-    const hide = () => {
-      if (document.hidden) void controller.pause();
+  useLayoutEffect(() => {
+    controller.attach(false);
+    return () => { void controller.detach(); };
+  }, [controller]);
+  useLayoutEffect(() => {
+    let pageAvailable = true;
+    const syncActivity = () => {
+      void controller.setActive(pageAvailable && !document.hidden && !covered);
     };
     const leave = () => {
-      void controller.pause();
+      pageAvailable = false;
+      syncActivity();
     };
-    document.addEventListener("visibilitychange", hide);
+    const show = () => {
+      pageAvailable = true;
+      syncActivity();
+    };
+    syncActivity();
+    document.addEventListener("visibilitychange", syncActivity);
     window.addEventListener("pagehide", leave);
-    window.addEventListener("beforeunload", leave);
+    window.addEventListener("pageshow", show);
+    return () => {
+      document.removeEventListener("visibilitychange", syncActivity);
+      window.removeEventListener("pagehide", leave);
+      window.removeEventListener("pageshow", show);
+    };
+  }, [controller, covered]);
+  useEffect(() => {
     const interval = window.setInterval(() => {
-      if (!document.hidden) void controller.saveCheckpoint();
+      void controller.saveCheckpoint();
     }, 250);
     return () => {
-      document.removeEventListener("visibilitychange", hide);
-      window.removeEventListener("pagehide", leave);
-      window.removeEventListener("beforeunload", leave);
       window.clearInterval(interval);
-      void controller.detach();
     };
   }, [controller]);
   useLayoutEffect(() => {
-    if (!document.hidden) controller.reveal();
-    else void controller.pause();
+    controller.reveal();
   }, [
     controller,
+    view.active,
+    view.loading,
     view.session?.cursor,
     view.session?.phase,
     view.paused,

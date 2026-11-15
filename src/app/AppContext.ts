@@ -1,23 +1,10 @@
 import { createContext, useContext } from "react";
-import type { Language, MessageKey } from "./i18n";
+import type { MessageKey } from "./i18n";
+import type { Preferences } from "../settings/preferences";
 
-export interface Preferences {
-  language: Language;
-  soundEnabled: boolean;
-  animationsEnabled: boolean;
-  dailyGoalMinutes: number;
-}
-export const defaultPreferences: Preferences = {
-  language: "es",
-  soundEnabled: false,
-  animationsEnabled: true,
-  dailyGoalMinutes: 10,
-};
 export interface AppContextValue {
   preferences: Preferences;
-  setLanguage: (language: Language) => void;
-  setDailyGoal: (minutes: number) => void;
-  setAnimations: (enabled: boolean) => void;
+  savePreferences: (patch: Partial<Preferences>) => void;
   t: (key: MessageKey, values?: Record<string, string>) => string;
 }
 export const AppContext = createContext<AppContextValue | null>(null);

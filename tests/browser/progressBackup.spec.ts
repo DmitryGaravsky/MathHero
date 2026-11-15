@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
+import { openParent, parentNav } from "../support/parentMode";
 
 async function answer(page: Page) {
   await expect(page.getByRole("textbox")).toBeEnabled();
@@ -52,13 +53,13 @@ test("real stars, child results, parent history and interactive accessible map",
   await expect(page.getByText("Estrellas en esta práctica: 8.")).toBeVisible();
   await page.locator('nav a[href="#home"]').click();
   await expect(page.locator(".journey-card .metrics")).toContainText("8");
-  await page.locator('nav a[href="#results"]').click();
+  await openParent(page, "results");
   await page.getByText("Análisis para adultos", { exact: true }).click();
   await expect(page.locator(".parent-analytics")).toContainText(
     "Correctas: 5 de 5.",
   );
   await expect(page.locator(".daily-trend li")).toHaveCount(1);
-  await page.locator('nav a[href="#map"]').click();
+  await parentNav(page, "map").click();
   await expect(page.locator("button.map-cell")).toHaveCount(144);
   const [a, b] = first!.split(" × ");
   await page.getByRole("combobox", { name: "Primer factor" }).selectOption(a!);
@@ -113,7 +114,7 @@ test("downloads all data, rejects corruption, cancels unchanged and restores res
   const equation = await page.locator(".equation").getAttribute("aria-label");
   await page.getByRole("textbox").fill("42");
   await page.getByRole("button", { name: "Pausar", exact: true }).click();
-  await page.locator('nav a[href="#settings"]').click();
+  await openParent(page, "settings");
   await page
     .getByRole("combobox", { name: "Objetivo diario" })
     .selectOption("5");
@@ -157,6 +158,7 @@ test("downloads all data, rejects corruption, cancels unchanged and restores res
           soundEnabled: false,
           animationsEnabled: true,
           dailyGoalMinutes: 15,
+          theme: "system",
         },
       },
     ]);
@@ -188,7 +190,7 @@ test("downloads all data, rejects corruption, cancels unchanged and restores res
   await page.getByRole("button", { name: "Заменить и восстановить" }).click();
   await expect(page.getByRole("status")).toContainText("Копия восстановлена");
   expect((await snapshot(page)).rewards).toHaveLength(1);
-  await page.locator('nav a[href="#training"]').click();
+  await parentNav(page, "training").click();
   await page
     .getByRole("button", { name: "Продолжить тренировку", exact: true })
     .click();
@@ -208,7 +210,7 @@ test("goal and animation settings persist in both locales and all four calm fox 
 }, info) => {
   await page.goto("./");
   await expect(page.locator('.mascot[data-state="greeting"]')).toBeVisible();
-  await page.locator('nav a[href="#settings"]').click();
+  await openParent(page, "settings");
   await page.getByRole("switch", { name: "Animaciones" }).click();
   await page
     .getByRole("combobox", { name: "Objetivo diario" })
@@ -223,17 +225,19 @@ test("goal and animation settings persist in both locales and all four calm fox 
           soundEnabled: false,
           animationsEnabled: false,
           dailyGoalMinutes: 15,
+          theme: "system",
         },
       },
     ]);
   await page.reload();
+  await openParent(page);
   await expect(
     page.getByRole("switch", { name: "Animaciones" }),
   ).toHaveAttribute("aria-checked", "false");
   await expect(
     page.getByRole("combobox", { name: "Objetivo diario" }),
   ).toHaveValue("15");
-  await page.locator('nav a[href="#training"]').click();
+  await parentNav(page, "training").click();
   await page.getByRole("button", { name: "Empezar a practicar" }).click();
   await expect(page.locator('.mascot[data-state="thinking"]')).toBeVisible();
   await answer(page);
@@ -242,7 +246,7 @@ test("goal and animation settings persist in both locales and all four calm fox 
   await page.getByRole("textbox").fill("0");
   await page.getByRole("textbox").press("Enter");
   await expect(page.locator('.mascot[data-state="support"]')).toBeVisible();
-  await page.locator('nav a[href="#results"]').click();
+  await parentNav(page, "results").click();
   await page.getByRole("button", { name: "Русский", exact: true }).click();
   await page
     .getByText("Подробная аналитика для родителей", { exact: true })

@@ -1,18 +1,18 @@
 import { useApp } from "../../app/AppContext";
-import { screens, type Route } from "../../app/router";
+import { childNavigation, parentNavigation, routeHref, type AppMode, type Route } from "../../app/router";
 import { Icon } from "../ui/Icon";
 
-export function Navigation({ screen }: { screen: Route }) {
+export function Navigation({ mode, screen }: { mode: AppMode; screen: Route }) {
   const { t } = useApp();
   return (
     <nav className="navigation" aria-label={t("navigation")}>
-      {screens.map((item) => (
+      {(mode === "parent" ? parentNavigation : childNavigation).map((item) => (
         <a
           key={item}
-          href={`#${item}`}
+          href={routeHref(mode, item)}
           aria-current={screen === item ? "page" : undefined}
         >
-          <Icon name={item} />
+          <Icon name={item === "achievements" ? "star" : item} />
           <span>{t(item)}</span>
         </a>
       ))}

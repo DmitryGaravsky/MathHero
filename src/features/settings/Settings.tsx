@@ -3,9 +3,11 @@ import { OfflineSettings } from "./OfflineSettings";
 import { useApp } from "../../app/AppContext";
 import { LanguageSwitcher } from "../../components/layout/LanguageSwitcher";
 import { PageHeading } from "../../components/ui/PageHeading";
+import { dailyGoals, themePreferences } from "../../settings/preferences";
+import { ParentPinSettings } from "./ParentPinSettings";
 
 export function Settings() {
-  const { preferences, setAnimations, setDailyGoal, t } = useApp();
+  const { preferences, savePreferences, t } = useApp();
   return (
     <>
       <PageHeading
@@ -19,6 +21,17 @@ export function Settings() {
             <p>{t("languageHint")}</p>
           </div>
           <LanguageSwitcher />
+        </div>
+        <div className="setting-row">
+          <h2 id="theme-label">{t("theme")}</h2>
+          <select aria-labelledby="theme-label" value={preferences.theme} onChange={(event) => {
+            const theme = themePreferences.find((choice) => choice === event.target.value);
+            if (theme) savePreferences({ theme });
+          }}>
+            {themePreferences.map((theme) => (
+              <option value={theme} key={theme}>{t(`theme_${theme}`)}</option>
+            ))}
+          </select>
         </div>
         <div className="setting-row">
           <div>
@@ -39,7 +52,7 @@ export function Settings() {
             aria-labelledby="animations-label"
             aria-describedby="animations-help"
             aria-checked={preferences.animationsEnabled}
-            onClick={() => setAnimations(!preferences.animationsEnabled)}
+            onClick={() => savePreferences({ animationsEnabled: !preferences.animationsEnabled })}
           >
             <span aria-hidden="true" />
           </button>
@@ -52,9 +65,12 @@ export function Settings() {
           <select
             aria-labelledby="goal-label"
             value={preferences.dailyGoalMinutes}
-            onChange={(e) => setDailyGoal(Number(e.target.value))}
+            onChange={(event) => {
+              const dailyGoalMinutes = dailyGoals.find((minutes) => String(minutes) === event.target.value);
+              if (dailyGoalMinutes) savePreferences({ dailyGoalMinutes });
+            }}
           >
-            {[5, 10, 15].map((n) => (
+            {dailyGoals.map((n) => (
               <option value={n} key={n}>
                 {t("minutes", { count: String(n) })}
               </option>
@@ -62,6 +78,7 @@ export function Settings() {
           </select>
         </div>
       </section>
+      <ParentPinSettings />
       <BackupControls />
       <OfflineSettings />
       <section className="privacy">

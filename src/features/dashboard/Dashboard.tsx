@@ -6,7 +6,9 @@ import { Mascot } from "../../components/mascot/Mascot";
 import { Icon } from "../../components/ui/Icon";
 import { useDiagnosticData } from "../../database/useDiagnosticData";
 import { useLearningData } from "../../database/useLearningData";
-export function Dashboard() {
+import { routeHref, type AppMode } from "../../app/router";
+
+export function Dashboard({ mode }: { mode: AppMode }) {
   const { t, preferences } = useApp();
   const progress = useProgressData();
   const today = progress.stats.daily.find(
@@ -21,15 +23,15 @@ export function Dashboard() {
           <p className="eyebrow">{t("hello")}</p>
           <h1>{t("heroTitle")}</h1>
           <p>{t("heroDescription")}</p>
-          <a href="#training" className="button primary">
+          <a href={routeHref(mode, "training")} className="button primary">
             {t(learning.pending ? "resumeLearning" : "startLearning")}
             <Icon name="arrow" />
           </a>
-          <a
+          {mode === "parent" && <a
             href={
               session?.completedAt !== null && session
-                ? "#results"
-                : "#diagnostic"
+                ? routeHref(mode, "results")
+                : routeHref(mode, "diagnostic")
             }
             className="text-link diagnostic-link"
           >
@@ -41,15 +43,15 @@ export function Dashboard() {
                   : "start",
             )}
             <Icon name="arrow" />
-          </a>
-          {session?.completedAt != null && (
-            <a href="#diagnostic" className="text-link diagnostic-link">
+          </a>}
+          {mode === "parent" && session?.completedAt != null && (
+            <a href={routeHref(mode, "diagnostic")} className="text-link diagnostic-link">
               {t("diagnosticLink")}
             </a>
           )}
           {loading && <p role="status">{t("loading")}</p>}
           {(error || learning.error) && <p role="alert">{t("storageError")}</p>}
-          {session && (
+          {mode === "parent" && session && (
             <p>{t("savedProgress", { count: String(session.cursor) })}</p>
           )}
         </div>
@@ -103,14 +105,14 @@ export function Dashboard() {
             aria-label={t("masteredDirections")}
           />
           <p>{t("progressHint")}</p>
-          <a className="text-link" href="#results">
-            {t("viewResults")}
+          <a className="text-link" href={routeHref(mode, mode === "parent" ? "results" : "achievements")}>
+            {t(mode === "parent" ? "viewResults" : "achievements")}
             <Icon name="arrow" />
           </a>
         </section>
       </div>
       <Achievements rewards={progress.rewards} />
-      <a href="#weak" className="weak-link">
+      <a href={routeHref(mode, "weak")} className="weak-link">
         <Icon name="map" />
         <div>
           <strong>{t("weak")}</strong>
