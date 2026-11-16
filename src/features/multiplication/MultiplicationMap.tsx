@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useApp } from "../../app/AppContext";
 import { PageHeading } from "../../components/ui/PageHeading";
-import { readPairAttempts } from "../../database/parentReadModel";
+import { readPairDetail } from "../../database/parentReadModel";
 import { useParentRead } from "../../database/useParentRead";
 import { getFact } from "../../engine/multiplication/facts";
 import { mapStatuses } from "../../engine/learning/analytics";
@@ -10,6 +10,7 @@ import { History } from "../statistics/History";
 import { ParentReadStatus } from "../parent/ParentReadStatus";
 import { useMetricFormat } from "../../app/useMetricFormat";
 import { useProgressView } from "../parent/useProgressView";
+import { PairEvidence } from "../parent/PairEvidence";
 
 const factors = Array.from({ length: 12 }, (_, index) => index + 1);
 const symbols = {
@@ -28,7 +29,7 @@ export function MultiplicationMap() {
   const buttons = useRef(new Map<string, HTMLButtonElement>());
   const id = `mul:${a}:${b}`;
   const fact = getFact(id);
-  const attempts = useParentRead(readPairAttempts, fact.canonicalId);
+  const detail = useParentRead(readPairDetail, fact.canonicalId);
   const cells = new Map(stats?.cells.map((cell) => [cell.id, cell]));
   const status = cells.get(id)?.status ?? "unknown";
   return (
@@ -132,21 +133,22 @@ export function MultiplicationMap() {
           <h2>{a} × {b} = {fact.expectedAnswer}</h2>
           <p>{t(status)}</p>
         </div>
-        {attempts?.data ? <>
+        {detail?.data ? <>
+        <PairEvidence data={detail.data} />
         <h3>{t("directionHistory")}</h3>
         <History
           key={id}
-          attempts={attempts.data.filter((row) => row.exerciseId === id)}
+          attempts={detail.data.attempts.filter((row) => row.exerciseId === id)}
         />
         <details>
           <summary>
             {t("pairHistory")} · {fact.operands.join(" × ")}
           </summary>
           <History
-            key={fact.canonicalId} attempts={attempts.data}
+            key={fact.canonicalId} attempts={detail.data.attempts}
           />
         </details>
-        </> : <ParentReadStatus error={attempts?.error} />}
+        </> : <ParentReadStatus error={detail?.error} />}
       </section>
       </>}
     </>

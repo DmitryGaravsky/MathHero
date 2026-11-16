@@ -9,7 +9,11 @@ import { ParentReadStatus } from "./ParentReadStatus";
 import { getFact } from "../../engine/multiplication/facts";
 import { useState } from "react";
 import { masteryEvidence } from "../../engine/learning/progress";
+import { knowledgeState, knowledgeStates } from "../../engine/learning/knowledge";
+import { multiplicationFacts } from "../../engine/multiplication/facts";
 import { useParentClock } from "./useProgressView";
+
+const pairCount = multiplicationFacts.filter((fact) => fact.id === fact.canonicalId).length;
 
 export function ParentSummary() {
   const { t, preferences } = useApp();
@@ -19,6 +23,7 @@ export function ParentSummary() {
   const [showLatest, setShowLatest] = useState(false);
   const data = query?.data;
   const mastered = data?.progress.filter((pair) => masteryEvidence(pair, now).mastered).length ?? 0;
+  const states = data?.progress.map((pair) => knowledgeState(pair, data.policies, now)) ?? [];
   const pendingDaily = data?.pending.some((session) => session.mode === "adaptive");
 
   return (
@@ -28,8 +33,8 @@ export function ParentSummary() {
         <section className="card overview-progress">
           <div>
             <h2>{t("masteredPairs")}</h2>
-            <strong className="result-value">{format.format(mastered)} / 78</strong>
-            <progress max={78} value={mastered} aria-label={t("masteredPairs")} />
+            <strong className="result-value">{format.format(mastered)} / {format.format(pairCount)}</strong>
+            <progress max={pairCount} value={mastered} aria-label={t("masteredPairs")} />
             <a className="text-link" href={routeHref("parent", "map")}>{t("viewMap")} <Icon name="arrow" /></a>
           </div>
           <div>
@@ -37,6 +42,20 @@ export function ParentSummary() {
             <strong className="result-value">{format.format(data.stars)}</strong>
             <a className="text-link" href={routeHref("parent", "achievements")}>{t("achievements")} <Icon name="arrow" /></a>
           </div>
+        </section>
+        <section className="card parent-section">
+          <h2>{t("knowledgeTitle")}</h2>
+          <dl className="knowledge-counts">
+            {knowledgeStates.map((state, index) => {
+              const count = states.filter((value) => value !== "unconfirmed" &&
+                knowledgeStates.indexOf(value) >= index).length;
+              return <div key={state}>
+                <dt>{t(`knowledge.${state}`)}</dt>
+                <dd>{format.format(count)} / {format.format(pairCount)}</dd>
+              </div>;
+            })}
+          </dl>
+          <p className="muted">{t("knowledgeCountsHint")}</p>
         </section>
         <section className="card parent-section">
           <h2>{t("training")}</h2>

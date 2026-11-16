@@ -24,7 +24,7 @@ import {
 } from "../src/engine/learning/session";
 import {
   DAY_MS,
-  learningPolicy,
+  legacyLearningPolicy,
   type PairProgress,
 } from "../src/engine/learning/progress";
 import {
@@ -65,7 +65,7 @@ function fixture(
       clock,
       random,
       undefined,
-      { ...learningPolicy, timeZone: "UTC" },
+      { ...legacyLearningPolicy, timeZone: "UTC" },
     );
     s.sequence = index + 1;
     for (const id of facts) {
@@ -162,7 +162,7 @@ describe("reward contracts and progress analytics", () => {
           clock,
           random,
           undefined,
-          { ...learningPolicy, timeZone: "UTC" },
+          { ...legacyLearningPolicy, timeZone: "UTC" },
         );
         s.sequence = day * 12 + block + 1;
         for (let n = 0; n < 24; n++) {
@@ -226,7 +226,7 @@ describe("reward contracts and progress analytics", () => {
     ).toBe("unknown");
     expect(
       directionStatus(a.exerciseId, [{ ...a, mode: "diagnostic" }], [], start),
-    ).toBe("fluent");
+    ).toBe("developing");
     expect(
       directionStatus(a.exerciseId, [{ ...a, correct: false }], [], start),
     ).toBe("difficult");
@@ -282,6 +282,60 @@ describe("reward contracts and progress analytics", () => {
     );
     validateBackup(await exportBackup(db));
   });
+});
+
+it("restores mixed policies without rewriting a saved v1 session and rejects forged v2 evidence", async () => {
+  const target = "mul:9:9";
+  const old = fixture([0, 1, 4, 11, 25, 39], [target]);
+  const db = database();
+  const clock = { now: () => start + 69 * DAY_MS };
+  const pending = createLearning("learning:pending-v1", "adaptive", [], [], clock, random, undefined,
+    { ...legacyLearningPolicy, timeZone: "UTC" });
+  pending.sequence = old.tables.sessions.length + 1;
+  pending.order = [target];
+  pending.draft = "81";
+  pending.activeMs = 500;
+  old.tables.sessions.push(pending);
+  await restoreBackup(old, true, db);
+  expect((await exportBackup(db)).tables.progress).toEqual(old.tables.progress);
+
+  const targeted = new LearningRepository(db, clock, random, "weak", target);
+  expect((await targeted.start()).policy.version).toBe(2);
+  let check = await targeted.claim("proof");
+  check = await targeted.submit(check, 81, 1800);
+  await targeted.finish(check);
+  const withProof = await exportBackup(db);
+  expect(validateBackup(withProof).tables.progress[0]!.retentionCheck).toMatchObject({
+    at: clock.now(), dueAt: clock.now(), intervalDays: 30,
+  });
+  const legacySnapshot = new LearningRepository(db, clock, random);
+  expect(await legacySnapshot.start()).toEqual(pending);
+  const resumed = await legacySnapshot.claim("regression");
+  await legacySnapshot.submit(resumed, 0, 1800);
+  const mixed = await exportBackup(db);
+  expect(mixed.tables.progress[0]).toMatchObject({
+    policyVersion: 1, masteredAt: null, retentionCheck: null,
+  });
+  expect(mixed.tables.journal.at(-1)?.id).toBe(`${resumed.id}:0`);
+  expect(validateBackup(mixed)).toEqual(mixed);
+  const restored = database();
+  await restoreBackup(mixed, true, restored);
+  expect((await exportBackup(restored)).tables.progress).toEqual(mixed.tables.progress);
+
+  const forged = structuredClone(mixed);
+  forged.tables.progress[0]!.retentionCheck = withProof.tables.progress[0]!.retentionCheck!;
+  expect(() => validateBackup(forged)).toThrow();
+  for (const version of [1, 2]) {
+    const tampered = structuredClone(mixed);
+    const session = tampered.tables.sessions.find((row): row is LearningSession =>
+      row.mode !== "diagnostic" && row.policy.version === version)!;
+    session.policy.fastMs = 3010;
+    expect(() => validateBackup(tampered)).toThrow();
+    session.policy.fastMs = 3000;
+    session.policy.version = 99;
+    expect(() => validateBackup(tampered)).toThrow();
+  }
+  expect(() => validateBackup({ ...withProof, version: 1, databaseVersion: 3 })).toThrow();
 });
 
 describe("transactional versioned backups", () => {
@@ -559,8 +613,8 @@ describe("transactional versioned backups", () => {
     await restoreBackup(
       {
         format: "math-hero-backup",
-        version: 1,
-        databaseVersion: 3,
+        version: 2,
+        databaseVersion: 4,
         exportedAt: time,
         tables: {
           sessions,

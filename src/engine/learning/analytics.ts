@@ -50,7 +50,9 @@ function statusForDirection(directed: readonly Attempt[], mastered: boolean): Ma
     return "stable";
   if (recent.slice(-5).some((a) => !a.correct)) return "difficult";
   const stats = statistics(recent);
-  return stats.accuracy !== null &&
+  return trained.length >= 2 &&
+    recent.filter((a) => a.correct && a.responseTimeMs <= learningPolicy.fastMs).length >= 2 &&
+    stats.accuracy !== null &&
     stats.accuracy >= 0.95 &&
     stats.medianCorrectMs !== null &&
     stats.medianCorrectMs <= learningPolicy.fastMs

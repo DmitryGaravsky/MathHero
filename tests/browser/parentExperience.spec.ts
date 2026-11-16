@@ -89,8 +89,9 @@ test("separate parent views expose diagnosis, filtered history and resumable tar
 
   await goParent(page, "weak-spots");
   const pair = factors.join(" × ");
-  const targetLink = page.getByRole("link", { name: `Practicar ${pair}`, exact: true });
-  const target = [...factors].sort((a, b) => a - b).join("%3A");
+  const canonical = [...factors].sort((a, b) => a - b);
+  const targetLink = page.getByRole("link", { name: `Practicar ${canonical.join(" × ")}`, exact: true });
+  const target = canonical.join("%3A");
   await expect(targetLink).toHaveAttribute("href", `#parent/weak?pair=mul%3A${target}`);
   await targetLink.click();
   await page.getByRole("button", { name: es.startLearning }).click();

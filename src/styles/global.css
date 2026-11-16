@@ -779,22 +779,6 @@ dialog {
 dialog::backdrop {
   background: var(--backdrop);
 }
-.difficult-list {
-  list-style: none;
-  padding: 0;
-}
-.difficult-list li {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.difficult-list a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 56px;
-  min-width: 90px;
-}
 progress,
 meter {
   width: 100%;
