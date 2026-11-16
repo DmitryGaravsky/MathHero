@@ -1,6 +1,7 @@
 # MathHero 1.1 — delivery and acceptance
 
-Status: accepted and published release. All six stages are complete.
+Status: **acceptance complete**. Published release, all six stages and
+user-reported iPhone/iPad acceptance are complete.
 Prepared 15 November 2026; release accepted 16 November 2026 (Europe/Paris).
 Baseline repository: `3367eb9`; previous published application: `923d1f6`.
 The original MVP evidence remains in `DELIVERY.md` as historical evidence.
@@ -74,7 +75,8 @@ stage 5 CI run. Theme coverage includes rendered contrast measurements and manua
 screenshot review, not a claim of complete accessibility certification. Physical
 iPhone/iPad acceptance remains distinct from Chromium/WebKit mobile emulation.
 Stage 6 documentation, release CI and published-site smoke checks are accepted.
-Publication evidence follows below. This checklist does not claim physical testing.
+Publication evidence and the separate user-reported physical-device sign-off
+follow below. Stage sections preserve the evidence available at each handoff.
 
 | Criteria | Acceptance evidence |
 | --- | --- |
@@ -236,6 +238,21 @@ the ignored local `test-results/live-release/` directory.
 The final source contains 68 passing unit/repository tests, 218 passing browser
 checks, 10 passing PWA checks and 6 passing native upgrade checks. Six existing
 duplicate full-diagnosis cases remain intentionally skipped; no new skips were
-introduced. Physical iPhone/iPad Safari and Home Screen acceptance remains for
-the user in [the device checklist](DEVICE-ACCEPTANCE.md). The final documentation
-commit records these outcomes without changing the deployed application assets.
+introduced. Physical iPhone/iPad acceptance was subsequently confirmed by the
+user, as recorded below. Documentation updates record these outcomes without
+changing the deployed application assets.
+
+## Physical-device sign-off
+
+On 16 November 2026 (Europe/Paris), after receiving the short post-update
+checklist, the user confirmed that MathHero works on both iPhone and iPad and
+explicitly requested that MathHero 1.1 acceptance be marked complete. No issues
+were reported. This is user-reported overall acceptance on real devices;
+models, OS versions, per-case results and startup measurements were not supplied.
+See the [device acceptance record](DEVICE-ACCEPTANCE.md).
+
+**MathHero 1.1 acceptance is complete:** all 19 implementation criteria, the six
+reviewed stages, automated verification, publication, live-site smoke checks
+and the user's physical-device sign-off are recorded. The functionality is
+already merged into `main` through PR 7 and deployed; no further functional
+merge is required for this release.
