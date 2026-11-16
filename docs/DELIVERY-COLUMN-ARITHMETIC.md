@@ -35,8 +35,8 @@ The coordinator owns this record and Git operations. Target version: 1.2.0.
 | --- | --- | --- |
 | 1. Engine and contracts | Arithmetic, digit/mark state, generator, pilot adaptation/evidence and replay contracts | Accepted, merged / 01a1e52e-d374-7d80-af58-7020b90a4c43 / [PR #8](https://github.com/DmitryGaravsky/MathHero/pull/8) |
 | 2. Persistence and compatibility | Additive stores, owned transactions, resumable drafts, validated backups and native 1.1 upgrade | Accepted, merged / 01a1e548-4398-7912-899c-29fcf66d4054 / [PR #9](https://github.com/DmitryGaravsky/MathHero/pull/9) |
-| 3. Child experience | Illustrated home, two-action entry, column exercise, manual marks, hints, pause and offline resume | Review accepted; PR CI pending / 01a1e571-69fd-7001-b774-70b183ec8f33 |
-| 4. Parent experience | Separate addition/subtraction evidence, history and difficulties; locale/theme/accessibility review | Pending |
+| 3. Child experience | Illustrated home, two-action entry, column exercise, manual marks, hints, pause and offline resume | Accepted, merged / 01a1e571-69fd-7001-b774-70b183ec8f33 / [PR #10](https://github.com/DmitryGaravsky/MathHero/pull/10) |
+| 4. Parent experience | Separate addition/subtraction evidence, history and difficulties; locale/theme/accessibility review | Review accepted; PR CI pending / 01a1e610-33d3-7080-bd92-393d920d638c |
 | 5. Release | Current documentation/screenshots, full regression, upgrade/PWA acceptance, CI and publication | Pending |
 
 ## Implementation decisions to verify
@@ -65,18 +65,18 @@ The coordinator owns this record and Git operations. Target version: 1.2.0.
 
 ## Acceptance checklist
 
-- [ ] Approved illustrated cards and exercises are reachable within two actions.
-- [ ] Both operations start independently with two three-digit operands.
-- [ ] Right-to-left digit entry, selection, replacement, erase and explicit zero work.
-- [ ] Manual carry ones and borrow dots are editable and do not count as hints.
-- [ ] `586 + 647 = 1233` and `604 − 187 = 417` work with the approved notation.
-- [ ] `199 + 205 = 404`, `501 − 492 = 9` and `304 − 304 = 0` work.
-- [ ] Mid-example digits, marks, active place, phase and help survive pause, mode/operation changes and offline restart.
-- [ ] Correct feedback advances only while active; errors preserve the draft and permit deliberate correction/help.
-- [ ] First-check accuracy and independence cannot be inflated by hints, retries or duplicate writes.
-- [ ] Selection revisits difficulties with fresh operands and tests retained skills across real gaps and days.
-- [ ] Parent evidence and history distinguish the two operations and remain separate from multiplication.
-- [ ] ES/RU, all themes, touch/physical keyboard and phone/tablet orientations work.
+- [x] Approved illustrated cards and exercises are reachable within two actions.
+- [x] Both operations start independently with two three-digit operands.
+- [x] Right-to-left digit entry, selection, replacement, erase and explicit zero work.
+- [x] Manual carry ones and borrow dots are editable and do not count as hints.
+- [x] `586 + 647 = 1233` and `604 − 187 = 417` work with the approved notation.
+- [x] `199 + 205 = 404`, `501 − 492 = 9` and `304 − 304 = 0` work.
+- [x] Mid-example digits, marks, active place, phase and help survive pause, mode/operation changes and offline restart.
+- [x] Correct feedback advances only while active; errors preserve the draft and permit deliberate correction/help.
+- [x] First-check accuracy and independence cannot be inflated by hints, retries or duplicate writes.
+- [x] Selection revisits difficulties with fresh operands and tests retained skills across real gaps and days.
+- [x] Parent evidence and history distinguish the two operations and remain separate from multiplication.
+- [x] ES/RU, all themes, touch/physical keyboard and phone/tablet orientations work in automated browser profiles.
 - [x] The published 1.1 native database upgrades without loss of multiplication records or unfinished practice.
 - [x] Old and new backups follow the documented scope, validation and atomicity rules.
 - [ ] Multiplication, ownership, timing, offline caching and update behavior retain their regressions checks.
@@ -159,3 +159,28 @@ a focused rerun on the same build. This interrupted run is not represented as
 a clean full pass. The coordinator accepted the implementation and
 [handoff](stages/column-arithmetic/03-child-experience.md), subject to complete
 green PR CI before integration and the parent stage.
+
+[CI run 43947574283](https://github.com/DmitryGaravsky/MathHero/actions/runs/43947574283)
+completed cleanly: 98 unit tests, 282 browser checks, 10 PWA checks and 10 native
+upgrade checks passed. The six existing duplicate-diagnosis skips remain.
+PR #10 merged into integration as `d842c5d` before stage 4 started. Main and
+Pages still contain the accepted 1.1 release.
+
+## Stage 4 review
+
+Coordinator review covered the indexed operation reads, denominators, cumulative
+active-time accounting, journaled help, sequence-ordered history and reconstruction
+of earlier dated evidence. Timing groups also distinguish result length, so a
+one-digit result is not compared with three-digit entry. The latest 100 recorded
+checks define the timing sample before filtering for independent first checks.
+
+The coordinator inspected actual phone/tablet ES/light and RU/dark summaries,
+an unfinished example with help opened after its wrong check, expanded skill
+dates and historical proof after regression. These views clearly separate
+current evidence from past checks. Local verification passed 103 unit tests,
+306 browser checks, 10 PWA checks and 10 native upgrade checks, with the six
+existing duplicate-diagnosis skips. The report's 24 new browser checks cover
+all eight profiles. The final Russian date punctuation correction passed the
+eight focused proof cases, PWA checks and native upgrades on the final build.
+The coordinator accepted the [handoff](stages/column-arithmetic/04-parent-experience.md)
+and implementation. Stage PR CI remains required before integration.

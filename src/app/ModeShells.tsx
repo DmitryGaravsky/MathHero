@@ -16,8 +16,10 @@ import { ParentDiagnosis } from "../features/parent/ParentDiagnosis";
 import { ParentHistory } from "../features/parent/ParentHistory";
 import { ParentWeakSpots } from "../features/parent/ParentWeakSpots";
 import { ParentReadStatus } from "../features/parent/ParentReadStatus";
+import { ParentColumnReport } from "../features/parent/ParentColumnReport";
+import { ParentModules } from "../features/parent/ParentModules";
 import { Training } from "../features/training/Training";
-import type { AppMode, Route } from "./router";
+import { reportOperation, type AppMode, type Route } from "./router";
 
 interface ModeShellProps {
   screen: Route;
@@ -57,6 +59,7 @@ export function ChildShell({ covered, columns, chooseColumn, takeColumnEntry, ..
 
 export function ParentShell(props: ModeShellProps) {
   const { screen, targetPair } = props;
+  const operation = reportOperation(screen);
   let content;
   switch (screen) {
     case "training":
@@ -86,7 +89,10 @@ export function ParentShell(props: ModeShellProps) {
       content = <AchievementsPage />;
       break;
     default:
-      content = <ParentSummary />;
+      content = operation ? <ParentColumnReport key={operation} operation={operation} /> : <ParentSummary />;
   }
-  return <AppShell mode="parent" {...props}>{content}</AppShell>;
+  return <AppShell mode="parent" {...props}>
+    <ParentModules operation={operation} settings={screen === "settings"} />
+    {content}
+  </AppShell>;
 }
