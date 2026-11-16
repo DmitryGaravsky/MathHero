@@ -2,12 +2,14 @@
 
 Status: active engineering and coordination instructions.
 
-## Active release: MathHero 1.1
+## Current release: MathHero 1.1
 
-Read `docs/DELIVERY-1.1.md` alongside the original delivery record. The user
-requested six sequential stage chats using Sol models, with coordinator review
-and stage PRs. Keep all work on the release integration branch until final
-acceptance; only a reviewed complete release may reach main and Pages.
+Read `docs/DELIVERY-1.1.md` alongside the historical MVP delivery record.
+MathHero 1.1 was delivered through six sequential Sol stage chats, coordinator
+review and stage PRs. It is now published on main and Pages. For future staged
+releases, keep implementation on an integration branch until acceptance; only
+a reviewed complete release may reach main and Pages. Follow the current user
+request when deciding the scope and coordination of subsequent work.
 The user's latest decisions supersede the feedback document: use a simple
 default parent PIN of 1234 as a mode-switch confirmation, allow changing/resetting
 it without deleting learning data, and do not build a recovery-code system.

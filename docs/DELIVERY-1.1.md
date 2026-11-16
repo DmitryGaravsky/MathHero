@@ -1,7 +1,8 @@
 # MathHero 1.1 — delivery and acceptance
 
-Status: active release plan. Prepared 15 November 2026 (Europe/Paris).
-Baseline: `3367eb9`; deployed application: `923d1f6`.
+Status: accepted and published release. All six stages are complete.
+Prepared 15 November 2026; release accepted 16 November 2026 (Europe/Paris).
+Baseline repository: `3367eb9`; previous published application: `923d1f6`.
 The original MVP evidence remains in `DELIVERY.md` as historical evidence.
 
 ## Scope and coordination
@@ -14,9 +15,9 @@ No new operations, backend, accounts, profiles, plugins or generic platform.
 All documentation/comments are English; application UI remains ES/RU.
 
 The source feedback is the user attachment named "Technical specification
-MathHero 1.1". Stage 1 will provide its faithful English repository counterpart
-and map requirements to implementation/verification. Do not publish the external
-attachment itself as a website asset.
+MathHero 1.1". Stage 1 provided its faithful English repository counterpart in
+[the requirements](product/REQUIREMENTS-1.1.md) and mapped them to implementation
+and verification. The external attachment itself is not a website asset.
 
 ## Decisions from the user
 
@@ -44,7 +45,7 @@ attachment itself as a website asset.
 | 3. Child experience | Short entry flow, exercises, automatic feedback, results, achievements | Accepted / 01a1e017-9be1-7173-be21-1064b66d2c7e / [PR 3](https://github.com/DmitryGaravsky/MathHero/pull/3) |
 | 4. Parent experience and themes | Complete management, light/dark/system, localization and terminology | Accepted / 01a1e03e-63f6-7242-9592-2b027cfa43c4 / [PR 4](https://github.com/DmitryGaravsky/MathHero/pull/4) |
 | 5. Pedagogy | Learned/fluent/retained evidence, retention checks, error/weakness analytics | Accepted / 01a1e3b4-f59b-7971-bf0f-923aef3d047a / [PR 5](https://github.com/DmitryGaravsky/MathHero/pull/5) |
-| 6. Documentation and release | Product/user/pedagogy/architecture/developer docs, screenshots, regression, publication | Accepted; final publication pending / 01a1e3d6-207f-7cc1-9310-ae56147aa103 / [PR 6](https://github.com/DmitryGaravsky/MathHero/pull/6) |
+| 6. Documentation and release | Product/user/pedagogy/architecture/developer docs, screenshots, regression, publication | Accepted and published / 01a1e3d6-207f-7cc1-9310-ae56147aa103 / [PR 6](https://github.com/DmitryGaravsky/MathHero/pull/6) |
 
 ## Acceptance — 19 of 19 verified for 1.1
 
@@ -72,8 +73,8 @@ The functional checks above use the accepted stage evidence below and the full
 stage 5 CI run. Theme coverage includes rendered contrast measurements and manual
 screenshot review, not a claim of complete accessibility certification. Physical
 iPhone/iPad acceptance remains distinct from Chromium/WebKit mobile emulation.
-Stage 6 documentation is accepted. Release CI and published-site smoke checks
-remain pending; this checklist does not claim publication or physical testing.
+Stage 6 documentation, release CI and published-site smoke checks are accepted.
+Publication evidence follows below. This checklist does not claim physical testing.
 
 | Criteria | Acceptance evidence |
 | --- | --- |
@@ -204,3 +205,37 @@ The stage handoff records exact evidence; real iPhone/iPad testing stays pending
 passed all verification steps on Ubuntu in 7m55s. PR 6 merged into the release
 integration branch as `17d24d0` on 16 November 2026. The coordinator's final
 documentation audit checked 124 local references after adding acceptance links.
+
+## Final release
+
+[Release PR 7](https://github.com/DmitryGaravsky/MathHero/pull/7) passed
+[CI run 43850139567](https://github.com/DmitryGaravsky/MathHero/actions/runs/43850139567)
+in 7m54s and merged into main as
+`9309abde58cff9c001e7944f29d2b727965ee093` on 16 November 2026.
+All six stage chats and their PRs are recorded above. The release preserves
+the published MVP data contracts while introducing the reviewed 1.1 behavior.
+
+[Main verification and Pages deployment run 43851420146](https://github.com/DmitryGaravsky/MathHero/actions/runs/43851420146)
+passed: verification took 8m2s and deployment 9s. Only the verified `dist/`
+artifact was published to [MathHero](https://dmitrygaravsky.github.io/MathHero/).
+The deployed application commit is `9309abde58cff9c001e7944f29d2b727965ee093`.
+Its worker revision is `01ee92a8204ef083b478`; the downloaded worker exactly
+matches the locally verified build, SHA-256
+`9033afd081afef050a4b93134abe1a6594ba94ee858cde160f2d68abb3295a97`.
+
+Live HTTPS smoke checks passed in fresh Chromium and WebKit contexts on
+16 November 2026 at 10:52 UTC (11:52 Europe/Paris). Both verified default child
+entry, a two-action practice start, automatic advance after a correct answer,
+default PIN 1234, persisted Russian/dark settings, and the same question and
+draft after closing the page and opening a new window offline. No page-script
+errors occurred. The manifest scope is `/MathHero/`; unbundled `src/main.tsx`
+and `docs/specification.txt` requests returned 404. The coordinator inspected
+the live WebKit offline-resume capture. JSON evidence and screenshots are in
+the ignored local `test-results/live-release/` directory.
+
+The final source contains 68 passing unit/repository tests, 218 passing browser
+checks, 10 passing PWA checks and 6 passing native upgrade checks. Six existing
+duplicate full-diagnosis cases remain intentionally skipped; no new skips were
+introduced. Physical iPhone/iPad Safari and Home Screen acceptance remains for
+the user in [the device checklist](DEVICE-ACCEPTANCE.md). The final documentation
+commit records these outcomes without changing the deployed application assets.
