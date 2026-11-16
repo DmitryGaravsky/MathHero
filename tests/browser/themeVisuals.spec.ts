@@ -31,8 +31,10 @@ for (const theme of ["light", "dark"] as const) {
     if (russian) await button(ru.russian).click();
     await expect(page.getByRole("heading", { name: locale.childHomeTitle })).toBeVisible();
     await inspect(page.locator(".hero-copy p"), "Child home muted copy");
-    await inspect(page.locator(".hero .primary"), "Child home primary label");
-    await inspect(page.locator(".hero .primary"), "Child home primary fill", 3, "background-color", "outside");
+    for (const card of await page.locator(".module-card").all()) {
+      await inspect(card.locator("strong"), "Child home module label");
+      await inspect(card, "Child home module border", 3, "border-top-color", "outside");
+    }
     await inspect(page.locator(".language-switch [aria-pressed=true]"), "Active language label");
     await screen("child-home");
 

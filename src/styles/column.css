@@ -1,0 +1,219 @@
+.column-chooser,
+.column-practice {
+  width: min(100%, 760px);
+  margin-inline: auto;
+}
+.column-chooser h1,
+.column-practice-title {
+  font-size: clamp(1.55rem, 3.5vw, 2.25rem);
+  margin-bottom: 12px;
+}
+.column-operation-symbol {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: var(--hero-surface);
+  color: var(--accent);
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+.column-practice .column-card,
+.column-practice .column-landing {
+  padding: clamp(14px, 2.6vw, 26px);
+}
+.column-landing {
+  text-align: center;
+}
+.column-landing .button {
+  margin: 4px;
+}
+.column-progress {
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.column-form {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+.column-problem {
+  display: grid;
+  justify-items: center;
+  align-self: start;
+}
+.column-board {
+  --places: 4;
+  display: grid;
+  grid-template-columns: 20px repeat(var(--places), minmax(44px, 52px));
+  gap: 3px;
+  align-items: center;
+  text-align: center;
+  font-size: clamp(1.6rem, 4vw, 2.05rem);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+}
+.column-board[data-operation="subtraction"] {
+  --places: 3;
+}
+.column-place {
+  color: var(--muted);
+  font-size: .8rem;
+  font-weight: 500;
+}
+.column-board button {
+  min-height: 46px;
+  border-radius: 8px;
+  color: var(--ink);
+}
+.column-board button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -5px;
+}
+.column-upper {
+  min-height: 46px;
+  display: grid;
+  align-content: center;
+  grid-template-rows: .85rem 1em;
+  padding: 0;
+  border: 0;
+}
+button.column-upper {
+  background: var(--surface-muted);
+}
+.column-note {
+  color: var(--accent);
+  font-size: .85rem;
+  font-weight: 800;
+  line-height: 1;
+}
+[data-operation="subtraction"] .column-note {
+  font-size: 1.12rem;
+}
+.column-rule {
+  grid-column: 1 / -1;
+  border-top: 2px solid var(--control);
+  margin-block: 2px 3px;
+}
+.column-answer {
+  background: var(--surface);
+  border: 1px solid var(--control);
+  padding: 0;
+}
+.column-answer[aria-current] {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  border-color: var(--accent);
+}
+.column-answer[data-mismatch="true"] {
+  background: var(--error-surface);
+  color: var(--error-ink);
+  box-shadow: inset 0 0 0 2px var(--error-ink);
+  border-color: var(--error-ink);
+}
+.column-board button:disabled {
+  opacity: 1;
+}
+.column-status {
+  min-height: 1.5em;
+  margin: 7px 0 0;
+  font-size: .9rem;
+  text-align: center;
+}
+.column-status[data-correct="true"] {
+  color: var(--success-ink);
+  font-weight: 750;
+}
+.column-status[data-incorrect="true"] {
+  color: var(--error-ink);
+}
+.column-controls {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  width: min(100%, 355px);
+}
+.column-card .keypad {
+  width: 100%;
+  gap: 5px;
+}
+.app-shell .column-card .keypad button {
+  height: 48px;
+  min-height: 44px;
+}
+.column-card .column-hint-button,
+.column-actions .keyboard-mode {
+  min-height: 44px;
+}
+.column-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 12px;
+  margin-top: 9px;
+  border-top: 1px solid var(--line);
+}
+.column-actions .keyboard-mode {
+  padding-inline: 4px;
+}
+.column-explanation {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 630px;
+  background: var(--surface-muted);
+  border-radius: 12px;
+  padding: 14px 18px;
+}
+.column-explanation h2 {
+  margin-bottom: 8px;
+}
+.column-explanation ol {
+  padding-inline-start: 22px;
+  margin: 0;
+}
+.column-explanation li + li {
+  margin-top: 8px;
+}
+.column-explanation p {
+  margin: 2px 0 0;
+}
+@media (min-width: 701px) {
+  .column-form {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 12px 22px;
+  }
+}
+@media (min-width: 701px) and (max-height: 550px) and (orientation: landscape) {
+  .app-shell main:has(.column-card) {
+    padding-top: 0;
+  }
+  .column-practice {
+    position: relative;
+  }
+  .column-practice-title {
+    font-size: 1.25rem;
+    margin-bottom: 5px;
+  }
+  .column-practice .column-card {
+    padding-block: 6px 10px;
+  }
+  .column-progress {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    margin: 0;
+  }
+  .column-controls {
+    justify-items: end;
+    gap: 4px;
+  }
+  .column-card .column-hint-button {
+    padding-block: 6px;
+  }
+  .app-shell .column-card .keypad button {
+    height: 44px;
+  }
+}

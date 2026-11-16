@@ -29,7 +29,7 @@ async function data(page: Page) {
   });
 }
 async function start(page: Page) {
-  await page.getByRole("link", { name: "Empezar a practicar" }).click();
+  await page.getByRole("link", { name: "Tablas de multiplicar" }).click();
   await page.getByRole("button", { name: "Empezar a practicar" }).click();
   await expect(page.getByRole("textbox")).toBeEnabled();
 }
@@ -188,12 +188,12 @@ test("records desktop cold online and warm offline startup samples", async ({ br
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto("http://127.0.0.1:4174/MathHero/");
-    await expect(page.getByRole("link", { name: "Empezar a practicar" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Tablas de multiplicar" })).toBeVisible();
     cold.push(Math.round(await page.evaluate(() => performance.now())));
     await ready(page);
     await context.setOffline(true);
     await page.reload();
-    await expect(page.getByRole("link", { name: "Empezar a practicar" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Tablas de multiplicar" })).toBeVisible();
     offline.push(Math.round(await page.evaluate(() => performance.now())));
     await context.close();
   }

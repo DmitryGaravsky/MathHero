@@ -6,6 +6,7 @@ import { nativeSnapshot, rows } from "../support/nativeSnapshot";
 
 const start = "Empezar a practicar";
 const resume = "Continuar práctica";
+const tables = "Tablas de multiplicar";
 const saved = "Guardar y salir";
 const next = "Siguiente";
 
@@ -30,17 +31,17 @@ async function setHidden(page: Page, hidden: boolean) {
   }, hidden);
 }
 
-test("child opens to one primary action and gets to a new or saved exercise in two actions", async ({ page }, info) => {
+test("child opens to two practice modules and gets to a new or saved multiplication exercise in two actions", async ({ page }, info) => {
   await page.goto("./");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator(".app-shell")).toHaveAttribute("data-mode", "child");
-  await expect(page.locator("main .primary")).toHaveCount(1);
+  await expect(page.locator("main .module-card")).toHaveCount(2);
   await expect(page.getByRole("progressbar", { name: "multiplicaciones que ya recuerdas" })).toHaveAttribute("value", "0");
   await expect(page.getByText(/Análisis para adultos|Objetivo diario/)).toHaveCount(0);
   await expect(page.locator("nav a")).toHaveCount(3);
   await page.screenshot({ path: info.outputPath("child-home-es.png"), fullPage: true });
 
-  await page.getByRole("link", { name: start }).click();
+  await page.getByRole("link", { name: tables }).click();
   await page.getByRole("button", { name: start }).click();
   await expect(answerBox(page)).toBeFocused();
   await expect(page.getByText("Pregunta 1 de 24")).toBeVisible();
@@ -86,8 +87,8 @@ test("child opens to one primary action and gets to a new or saved exercise in t
   await expect(page.locator(".equation")).toHaveAttribute("aria-label", equation!);
   await page.getByRole("link", { name: saved }).click();
 
-  await page.locator("main").getByRole("link", { name: "Tus logros" }).click();
-  await expect(page.getByRole("heading", { name: "Tus logros" })).toBeVisible();
+  await page.locator("main").getByRole("link", { name: "Logros de las tablas" }).click();
+  await expect(page.getByRole("heading", { name: "Logros de las tablas" })).toBeVisible();
   await expect(page.getByText("Por descubrir", { exact: true })).toHaveCount(6);
   await page.getByRole("button", { name: "Русский", exact: true }).click();
   await expect(page.locator(".child-badges li")).toHaveCount(6);

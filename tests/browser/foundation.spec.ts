@@ -96,11 +96,11 @@ test("preview has no invented progress, supports back and reduced motion", async
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./");
   await expect(page.locator(".child-progress")).toContainText("0 / 78");
-  expect(
-    await page
-      .locator(".hero .mascot")
-      .evaluate((element) => getComputedStyle(element).animationName),
-  ).toBe("none");
+  await page.getByRole("link", { name: "Tablas de multiplicar" }).click();
+  const mascot = page.locator('.child-practice-panel .mascot[data-state="greeting"]');
+  await expect(mascot).toHaveCSS("animation-name", "none");
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(mascot).toHaveCSS("animation-name", "float");
   await openParent(page);
   await goParent(page, "diagnosis");
   await expect(

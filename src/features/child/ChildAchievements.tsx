@@ -20,7 +20,7 @@ export function ChildAchievements() {
   const format = new Intl.NumberFormat(preferences.language);
   return (
     <section className="child-achievements">
-      <h1>{t("achievements")}</h1>
+      <h1>{t("childTablesRewards")}</h1>
       {error ? <p role="alert">{t("storageError")}</p> : !state ? <p role="status">{t("loading")}</p> : (
         <>
           <p>{t("childBadgesEarned", {

@@ -2,6 +2,11 @@ import { AppShell } from "../components/layout/AppShell";
 import { useUnlockedAchievements } from "../database/usePracticeData";
 import { ChildAchievements } from "../features/child/ChildAchievements";
 import { ChildHome } from "../features/child/ChildHome";
+import { ColumnChooser } from "../features/column/ColumnChooser";
+import { ColumnPractice } from "../features/column/ColumnPractice";
+import type { ColumnController } from "../features/column/ColumnController";
+import type { ColumnRepository } from "../database/columnRepository";
+import type { ColumnOperation } from "../engine/column/arithmetic";
 import { ParentSummary } from "../features/parent/ParentSummary";
 import { MultiplicationMap } from "../features/multiplication/MultiplicationMap";
 import { Settings } from "../features/settings/Settings";
@@ -33,10 +38,19 @@ function practice(mode: AppMode, screen: "training" | "weak" | "diagnostic", tar
   );
 }
 
-export function ChildShell({ covered, ...props }: ModeShellProps & { covered: boolean }) {
+export function ChildShell({ covered, columns, chooseColumn, takeColumnEntry, ...props }: ModeShellProps & {
+  covered: boolean;
+  columns: Record<ColumnOperation, ColumnController> & { repository: ColumnRepository };
+  chooseColumn: (operation: ColumnOperation) => void;
+  takeColumnEntry: (operation: ColumnOperation) => boolean;
+}) {
   const { screen, targetPair } = props;
+  const operation = screen === "column-addition" ? "addition" : screen === "column-subtraction" ? "subtraction" : null;
   const content = screen === "achievements" ? <ChildAchievements /> :
     screen === "training" || screen === "weak" ? practice("child", screen, targetPair, covered) :
+    screen === "columns" ? <ColumnChooser repository={columns.repository} onChoose={chooseColumn} /> :
+    operation ? <ColumnPractice key={operation} controller={columns[operation]} repository={columns.repository}
+      operation={operation} covered={covered} takeEntry={takeColumnEntry} /> :
       <ChildHome />;
   return <AppShell mode="child" {...props}>{content}</AppShell>;
 }

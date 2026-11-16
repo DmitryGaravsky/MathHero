@@ -2,8 +2,8 @@
 
 Stage 1 implements the pure engine and replay in `src/engine/column/`. The
 [approved requirements](../product/REQUIREMENTS-COLUMN-ARITHMETIC.md) cover the
-full module. Stage 2 adds the repository and backup integration. Child and
-parent screens belong to subsequent stages.
+full module. Stage 2 adds the repository and backup integration. Stage 3 adds
+child navigation and practice. Parent reporting belongs to stage 4.
 
 ## Arithmetic and entry
 
@@ -202,6 +202,37 @@ sessions and both feedback phases must match exactly. The decoder matches all
 stored attempts and progress rows against replay with exact keysets, rejecting
 missing, duplicate, dangling or altered rows. Replay checks internal
 consistency, with the same trust limits as other user-editable local backups.
+
+## Child routes and activity
+
+The Home cards lead to the existing `#training` route and to `#columns`.
+The operation buttons navigate to `#column-addition` and `#column-subtraction`
+with a one-use entry intent held in memory. A URL, reload or return from
+parent mode reads the saved state. It takes a deliberate action to claim
+the operation. The parent gate remembers the precise child route.
+
+The app retains one `ColumnController` per operation across route and mode
+changes. Each controller keeps its optimistic input separate from the
+repository's last exact token. It coalesces checkpoints and serializes them
+with commands, so a delayed write cannot replace newer screen input. A
+release drains behind pending edits even when React removes the view.
+Immediate same-operation entry queues behind that release. Hiding or
+covering the view, leaving the route and pausing cancel activity commands,
+stop the monotonic timer and queue a release. Starting an elapsed-time
+interval requires the answering controls to commit to the visible DOM.
+
+Correct feedback only schedules automatic advancement for the owned
+revision returned by the active check. Restored correct feedback waits for
+Next. Storage notifications prompt a serialized ownership check. The same
+revision and generation checks also protect each transaction. Read-only
+recovery shows the latest saved practice before another deliberate claim.
+Skip and End session are available from Pause and compare that exact saved
+snapshot before modifying it.
+
+The requested explanation uses the engine's computed carry or borrow steps.
+Hint exposure is durable and commits before the panel opens. The panel
+expansion is temporary and reopens only by request after resume. Manual
+marks stay editable with the answer and remain independent of hint exposure.
 
 ## Backup and compatibility
 

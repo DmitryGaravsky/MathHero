@@ -11,7 +11,8 @@ test("system follows live color changes, explicit preferences override them and 
   await expect(shell).toHaveAttribute("data-theme", "system");
   await expect(root).toHaveCSS("color-scheme", "dark");
   const dark = await root.evaluate((el) => getComputedStyle(el).backgroundColor);
-  await expect(page.locator(".hero .mascot")).toHaveCSS("animation-name", "none");
+  await page.getByRole("link", { name: es.childTables }).click();
+  await expect(page.locator('.child-practice-panel .mascot[data-state="greeting"]')).toHaveCSS("animation-name", "none");
   await page.emulateMedia({ colorScheme: "light" });
   await expect(root).toHaveCSS("color-scheme", "light");
   await expect(root).not.toHaveCSS("background-color", dark);

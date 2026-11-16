@@ -270,7 +270,7 @@ main {
 .mascot-small {
   max-width: 155px;
 }
-.hero .mascot {
+.child-practice-panel [data-state="greeting"] {
   animation: float 5s ease-in-out infinite;
 }
 .orbit {
