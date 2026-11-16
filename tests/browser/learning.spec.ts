@@ -104,7 +104,7 @@ test("completes a real daily session, repeats the error, restores feedback and s
   await expect(
     page.getByText("Correctas: 23 de 24.", { exact: true }),
   ).toBeVisible();
-  await expect(page.getByText(/Multiplicaciones que recordaste mejor: [1-9]/)).toBeVisible();
+  await expect(page.getByText(/Te resultó más fácil recordar [1-9]\d?\s+multiplicaci/)).toBeVisible();
   await expect(page.getByText("95,8%", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Tiempo medio")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Práctica completada" })).toBeFocused();
@@ -135,11 +135,13 @@ test("completes a real daily session, repeats the error, restores feedback and s
   });
   await page.locator('nav a[href="#achievements"]').click();
   await expect(page.locator('.child-badges li[data-earned="true"]')).toHaveCount(1);
-  await openParent(page, "results");
+  await openParent(page, "home");
   await expect(
-    page.getByRole("heading", { name: "Последнее занятие" }),
-  ).toBeVisible();
-  await expect(page.locator(".card.empty-state .session-metrics").getByText("95,8%", { exact: true })).toBeVisible();
+    page.locator(".latest-practice summary"),
+  ).toHaveText("Последнее занятие");
+  await page.locator(".latest-practice summary").click();
+  const accuracy = new Intl.NumberFormat("ru", { style: "percent", maximumFractionDigits: 1 }).format(23 / 24);
+  await expect(page.locator(".card.empty-state .session-metrics").getByText(accuracy, { exact: true })).toBeVisible();
   await expect(
     page.getByText("Правильно: 23 из 24.", { exact: true }),
   ).toBeVisible();
@@ -202,7 +204,7 @@ test("ends early from a restored pause, retains the summary and starts another i
   await page.reload();
   await page.getByRole("button", { name: "Terminar esta práctica" }).click();
   await expect(
-    page.getByRole("heading", { name: "Práctica guardada" }),
+    page.getByRole("heading", { name: "Práctica finalizada" }),
   ).toBeVisible();
   await expect(
     page.getByText("Correctas: 1 de 1.", { exact: true }),

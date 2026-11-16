@@ -5,6 +5,10 @@ import { cleanup } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
 
 Object.defineProperty(window, "scrollTo", { value: vi.fn(), writable: true });
+Object.defineProperty(window, "matchMedia", {
+  value: () => Object.assign(new EventTarget(), { matches: false }),
+  writable: true,
+});
 afterEach(async () => {
   cleanup();
   window.location.hash = "";

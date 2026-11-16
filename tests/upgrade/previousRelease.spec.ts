@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { expect, test, type APIRequestContext, type Page, type TestInfo } from "@playwright/test";
 import { nativeSnapshot, rows } from "../support/nativeSnapshot";
-import { openParent, parentNav } from "../support/parentMode";
+import { goParent, openParent } from "../support/parentMode";
 import type { Attempt, DiagnosticSession } from "../../src/engine/sessions/diagnostic";
 import type { LearningSession, Session } from "../../src/engine/learning/session";
 import type { PairProgress } from "../../src/engine/learning/progress";
@@ -184,7 +184,7 @@ test.describe("native IndexedDB upgrade", () => {
     const reexported = await exportFile(page, info, "candidate-v2.json");
     expect(reexported.backup).toMatchObject({ version: 2, databaseVersion: 4 });
     expect(reexported.backup.tables).toEqual(businessTables(backup));
-    await parentNav(page, "training").click();
+    await goParent(page, "training");
     await page.getByRole("button", { name: "Continuar práctica" }).click();
     await expect(page.getByRole("textbox")).toHaveValue("42");
     await expect(page.locator(".equation")).toHaveAttribute("aria-label", equation!);

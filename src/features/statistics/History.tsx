@@ -6,6 +6,7 @@ import type { Attempt } from "../../engine/sessions/diagnostic";
 export function History({ attempts }: { attempts: Attempt[] }) {
   const { t, preferences } = useApp();
   const [limit, setLimit] = useState(20);
+  const date = new Intl.DateTimeFormat(preferences.language, { dateStyle: "medium", timeStyle: "short" });
   return (
     <>
       <ol className="history-list">
@@ -23,8 +24,8 @@ export function History({ attempts }: { attempts: Attempt[] }) {
                 })}
               </span>
               <span>
-                {new Date(a.createdAt).toLocaleString(preferences.language)} ·{" "}
-                {t(a.mode === "diagnostic" ? "diagnosticLink" : "training")} ·{" "}
+                <time dateTime={new Date(a.createdAt).toISOString()}>{date.format(a.createdAt)}</time> ·{" "}
+                {t(a.mode === "diagnostic" ? "diagnosticLink" : a.mode === "weak" ? "weakSpots" : "training")} ·{" "}
                 {t("seconds", {
                   value: (a.responseTimeMs / 1000).toLocaleString(
                     preferences.language,

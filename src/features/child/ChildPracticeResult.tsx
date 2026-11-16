@@ -18,6 +18,8 @@ export function ChildPracticeResult({ session, headingRef, busy, onContinue }: {
   const rewards = rewardData?.rewards ?? [];
   const stars = rewards.reduce((sum, reward) => sum + reward.stars, 0);
   const format = new Intl.NumberFormat(preferences.language);
+  const plural = new Intl.PluralRules(preferences.language).select(improvedPairs.length);
+  const improved = plural === "one" ? "childImprovedOne" : plural === "few" ? "childImprovedFew" : "childImprovedOther";
   return (
     <section className="card child-result">
       <h1 ref={headingRef} tabIndex={-1}>
@@ -30,7 +32,7 @@ export function ChildPracticeResult({ session, headingRef, busy, onContinue }: {
           {correct > 0 && <p>{t("childCorrectPraise")}</p>}
         </div>
       </div>
-      {answered > 0 && <p>{t(improvedPairs.length ? "childImproved" : "childKeepPracticing", {
+      {answered > 0 && <p>{t(improvedPairs.length ? improved : "childKeepPracticing", {
         count: format.format(improvedPairs.length),
       })}</p>}
       {rewardData?.error && <p role="alert">{t("storageError")}</p>}

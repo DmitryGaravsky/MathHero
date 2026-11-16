@@ -1,12 +1,11 @@
 import { useApp } from "../../app/AppContext";
 import { achievementIds, type Reward } from "../../engine/learning/rewards";
 
-export function Achievements({ rewards, pageHeading = false }: { rewards: Reward[]; pageHeading?: boolean }) {
+export function Achievements({ rewards }: { rewards: Reward[] }) {
   const { t } = useApp();
-  const Heading = pageHeading ? "h1" : "h2";
   return (
     <section className="card achievements">
-      <Heading>{t("achievements")}</Heading>
+      <h1>{t("achievements")}</h1>
       <p>{t("achievementHint")}</p>
       <ul>
         {achievementIds.map((id) => (

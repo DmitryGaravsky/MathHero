@@ -41,8 +41,8 @@ attachment itself as a website asset.
 | --- | --- | --- |
 | 1. Audit | Screens, documents, algorithms, debt, baseline and release requirements | Accepted / 01a1dfe4-77de-7401-aa39-e23055253c8f / [PR 1](https://github.com/DmitryGaravsky/MathHero/pull/1) |
 | 2. Architecture | Central settings, modes, parent gate, storage boundaries/migrations | Accepted / 01a1dff0-6e88-7131-abe8-a916c704b53f / [PR 2](https://github.com/DmitryGaravsky/MathHero/pull/2) |
-| 3. Child experience | Short entry flow, exercises, automatic feedback, results, achievements | Local review accepted; CI pending / 01a1e017-9be1-7173-be21-1064b66d2c7e |
-| 4. Parent experience and themes | Complete management, light/dark/system, localization and terminology | Pending |
+| 3. Child experience | Short entry flow, exercises, automatic feedback, results, achievements | Accepted / 01a1e017-9be1-7173-be21-1064b66d2c7e / [PR 3](https://github.com/DmitryGaravsky/MathHero/pull/3) |
+| 4. Parent experience and themes | Complete management, light/dark/system, localization and terminology | Local review accepted; CI pending / 01a1e03e-63f6-7242-9592-2b027cfa43c4 |
 | 5. Pedagogy | Learned/fluent/retained evidence, retention checks, error/weakness analytics | Pending |
 | 6. Documentation and release | Product/user/pedagogy/architecture/developer docs, screenshots, regression, publication | Pending |
 
@@ -118,3 +118,26 @@ and keypad now fit with at least 12 CSS px below them and 44 px minimum keypad
 targets. All 18 affected Chromium/WebKit landscape checks and build/lint passed
 after that CSS correction. Parent analytics and the learning/storage policies
 remain intact. See `stages/1.1/03-child.md` for actual artifacts and limitations.
+
+[GitHub CI run 43740382611](https://github.com/DmitryGaravsky/MathHero/actions/runs/43740382611)
+passed all verification steps on Ubuntu. PR 3 merged into the integration branch
+as `d8cd3c2`. Main and Pages remain on the published MVP until final acceptance.
+
+## Stage 4 acceptance
+
+Reviewed dedicated parent destinations, guarded routes, one-action return,
+focused data reads, history drilldown, native theme resolution and centralized
+palette tokens. All prior management functions remain available. ES/RU formatting
+and an opt-in Spanish/Russian glossary are implemented. The coordinator requested
+clear finished-versus-saved wording and reviewed actual light/dark captures.
+Final corrections cover the landscape PIN reset action, native WebKit selects,
+return-button border contrast and Russian quantity wrapping.
+
+Build/types/lint and 61 unit tests passed. The full browser matrix passed 210
+checks with six baseline skips; the final presentation changes passed 26 targeted
+checks. PWA passed 10 and native published-release upgrade passed 6. The rendered
+contrast audit contains 844 readings: minimum normal text 6.29:1 light / 7.30:1
+dark, and meaningful large-text/control/graphic samples 4.13:1 / 5.42:1.
+This is measured coverage, not a full accessibility certification. The stage
+handoff records screenshots and exact checks. Static inspection found no import
+cycles or engine dependencies on UI/storage, and 238 matching locale keys.

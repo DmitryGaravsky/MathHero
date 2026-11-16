@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { openParent, parentNav } from "../support/parentMode";
+import { goParent, openParent } from "../support/parentMode";
 
 async function databaseSnapshot(page: Page) {
   return page.evaluate(async () => {
@@ -103,15 +103,15 @@ test("completes a part, restores draft and feedback, records an error once and r
     .click();
   await expect(page.getByText("PARTE 2 / 6 · 1 / 24")).toBeVisible();
   await page.getByRole("button", { name: "Pausar", exact: true }).click();
-  await parentNav(page, "home").click();
+  await goParent(page, "home");
   await expect(
     page.getByRole("link", { name: "Continuar diagnóstico" }),
   ).toBeVisible();
-  await parentNav(page, "results").click();
+  await goParent(page, "diagnosis");
   await expect(
     page.getByText("Correctas: 23 de 24.", { exact: false }),
   ).toBeVisible();
-  await expect(page.getByText("95,8%")).toBeVisible();
+  await expect(page.getByText(new Intl.NumberFormat("es", { style: "percent", maximumFractionDigits: 1 }).format(23 / 24))).toBeVisible();
 });
 
 test("guards same-tick double submit and persists language and animation settings", async ({
@@ -127,7 +127,7 @@ test("guards same-tick double submit and persists language and animation setting
   });
   await expect(page.getByRole("status")).toContainText("La respuesta correcta");
   expect((await databaseSnapshot(page)).attempts).toHaveLength(1);
-  await parentNav(page, "settings").click();
+  await goParent(page, "settings");
   await page.getByRole("switch").click();
   await page
     .getByRole("button", { name: "Русский", exact: true })
@@ -211,6 +211,14 @@ test("finishes all six parts and shows real diagnostic results", async ({
   for (let i = 1; i <= 144; i++) {
     await answer(page);
     await page.clock.fastForward(800);
+    if (i === 24) {
+      await expect(page.getByRole("heading", { name: "Parte 1 completada" })).toBeVisible();
+      for (const colorScheme of ["light", "dark"] as const) {
+        await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
+        await expect(page.locator("html")).toHaveCSS("color-scheme", colorScheme);
+        await page.screenshot({ path: testInfo.outputPath(`${colorScheme}-parent-diagnosis-break.png`), fullPage: true });
+      }
+    }
     if (i % 24 === 0 && i < 144)
       await page
         .getByRole("button", { name: "Empezar la siguiente parte" })
@@ -223,7 +231,7 @@ test("finishes all six parts and shows real diagnostic results", async ({
   await expect(
     page.getByText("Correctas: 144 de 144.", { exact: false }),
   ).toBeVisible();
-  await expect(page.getByText("100%")).toBeVisible();
+  await expect(page.getByText(new Intl.NumberFormat("es", { style: "percent" }).format(1))).toBeVisible();
   const { attempts } = await databaseSnapshot(page);
   expect(attempts).toHaveLength(144);
   expect(new Set(attempts.map((a) => a.exerciseId)).size).toBe(144);
@@ -232,4 +240,9 @@ test("finishes all six parts and shows real diagnostic results", async ({
   await expect(
     page.getByText("Correctas: 144 de 144.", { exact: false }),
   ).toBeVisible();
+  for (const colorScheme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
+    await expect(page.locator("html")).toHaveCSS("color-scheme", colorScheme);
+    await page.screenshot({ path: testInfo.outputPath(`${colorScheme}-parent-diagnosis-complete.png`), fullPage: true });
+  }
 });

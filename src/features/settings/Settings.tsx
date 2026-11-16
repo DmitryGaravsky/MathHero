@@ -5,14 +5,16 @@ import { LanguageSwitcher } from "../../components/layout/LanguageSwitcher";
 import { PageHeading } from "../../components/ui/PageHeading";
 import { dailyGoals, themePreferences } from "../../settings/preferences";
 import { ParentPinSettings } from "./ParentPinSettings";
+import { messages } from "../../app/i18n";
+
+const terms = ["termMultiplication", "termFactor", "termProduct", "termTimesTable"] as const;
 
 export function Settings() {
   const { preferences, savePreferences, t } = useApp();
   return (
     <>
       <PageHeading
-        title={t("settingsTitle")}
-        description={t("settingsDescription")}
+        title={t("settingsData")}
       />
       <section className="card settings-card">
         <div className="setting-row">
@@ -81,6 +83,15 @@ export function Settings() {
       <ParentPinSettings />
       <BackupControls />
       <OfflineSettings />
+      <details className="card parent-section glossary">
+        <summary>{t("glossary")}</summary>
+        <dl>
+          {terms.map((term) => <div key={term}>
+            <dt lang="es">{messages.es[term]}</dt>
+            <dd lang="ru">{messages.ru[term]}</dd>
+          </div>)}
+        </dl>
+      </details>
       <section className="privacy">
         <h2>{t("privacyTitle")}</h2>
         <p>{t("privacy")}</p>
