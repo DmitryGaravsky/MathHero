@@ -1,5 +1,9 @@
 # Math Hero — delivery and acceptance
 
+Status: historical MVP delivery record. Preserve these original outcomes.
+For MathHero 1.1, use [the current delivery record](DELIVERY-1.1.md) and
+[active requirements](product/REQUIREMENTS-1.1.md).
+
 Prepared on 15 November 2026 (Europe/Paris).
 
 ## Coordination

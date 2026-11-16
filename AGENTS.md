@@ -1,5 +1,7 @@
 # Math Hero
 
+Status: active engineering and coordination instructions.
+
 ## Active release: MathHero 1.1
 
 Read `docs/DELIVERY-1.1.md` alongside the original delivery record. The user
@@ -22,8 +24,9 @@ records. All new documentation and comments must be English.
 Read `docs/specification.txt` and `docs/DELIVERY.md` before implementing a stage.
 This is a React + TypeScript + Vite PWA for multiplication fluency, with RU/ES,
 local IndexedDB storage, and GitHub Pages deployment. No backend or accounts.
-The original specification is the source of product requirements; explicit
-subsequent user decisions take precedence. Record resolved ambiguities.
+The active 1.1 requirements are in `docs/product/REQUIREMENTS-1.1.md`; the
+original specification preserves the MVP requirements. Explicit subsequent
+user decisions take precedence. Record resolved ambiguities.
 The user additionally requires ALL repository documentation and source-code
 comments to be in English when work is complete. Write new documentation and
 comments in English now; translate existing Russian docs in the final stage,
@@ -39,7 +42,8 @@ the coordinator accepts its prerequisite. Do not spawn additional agents
 unless explicitly asked. Do not create extra stage chats from a worker chat.
 Each stage must leave a handoff with changed files, executed checks, results,
 known limitations, and outstanding acceptance criteria in `docs/stages/`.
-The coordinator records actual chat IDs and acceptance evidence in DELIVERY.md.
+The coordinator records actual chat IDs and acceptance evidence in
+`docs/DELIVERY-1.1.md`; `docs/DELIVERY.md` preserves the MVP delivery history.
 Never represent planned, unexecuted, simulated, or device-only checks as passed.
 
 ## Engineering and verification

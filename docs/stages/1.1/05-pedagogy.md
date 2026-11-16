@@ -1,5 +1,8 @@
 # MathHero 1.1 stage 5 — learning evidence
 
+Status — historical 1.1 stage record. See the
+[active 1.1 learning model](../../pedagogy/LEARNING_MODEL.md) and [mastery policy](../../pedagogy/MASTERY_POLICY.md).
+
 Working branch `v1.1/05-pedagogy`. Handoff for coordinator review.
 
 ## Parent evidence

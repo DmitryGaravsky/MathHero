@@ -43,33 +43,47 @@ attachment itself as a website asset.
 | 2. Architecture | Central settings, modes, parent gate, storage boundaries/migrations | Accepted / 01a1dff0-6e88-7131-abe8-a916c704b53f / [PR 2](https://github.com/DmitryGaravsky/MathHero/pull/2) |
 | 3. Child experience | Short entry flow, exercises, automatic feedback, results, achievements | Accepted / 01a1e017-9be1-7173-be21-1064b66d2c7e / [PR 3](https://github.com/DmitryGaravsky/MathHero/pull/3) |
 | 4. Parent experience and themes | Complete management, light/dark/system, localization and terminology | Accepted / 01a1e03e-63f6-7242-9592-2b027cfa43c4 / [PR 4](https://github.com/DmitryGaravsky/MathHero/pull/4) |
-| 5. Pedagogy | Learned/fluent/retained evidence, retention checks, error/weakness analytics | Accepted locally; CI pending / 01a1e3b4-f59b-7971-bf0f-923aef3d047a |
-| 6. Documentation and release | Product/user/pedagogy/architecture/developer docs, screenshots, regression, publication | Pending |
+| 5. Pedagogy | Learned/fluent/retained evidence, retention checks, error/weakness analytics | Accepted / 01a1e3b4-f59b-7971-bf0f-923aef3d047a / [PR 5](https://github.com/DmitryGaravsky/MathHero/pull/5) |
+| 6. Documentation and release | Product/user/pedagogy/architecture/developer docs, screenshots, regression, publication | Accepted locally; release CI/publication pending / 01a1e3d6-207f-7cc1-9310-ae56147aa103 |
 
-## Acceptance — 0 of 19 verified for 1.1
+## Acceptance — 19 of 19 verified for 1.1
 
-- [ ] Child mode opens by default.
-- [ ] Practice begins within two actions.
-- [ ] Child navigation excludes parent analytics.
-- [ ] Parent mode retains every existing management function.
-- [ ] Parent entry requires the simple PIN gate.
-- [ ] Returning to child mode takes one action.
-- [ ] Switching modes preserves the session and appropriate child screen.
-- [ ] System/light/dark theme preferences work and persist.
-- [ ] Both themes cover every screen and state with accessible contrast.
-- [ ] ES/RU localization is complete.
-- [ ] Existing multiplication behavior has no regression.
-- [ ] Diagnosis, intervals and mastery are preserved and improvements tested.
-- [ ] History and achievements are preserved.
-- [ ] Previous data migrates successfully.
-- [ ] Backup export/import remains compatible and atomic.
-- [ ] Automated checks actually pass.
-- [ ] README and documentation match implemented behavior.
-- [ ] Historical/obsolete documents are identified and marked.
-- [ ] Architectural boundaries and dependencies are documented.
+- [x] Child mode opens by default.
+- [x] Practice begins within two actions.
+- [x] Child navigation excludes parent analytics.
+- [x] Parent mode retains every existing management function.
+- [x] Parent entry requires the simple PIN gate.
+- [x] Returning to child mode takes one action.
+- [x] Switching modes preserves the session and appropriate child screen.
+- [x] System/light/dark theme preferences work and persist.
+- [x] Both themes cover every screen and state with accessible contrast.
+- [x] ES/RU localization is complete.
+- [x] Existing multiplication behavior has no regression.
+- [x] Diagnosis, intervals and mastery are preserved and improvements tested.
+- [x] History and achievements are preserved.
+- [x] Previous data migrates successfully.
+- [x] Backup export/import remains compatible and atomic.
+- [x] Automated checks actually pass.
+- [x] README and documentation match implemented behavior.
+- [x] Historical/obsolete documents are identified and marked.
+- [x] Architectural boundaries and dependencies are documented.
 
-Actual stage evidence, review findings, PRs and release checks will be added here.
-Physical-device tests remain distinct from Chromium/WebKit mobile emulation.
+The functional checks above use the accepted stage evidence below and the full
+stage 5 CI run. Theme coverage includes rendered contrast measurements and manual
+screenshot review, not a claim of complete accessibility certification. Physical
+iPhone/iPad acceptance remains distinct from Chromium/WebKit mobile emulation.
+Stage 6 documentation is accepted. Release CI and published-site smoke checks
+remain pending; this checklist does not claim publication or physical testing.
+
+| Criteria | Acceptance evidence |
+| --- | --- |
+| 1–3: child entry/navigation | [Stage 3](stages/1.1/03-child.md); browser `childExperience`, `modes` |
+| 4–7: parent functions/PIN/return/session | [Stages 2](stages/1.1/02-architecture.md) and [4](stages/1.1/04-parent-themes.md); browser `modes`, `parentExperience`, `childExperience` |
+| 8–10: themes/locales | [Stage 4](stages/1.1/04-parent-themes.md) and [5](stages/1.1/05-pedagogy.md); browser `themeVisuals`, `pairEvidence`; locale parity |
+| 11–12: mathematics/learning | [Stage 5](stages/1.1/05-pedagogy.md); deterministic engine/profile/evidence tests and complete diagnosis in both engines |
+| 13–15: preservation/backup | [Stage 2](stages/1.1/02-architecture.md) and [5](stages/1.1/05-pedagogy.md); native pinned-release upgrade, mixed-policy replay, transactional restore |
+| 16: automated verification | Accepted stage CI runs linked below; no new skips |
+| 17–19: documentation/history/architecture | [Stage 6](stages/1.1/06-docs-release.md); [documentation index](README.md), source review, four real screenshots, link/comment/locale/dependency audits |
 
 ## Stage 1 acceptance
 
@@ -162,3 +176,26 @@ forged proof and altered policies; native old history exposes its genuine 14-day
 check without rewriting old records. Deterministic 14/30-day checks fit within
 24 questions, and all three 90-day synthetic profiles cover 78 pairs/144 directions.
 See `stages/1.1/05-pedagogy.md` for thresholds, evidence and limitations.
+
+[GitHub CI run 43844887311](https://github.com/DmitryGaravsky/MathHero/actions/runs/43844887311)
+passed all verification steps on Ubuntu in 8m17s. PR 5 merged into the release
+integration branch as `0a2bcfd` on 16 November 2026.
+
+## Stage 6 acceptance
+
+Reviewed the current product, user, pedagogy, architecture and development guides
+against the implementation. Historical MVP and intermediate stage records keep
+their actual outcomes and link to current authority. The README is concise and
+contains four inspected real app captures covering both modes and themes; parent
+figures come from validated synthetic history. Corrected the first-attempt repeat
+wording to match the scheduler exactly. Version metadata is 1.1.0 with unchanged
+dependency versions. English documentation and source comments remain separate
+from the ES/RU product translations.
+
+Clean npm installation, build/types/lint and 68 unit/repository tests passed.
+The full browser matrix passed 218 checks with six baseline skips, PWA passed 10,
+and native published-release upgrade passed 6 using an isolated old lockfile
+installation. The clean rebuilt worker remains `01ee92a8204ef083b478`. Reviewed
+956 rendered contrast samples, 259 matching locale keys, local links, comment
+audit and an acyclic 65-module dependency graph with no engine boundary violations.
+The stage handoff records exact evidence; real iPhone/iPad testing stays pending.

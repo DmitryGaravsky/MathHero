@@ -1,5 +1,8 @@
 # Stage 1 — interface foundation
 
+Status — historical MVP stage record. See the
+[current source map](../architecture/APPLICATION_STRUCTURE.md).
+
 Date: 15 November 2026, Europe/Paris.
 Worker status at handoff: implemented and locally verified; coordinator acceptance
 is recorded separately in DELIVERY.md. The worker made no commits, push or

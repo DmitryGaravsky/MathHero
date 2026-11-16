@@ -1,5 +1,8 @@
 # MathHero 1.1 stage 4 — parent experience, themes, and localization
 
+Status — historical 1.1 stage record. See the
+[active 1.1 parent guide](../../user/PARENT_GUIDE.md) and [settings](../../user/SETTINGS.md).
+
 Working branch `v1.1/04-parent-themes`. Handoff for coordinator review.
 
 ## Parent experience

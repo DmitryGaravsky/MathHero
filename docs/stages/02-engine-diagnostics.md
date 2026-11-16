@@ -1,5 +1,8 @@
 # Stage 2 — mathematical engine and diagnosis
 
+Status — historical MVP stage record. See the
+[current diagnosis](../pedagogy/DIAGNOSTICS.md) and [storage](../architecture/STORAGE.md) references.
+
 Date: 15 November 2026, Europe/Paris.
 Worker status at handoff: implemented with the verification below; coordinator
 acceptance is recorded separately. No worker commits, push, deployment,
