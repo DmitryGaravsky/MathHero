@@ -34,8 +34,8 @@ The coordinator owns this record and Git operations. Target version: 1.2.0.
 | Stage | Deliverable | State / chat / PR |
 | --- | --- | --- |
 | 1. Engine and contracts | Arithmetic, digit/mark state, generator, pilot adaptation/evidence and replay contracts | Accepted, merged / 01a1e52e-d374-7d80-af58-7020b90a4c43 / [PR #8](https://github.com/DmitryGaravsky/MathHero/pull/8) |
-| 2. Persistence and compatibility | Additive stores, owned transactions, resumable drafts, validated backups and native 1.1 upgrade | Coordinator review accepted; PR CI pending / 01a1e548-4398-7912-899c-29fcf66d4054 |
-| 3. Child experience | Illustrated home, two-action entry, column exercise, manual marks, hints, pause and offline resume | Pending |
+| 2. Persistence and compatibility | Additive stores, owned transactions, resumable drafts, validated backups and native 1.1 upgrade | Accepted, merged / 01a1e548-4398-7912-899c-29fcf66d4054 / [PR #9](https://github.com/DmitryGaravsky/MathHero/pull/9) |
+| 3. Child experience | Illustrated home, two-action entry, column exercise, manual marks, hints, pause and offline resume | Review accepted; PR CI pending / 01a1e571-69fd-7001-b774-70b183ec8f33 |
 | 4. Parent experience | Separate addition/subtraction evidence, history and difficulties; locale/theme/accessibility review | Pending |
 | 5. Release | Current documentation/screenshots, full regression, upgrade/PWA acceptance, CI and publication | Pending |
 
@@ -131,4 +131,31 @@ test because the native snapshot helper now includes verifier type metadata.
 The correction checks the actual IndexedDB row's keys before serialization,
 as well as the byte types and lengths. All eight affected browser profiles,
 type checking and lint passed locally. Product storage and the helper's default
-output remain unchanged; full stage CI is being repeated.
+output remain unchanged. [Corrected CI run 43919015602](https://github.com/DmitryGaravsky/MathHero/actions/runs/43919015602)
+passed 90 unit/repository tests, 226 browser checks, 10 PWA checks and 10 native
+upgrade checks. The six existing duplicate-diagnosis skips are unchanged.
+PR #9 merged into integration as `27f90a0` before stage 3 started.
+
+## Stage 3 review
+
+Coordinator review covered the operation routes, persistent controllers,
+serialized checkpoints and release, exact ownership checks, optional marks,
+keyboard focus and worked explanations. Corrections cover quick exit/reentry
+while storage is pending, interrupted entry, and selecting an answer cell with
+Tab before typing. Pause and Save and exit remain the two visible practice
+actions; Skip and End are secondary actions on the paused screen and use its
+exact unowned snapshot.
+
+The coordinator inspected actual phone screenshots of the illustrated home,
+marked `586 + 647` addition and marked `604 − 187` subtraction in light Spanish
+and dark Russian, plus tablet layouts, the worked borrow-through-zero
+explanation and paused actions. These match the approved visual direction.
+
+Local type checking, lint, build, 98 unit tests, 10 PWA checks and 10 native
+upgrade checks passed. The full browser run recorded 280 passes, including all
+56 new column checks across eight profiles, and six existing skips. Two WebKit
+phone-landscape theme tests timed out during host suspension; both passed in
+a focused rerun on the same build. This interrupted run is not represented as
+a clean full pass. The coordinator accepted the implementation and
+[handoff](stages/column-arithmetic/03-child-experience.md), subject to complete
+green PR CI before integration and the parent stage.

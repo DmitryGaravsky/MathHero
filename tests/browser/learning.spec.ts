@@ -70,7 +70,7 @@ test("completes a real daily session, repeats the error, restores feedback and s
   test.setTimeout(90000);
   await page.clock.install();
   await page.goto("./");
-  await page.getByRole("link", { name: "Empezar a practicar" }).click();
+  await page.getByRole("link", { name: "Tablas de multiplicar" }).click();
   await page.getByRole("button", { name: "Empezar a practicar" }).click();
   await expect(page.getByText("Pregunta 1 de 24")).toBeVisible();
   await expect(page.getByRole("textbox")).toBeEnabled();

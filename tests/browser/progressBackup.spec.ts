@@ -271,6 +271,7 @@ test("goal and animation settings persist in both locales and all four calm fox 
   page,
 }, info) => {
   await page.goto("./");
+  await page.getByRole("link", { name: "Tablas de multiplicar" }).click();
   await expect(page.locator('.mascot[data-state="greeting"]')).toBeVisible();
   await openParent(page, "settings");
   await page.getByRole("switch", { name: "Animaciones" }).click();

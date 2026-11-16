@@ -16,8 +16,8 @@ const destinations = {
 } satisfies Record<(typeof parentNavigation)[number], [MessageKey, IconName]>;
 const childDestinations = {
   home: ["home", "home"],
-  training: ["training", "training"],
-  achievements: ["achievements", "star"],
+  training: ["childTablesNav", "training"],
+  achievements: ["childTablesRewards", "star"],
 } satisfies Record<(typeof childNavigation)[number], [MessageKey, IconName]>;
 
 export function Navigation({ mode, screen }: { mode: AppMode; screen: Route }) {

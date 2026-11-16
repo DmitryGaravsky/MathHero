@@ -30,7 +30,7 @@ export function Training({ mode = "diagnostic", targetPair, covered = false, app
     }
   }, [active, loading, pausedQuestion, session?.id, session?.phase]);
 
-  const title = t(child ? "training" : mode === "weak" ? "weak" : isLearning ? "dailyTitle" : "practiceTitle");
+  const title = t(child ? "childTables" : mode === "weak" ? "weak" : isLearning ? "dailyTitle" : "practiceTitle");
   const heading = child ? <h1 className="child-practice-title">{title}</h1> : (
     <PageHeading title={title} description={t(isLearning ? "dailyPlan" : "practiceDescription")} />
   );
@@ -47,7 +47,7 @@ export function Training({ mode = "diagnostic", targetPair, covered = false, app
     <button className="button primary" onClick={() => void controller.load()}>{t("retryLoad")}</button>
   </>);
   if (!session) return panel(<>
-    <Mascot small state="thinking" />
+    <Mascot small state={child ? "greeting" : "thinking"} />
     <h2>{t(child ? "childReady" : isLearning ? "dailyTitle" : "diagnosticIntro")}</h2>
     {!child && <p>{t(isLearning ? "dailyPlan" : "diagnosticPlan")}</p>}
     <button className="button primary" disabled={busy || !active} onClick={() => void controller.start()}>

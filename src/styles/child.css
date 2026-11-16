@@ -7,19 +7,54 @@
   width: min(100%, 960px);
   margin-inline: auto;
 }
-.child-home .child-hero {
-  min-height: 0;
-  grid-template-columns: 1.4fr 1fr;
+.child-welcome {
+  padding: clamp(16px, 3vw, 32px);
+  background: var(--hero-surface);
+  border-radius: 20px;
 }
-.child-hero .hero-copy > p {
-  margin-bottom: 24px;
+.child-welcome h1 {
+  margin-bottom: 4px;
 }
-.child-hero .hero-art {
-  height: clamp(170px, 26vw, 300px);
+.child-welcome .hero-copy > p:not(.eyebrow) {
+  margin: 0;
 }
-.child-hero .mascot {
-  width: min(90%, 275px);
-  max-height: 100%;
+.child-modules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+.module-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(10px, 2vw, 18px);
+  padding: 12px;
+  border: 1px solid var(--control);
+  border-radius: 17px;
+  color: var(--ink);
+  background: var(--surface);
+  text-align: start;
+}
+.module-card:hover {
+  background: var(--surface-muted);
+}
+.module-card strong {
+  display: block;
+  font-size: clamp(1rem, 2.3vw, 1.25rem);
+  line-height: 1.25;
+}
+.module-card small {
+  display: block;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.module-card > svg:last-child {
+  color: var(--accent);
+}
+.module-art {
+  width: clamp(74px, 12vw, 113px);
+  height: auto;
 }
 .child-home-links,
 .child-badges {
@@ -195,17 +230,9 @@
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  .app-shell .child-hero {
-    padding-top: 12px;
-  }
-  .app-shell .child-hero .hero-art {
-    height: 130px;
-  }
-  .app-shell .child-hero .mascot {
-    width: 170px;
-  }
-  .app-shell .child-hero h1 {
-    margin-bottom: 8px;
+  .child-modules {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
   .app-shell .child-home-links .card {
     padding-block: 16px;
