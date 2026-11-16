@@ -124,13 +124,21 @@ export function BackupControls() {
         }}
       >
         <h2 id="restore-title">{t("replaceData")}</h2>
-        <p id="restore-warning">{t("replaceWarning")}</p>
+        <p id="restore-warning">{t(pending?.version === 3 ? "replaceWarning" : "replaceLegacyWarning")}</p>
         <p>
           {t("backupPreview", {
             attempts: numbers.format(pending?.tables.attempts.length ?? 0),
             sessions: numbers.format(pending?.tables.sessions.length ?? 0),
           })}
         </p>
+        {pending?.version === 3 && (
+          <p>
+            {t("backupColumnPreview", {
+              attempts: numbers.format(pending.tables.columnAttempts.length),
+              sessions: numbers.format(pending.tables.columnSessions.length),
+            })}
+          </p>
+        )}
         <div className="action-row">
           <button
             autoFocus

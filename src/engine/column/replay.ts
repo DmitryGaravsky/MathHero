@@ -50,16 +50,16 @@ function record(value: unknown): Record<string, unknown> | undefined {
   return value as Record<string, unknown>;
 }
 
-function sameJson(actual: unknown, expected: unknown): boolean {
+export function sameColumnValue(actual: unknown, expected: unknown): boolean {
   if (actual === expected) return true;
   if (Array.isArray(expected)) {
-    return Array.isArray(actual) && actual.length === expected.length &&
-      expected.every((value, i) => Object.hasOwn(actual, i) && sameJson(actual[i], value));
+    return Array.isArray(actual) && actual.length === expected.length && Object.keys(actual).length === expected.length &&
+      expected.every((value, i) => Object.hasOwn(actual, i) && sameColumnValue(actual[i], value));
   }
   const a = record(actual);
   const b = record(expected);
   return !!a && !!b && Object.keys(a).length === Object.keys(b).length &&
-    Object.keys(b).every((key) => Object.hasOwn(a, key) && sameJson(a[key], b[key]));
+    Object.keys(b).every((key) => Object.hasOwn(a, key) && sameColumnValue(a[key], b[key]));
 }
 
 /** Validate all derived fields exactly, allowing one unjournaled editing tail. */
@@ -74,6 +74,6 @@ export function validateColumnSessionSnapshot(replayed: ColumnSession, value: un
       expected = checkpointColumnDraft(replayed, input, saved.activeMs);
     }
   }
-  if (!sameJson(value, expected)) throw new Error("Column snapshot does not match journal replay");
+  if (!sameColumnValue(value, expected)) throw new Error("Column snapshot does not match journal replay");
   return expected;
 }

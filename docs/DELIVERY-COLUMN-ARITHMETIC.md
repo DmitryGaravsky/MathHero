@@ -33,8 +33,8 @@ The coordinator owns this record and Git operations. Target version: 1.2.0.
 
 | Stage | Deliverable | State / chat / PR |
 | --- | --- | --- |
-| 1. Engine and contracts | Arithmetic, digit/mark state, generator, pilot adaptation/evidence and replay contracts | Coordinator review accepted; PR CI pending / 01a1e52e-d374-7d80-af58-7020b90a4c43 |
-| 2. Persistence and compatibility | Additive stores, owned transactions, resumable drafts, validated backups and native 1.1 upgrade | Pending |
+| 1. Engine and contracts | Arithmetic, digit/mark state, generator, pilot adaptation/evidence and replay contracts | Accepted, merged / 01a1e52e-d374-7d80-af58-7020b90a4c43 / [PR #8](https://github.com/DmitryGaravsky/MathHero/pull/8) |
+| 2. Persistence and compatibility | Additive stores, owned transactions, resumable drafts, validated backups and native 1.1 upgrade | Coordinator review accepted; PR CI pending / 01a1e548-4398-7912-899c-29fcf66d4054 |
 | 3. Child experience | Illustrated home, two-action entry, column exercise, manual marks, hints, pause and offline resume | Pending |
 | 4. Parent experience | Separate addition/subtraction evidence, history and difficulties; locale/theme/accessibility review | Pending |
 | 5. Release | Current documentation/screenshots, full regression, upgrade/PWA acceptance, CI and publication | Pending |
@@ -77,8 +77,8 @@ The coordinator owns this record and Git operations. Target version: 1.2.0.
 - [ ] Selection revisits difficulties with fresh operands and tests retained skills across real gaps and days.
 - [ ] Parent evidence and history distinguish the two operations and remain separate from multiplication.
 - [ ] ES/RU, all themes, touch/physical keyboard and phone/tablet orientations work.
-- [ ] The published 1.1 native database upgrades without loss of multiplication records or unfinished practice.
-- [ ] Old and new backups follow the documented scope, validation and atomicity rules.
+- [x] The published 1.1 native database upgrades without loss of multiplication records or unfinished practice.
+- [x] Old and new backups follow the documented scope, validation and atomicity rules.
 - [ ] Multiplication, ownership, timing, offline caching and update behavior retain their regressions checks.
 - [ ] Current English documentation, real screenshots, CI and live release checks are complete.
 
@@ -100,4 +100,35 @@ Local type checking, lint and production build passed; 82 tests passed, includin
 pairs and their intermediate carry/borrow steps. The unchanged application
 build still has the published 1.1 worker revision. Persistence, browser/PWA,
 native upgrade and full product acceptance remain subsequent work. Stage PR CI
-must pass before the persistence stage starts.
+passed before the persistence stage started. [Run 43911129345](https://github.com/DmitryGaravsky/MathHero/actions/runs/43911129345)
+passed 82 unit tests, 218 browser checks, 10 PWA checks and six native MVP
+upgrade checks. The six pre-existing duplicate-diagnosis skips remain unchanged.
+PR #8 merged into integration as `2eec760`; main and Pages were not changed.
+
+## Stage 2 review
+
+The coordinator reviewed the additive v5 schema, repository ownership and
+transaction boundaries, bounded pair index, strict v3 replay, legacy restore
+scope and [handoff](stages/column-arithmetic/02-persistence.md). Full restores
+rotate the local generation; old copies preserve every column record. Column
+rules are unchanged; validators now also reject malformed in-memory arrays.
+
+Local type checking, lint and build passed, with 90 unit/repository tests,
+40 targeted browser checks, 10 PWA checks and 10 native upgrade checks. In both
+Chromium and WebKit, the actual published 1.1 UI created a native database with
+draft, feedback, evidence, rewards, preferences and a custom PIN. Every old
+store's metadata and rows survived the upgrade. At the coordinator's request,
+the tests also imported that published app's actual v2 export through the
+candidate UI, compared its data and verifier bytes, and resumed practice.
+All dates and scripted answers are test fixtures, not child learning records.
+
+The existing CI command now builds both published baselines and runs all ten
+upgrade checks. Full browser regression remains required in stage PR CI before
+starting the child interface stage. No new module device acceptance is claimed.
+
+The initial stage CI run `43916856310` found eight failures in an existing PIN
+test because the native snapshot helper now includes verifier type metadata.
+The correction checks the actual IndexedDB row's keys before serialization,
+as well as the byte types and lengths. All eight affected browser profiles,
+type checking and lint passed locally. Product storage and the helper's default
+output remain unchanged; full stage CI is being repeated.

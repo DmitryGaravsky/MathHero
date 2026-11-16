@@ -2,8 +2,8 @@
 
 Stage 1 implements the pure engine and replay in `src/engine/column/`. The
 [approved requirements](../product/REQUIREMENTS-COLUMN-ARITHMETIC.md) cover the
-full module. IndexedDB, backup integration, controllers and screens belong to
-subsequent stages.
+full module. Stage 2 adds the repository and backup integration. Child and
+parent screens belong to subsequent stages.
 
 ## Arithmetic and entry
 
@@ -155,24 +155,25 @@ device clock accuracy. Active response times should use the existing monotonic
 
 ## Persistence and controller integration
 
-Stage 2 should add column session, attempt, journal and progress stores through
-an additive Dexie upgrade. Column progress is keyed by operation and skill.
+Dexie v5 adds column session, attempt, journal, progress, seen and local state
+stores. Column progress is keyed by operation and skill.
 There is one open session per operation, including any feedback or paused
 draft. Resume uses its stored order and draft, so claiming a session never
 generates different operands.
 
 1. A repository transaction reads the latest owned snapshot, operation's
-   progress, seen-pair index and global column journal cursor. For an event,
-   allocate the next contiguous positive sequence and use an injected wall
-   clock for `at`. The injected random source can supply the session seed when
-   starting. Store a time zone at start and use it for the session's lifetime.
+   progress and global column journal cursor. For an event, it allocates the
+   next contiguous positive sequence and uses an injected wall clock for
+   `at`. The injected random source supplies the session seed when starting.
+   The device's time zone is recorded then and used for the session's lifetime.
 2. `applyColumnEvent` takes the prior session, cursor, operation's skill rows,
    and seen-pair membership. It returns the new snapshot and cursor, any
    immutable attempt and issued selection, and skill rows to upsert. Commit
    these together with the event. Update the seen-pair index on issuance before
    any later selection. Keep `sequence` and the effective time watermark
-   available without scanning the entire journal for each answer. The seen
-   index can be derived from persisted orders or maintained transactionally.
+   available without scanning the journal for each answer. The seen index uses
+   one triangular pair bitmap per operation. Only commands that can issue an
+   exercise read it. Checkpoints only read the session and generation state.
 3. Every editable checkpoint, phase change and ownership change compares a
    session identity and exact `{generation, owner, revision}`. Increment the
    revision for every accepted write. Adopting an open session changes the
@@ -197,21 +198,19 @@ event shapes and policy versions. `validateColumnSessionSnapshot` requires
 exact replay agreement except for a legal editing tail in an `answering`
 snapshot. That tail may change only digits, marks, active place and cumulative
 active time. It cannot move time behind the last journaled state. Completed
-sessions and both feedback phases must match exactly. Stage 2 must match all
+sessions and both feedback phases must match exactly. The decoder matches all
 stored attempts and progress rows against replay with exact keysets, rejecting
 missing, duplicate, dangling or altered rows. Replay checks internal
 consistency, with the same trust limits as other user-editable local backups.
 
-## Backup and compatibility plan
+## Backup and compatibility
 
-Use a new portable JSON envelope version beside existing v1/v2 imports. The
-new envelope includes portable snapshots, journal, attempts and progress for
-column practice and all existing portable multiplication/common-preference
-data. A full import validates both modules and atomically replaces both scopes,
-including column ownership invalidation. Old v1/v2 imports preserve column
-history and drafts, replacing only the existing multiplication and portable
-common-preference scope. Show that scope in the confirmation. All formats leave
-the PIN verifier device-local. Continue to read the native published 1.1
-database and keep the multiplication routes and storage contracts compatible.
-Stage 2 owns the exact schema, backup validation, transaction behavior,
-compatibility tests and native upgrade evidence.
+The v3 portable JSON envelope includes column snapshots, attempts, journal
+and progress alongside multiplication and common preferences. Full import
+validates both modules, then replaces both scopes in a single transaction and
+rotates the column generation. The column cursor and seen pairs are rebuilt
+from replay. V1/v2 imports preserve column history and drafts while replacing
+multiplication and common preferences. The restore confirmation states the
+scope for the selected file. The PIN verifier stays on the destination device
+for all three formats. The [storage reference](STORAGE.md) describes the additive
+native migration.

@@ -1,9 +1,10 @@
 # Data model
 
-Status — active schema reference for MathHero 1.1.
+Status — schema reference for the column arithmetic integration.
 
-IndexedDB schema v4 contains eight stores. The v2 backup envelope contains
-the first seven. One attempt references a session and records both the
+IndexedDB schema v5 keeps the eight published v4 stores and adds six for
+column practice. The first seven v4 stores are portable across the three backup
+formats. One multiplication attempt references a session and records both the
 directed fact ID and the canonical pair ID.
 
 | Store | Key and contents |
@@ -29,3 +30,19 @@ verified check or carry an explicit null after invalidation. The check stores
 the date, previous due timestamp, interval and time zone. A missing legacy
 proof on a currently mastered pair with an eligible reward can be reconstructed
 from that pair's history. Pair drilldown replays its attempts on demand.
+
+## Column arithmetic stores
+
+| Store | Key and contents |
+| --- | --- |
+| `columnSessions` | Embedded session ID. Stores the canonical snapshot and local owner and revision. A unique sparse `openOperation` index exists on open rows. An operation/start-sequence index supports history reads. |
+| `columnAttempts` | Immutable session/ordinal/check ID, indexed by session and operation/sequence. Stores the exact input, active time, hint exposure, result and time evidence for each check. |
+| `columnProgress` | Operation and skill. Stores counts, recent first checks, latest practice, supporting solutions and current retained evidence. |
+| `columnJournal` | Contiguous sequence across both operations. Stores the session ID, event time, event type and its inputs for exact policy replay. |
+| `columnSeen` | Operation. Packed canonical pair index for exercises already issued, including skipped or abandoned examples. |
+| `columnState` | `state` singleton. Stores the local generation, last committed sequence and effective time watermark. |
+
+The v3 envelope carries canonical column sessions, attempts, progress and
+journal. The session wrapper, seen index and state are device-local. Full
+restore rebuilds the pair bitmaps and cursor and assigns a new generation. See the
+[column engine and storage contract](COLUMN-ARITHMETIC.md).

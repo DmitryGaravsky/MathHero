@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 
-export function nativeSnapshot(page: Page) {
-  return page.evaluate(async () => {
+export function nativeSnapshot(page: Page, { includePinKeys = false } = {}) {
+  return page.evaluate(async (includePinKeys) => {
     const open = indexedDB.open("math-hero");
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       open.onsuccess = () => resolve(open.result);
@@ -20,13 +20,24 @@ export function nativeSnapshot(page: Page) {
           get.onsuccess = () => resolve(get.result);
           get.onerror = () => reject(get.error);
         });
-        return { name, keyPath: store.keyPath, indexes, rows };
+        // Preserve the byte values in test attachments and Playwright comparisons.
+        if (name === "parentGate") {
+          const pinRows = rows as { salt: Uint8Array; hash: Uint8Array }[];
+          return { name, keyPath: store.keyPath, autoIncrement: store.autoIncrement, indexes,
+            rows: pinRows.map((row) => ({
+              ...row, salt: [...row.salt], hash: [...row.hash],
+              saltType: row.salt.constructor.name, hashType: row.hash.constructor.name,
+              ...(includePinKeys ? { storedKeys: Object.keys(row).sort() } : {}),
+            })),
+          };
+        }
+        return { name, keyPath: store.keyPath, autoIncrement: store.autoIncrement, indexes, rows };
       }));
       return { version: db.version, stores };
     } finally {
       db.close();
     }
-  });
+  }, includePinKeys);
 }
 
 export function rows<T>(snapshot: Awaited<ReturnType<typeof nativeSnapshot>>, name: string) {

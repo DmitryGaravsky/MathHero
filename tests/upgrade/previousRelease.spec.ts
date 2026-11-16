@@ -7,6 +7,7 @@ import type { LearningSession, Session } from "../../src/engine/learning/session
 import type { PairProgress } from "../../src/engine/learning/progress";
 import type { Reward } from "../../src/engine/learning/rewards";
 import type { Backup } from "../../src/database/backup";
+import { expectEmptyColumnStores } from "./columnStores";
 
 const origin = "http://127.0.0.1:4175";
 const provenance = {
@@ -64,17 +65,20 @@ type NativeSnapshot = Awaited<ReturnType<typeof nativeSnapshot>>;
 
 function expectAdditiveUpgrade(old: NativeSnapshot, upgraded: NativeSnapshot) {
   expect(old.version).toBe(30);
-  expect(upgraded.version).toBe(40);
+  const previousStores = expectEmptyColumnStores(upgraded);
   // Store metadata includes native key paths and indexes in both engines.
-  expect(upgraded.stores.filter(({ name }) => name !== "parentGate")).toEqual(old.stores);
-  expect(upgraded.stores.find(({ name }) => name === "parentGate"))
-    .toEqual({ name: "parentGate", keyPath: "id", indexes: [], rows: [] });
+  expect(previousStores.filter(({ name }) => name !== "parentGate")).toEqual(old.stores);
+  expect(previousStores.find(({ name }) => name === "parentGate"))
+    .toEqual({ name: "parentGate", keyPath: "id", autoIncrement: false, indexes: [], rows: [] });
 }
 
 function businessTables(backup: Backup) {
-  return { ...backup.tables, settings: backup.tables.settings.map(({ id, value }) => ({
-    id, value: { ...value, theme: "system" },
-  })) };
+  return {
+    ...backup.tables,
+    sessions: backup.tables.sessions.map((session) => ({ ...session, owner: null })),
+    settings: backup.tables.settings.map(({ id, value }) => ({ id, value: { ...value, theme: "system" } })),
+    columnSessions: [], columnAttempts: [], columnProgress: [], columnJournal: [],
+  };
 }
 
 test.describe("native IndexedDB upgrade", () => {
@@ -181,8 +185,8 @@ test.describe("native IndexedDB upgrade", () => {
     await expect(page.getByRole("combobox", { name: "Objetivo diario" })).toHaveValue("5");
     await expect(page.getByRole("combobox", { name: "Tema" })).toHaveValue("system");
     await expect(page.getByRole("switch", { name: "Animaciones" })).toHaveAttribute("aria-checked", "false");
-    const reexported = await exportFile(page, info, "candidate-v2.json");
-    expect(reexported.backup).toMatchObject({ version: 2, databaseVersion: 4 });
+    const reexported = await exportFile(page, info, "candidate-v3.json");
+    expect(reexported.backup).toMatchObject({ version: 3, databaseVersion: 5 });
     expect(reexported.backup.tables).toEqual(businessTables(backup));
     await goParent(page, "training");
     await page.getByRole("button", { name: "Continuar práctica" }).click();
@@ -215,8 +219,8 @@ test.describe("native IndexedDB upgrade", () => {
       const expectedSessions = backup.tables.sessions.map((session) => ({ ...session, owner: null }));
       expect(rows<Session>(after, "sessions")).toEqual(expectedSessions);
       expect(rows<Attempt>(after, "attempts")).toEqual(attempts);
-      const roundTrip = await exportFile(restored, info, "restored-v2.json");
-      expect(roundTrip.backup.tables).toEqual({ ...businessTables(backup), sessions: expectedSessions });
+      const roundTrip = await exportFile(restored, info, "restored-v3.json");
+      expect(roundTrip.backup.tables).toEqual(businessTables(backup));
       await restored.reload();
       await openParent(restored, undefined, "4321");
       await expect(restored.getByRole("combobox", { name: "Objetivo diario" })).toHaveValue("5");
