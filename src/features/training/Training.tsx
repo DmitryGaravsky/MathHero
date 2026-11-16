@@ -73,7 +73,7 @@ export function Training({ mode = "diagnostic", targetPair, covered = false, app
   if (session.phase === "completed") return panel(<>
     <h2 ref={headingRef} tabIndex={-1}>{t("diagnosticComplete")}</h2>
     <p>{t("noMastery")}</p>
-    <a href={routeHref(appMode, child ? "achievements" : "results")} className="button primary">
+    <a href={routeHref(appMode, child ? "achievements" : "diagnosis")} className="button primary">
       {t("viewResults")}
     </a>
   </>);

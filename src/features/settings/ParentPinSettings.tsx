@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useApp } from "../../app/AppContext";
-import { isParentPin, parentPinRepository } from "../../database/parentPinRepository";
+import { defaultParentPin, isParentPin, parentPinRepository } from "../../database/parentPinRepository";
 
 export function ParentPinSettings() {
   const { t } = useApp();
@@ -8,8 +8,9 @@ export function ParentPinSettings() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<"pinHint" | "pinChanged" | "pinStorageError" | null>(null);
   return (
-    <section className="card settings-card">
+    <section className="card parent-section">
       <h2>{t("parentPin")}</h2>
+      <p>{t("pinDefaultHint", { pin: defaultParentPin })}</p>
       <form noValidate onSubmit={async (event) => {
         event.preventDefault();
         if (busy) return;

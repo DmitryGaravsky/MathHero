@@ -6,6 +6,12 @@ export function parentNav(page: Page, route: string) {
   return page.locator(`nav a[href="#parent/${route}"]`);
 }
 
+export async function goParent(page: Page, route: string) {
+  const toggle = page.locator(".parent-menu");
+  if (await toggle.isVisible() && await toggle.getAttribute("aria-expanded") === "false") await toggle.click();
+  await parentNav(page, route).click();
+}
+
 export async function openParent(page: Page, destination?: string, pin = "1234") {
   await expect(page.locator(".app-shell")).toHaveAttribute("data-mode", "child");
   const opener = page.getByRole("button", { name: /^(Modo adulto|Для родителей)$/ });
@@ -15,5 +21,5 @@ export async function openParent(page: Page, destination?: string, pin = "1234")
   await dialog.getByLabel(locale.parentPin).fill(pin);
   await dialog.getByRole("button", { name: locale.parentEnter, exact: true }).click();
   await expect(page.locator(".app-shell")).toHaveAttribute("data-mode", "parent");
-  if (destination) await parentNav(page, destination).click();
+  if (destination) await goParent(page, destination);
 }

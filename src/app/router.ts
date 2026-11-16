@@ -9,9 +9,12 @@ export function pairTrainingLink(exerciseId: string) {
 export type AppMode = "child" | "parent";
 export const parentNavigation = [
   "home",
-  "training",
-  "results",
   "map",
+  "results",
+  "weak-spots",
+  "diagnosis",
+  "history",
+  "training",
   "settings",
 ] as const;
 export const childNavigation = ["home", "training", "achievements"] as const;
@@ -24,8 +27,9 @@ export function resolveRoute(hash: string, mode: AppMode) {
   const name = namespace ? path.slice(namespace.length + 1) : path;
   const requestedScreen = routes.find((route) => route === name) ?? "home";
   const parentOnly = namespace === "parent" ||
-    requestedScreen === "diagnostic" || requestedScreen === "results" ||
-    requestedScreen === "map" || requestedScreen === "settings";
+    requestedScreen === "diagnostic" || parentNavigation.some(
+      (route) => route !== "home" && route !== "training" && route === requestedScreen,
+    );
   const requested = new URLSearchParams(search).get("pair");
   const target = requestedScreen === "weak" ? multiplicationFacts.find(
     (f) => f.id === requested,

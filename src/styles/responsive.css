@@ -24,12 +24,6 @@
   .app-shell .exercise-card {
     padding: 25px;
   }
-  .app-shell .mission-card {
-    padding-right: 28px;
-  }
-  .app-shell .mission-icon {
-    display: none;
-  }
   .app-shell .hero-art .orbit {
     width: 240px;
     height: 240px;
@@ -65,8 +59,8 @@
     right: 0;
     gap: 0;
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    background: #fffffff5;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    background: var(--surface);
     border-top: 1px solid var(--line);
     padding: 8px max(8px, env(safe-area-inset-right, 0px))
       calc(8px + var(--safe-bottom)) max(8px, env(safe-area-inset-left, 0px));
@@ -79,9 +73,6 @@
     font-size: 0.67rem;
     min-height: 58px;
     border-radius: 12px;
-  }
-  .app-shell[data-mode="child"] .navigation {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .app-shell .navigation svg {
     width: 21px;
@@ -128,19 +119,8 @@
     padding: 14px 12px;
     font-size: 0.95rem;
   }
-  .app-shell .dashboard-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    margin-top: 18px;
-  }
   .app-shell .card {
     padding: 24px;
-  }
-  .app-shell .preview-note {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    margin-top: 24px;
   }
   .app-shell .page-heading {
     margin: 0 0 22px;
@@ -170,25 +150,6 @@
   }
   .app-shell .practice-aside h2 {
     font-size: 1.1rem;
-  }
-  .app-shell .analytics-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .app-shell .analytics-grid .card {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 4px 16px;
-  }
-  .app-shell .analytics-grid p {
-    grid-column: 1/-1;
-  }
-  .app-shell .analytics-grid h3 {
-    margin: 0;
-  }
-  .app-shell .empty-value {
-    font-size: 1.4rem;
-    line-height: 1;
   }
   .app-shell .map-card {
     padding: 14px 10px;
@@ -253,6 +214,24 @@
   }
 }
 @media (max-height: 550px) and (orientation: landscape) {
+  dialog {
+    max-height: calc(100dvh - 24px);
+    padding: 16px 20px;
+  }
+  dialog h2 {
+    margin-bottom: 10px;
+  }
+  dialog .pin-field {
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  dialog p {
+    line-height: 1.4;
+  }
+  dialog .keyboard-mode {
+    min-height: 52px;
+    margin-top: 0;
+  }
   .app-shell .hero {
     grid-template-columns: 1.2fr 1fr;
   }

@@ -1,12 +1,16 @@
 import { AppShell } from "../components/layout/AppShell";
-import { useProgressData } from "../database/useProgressData";
+import { useUnlockedAchievements } from "../database/usePracticeData";
 import { ChildAchievements } from "../features/child/ChildAchievements";
 import { ChildHome } from "../features/child/ChildHome";
-import { Dashboard } from "../features/dashboard/Dashboard";
+import { ParentSummary } from "../features/parent/ParentSummary";
 import { MultiplicationMap } from "../features/multiplication/MultiplicationMap";
 import { Settings } from "../features/settings/Settings";
 import { Achievements } from "../features/statistics/Achievements";
-import { Statistics } from "../features/statistics/Statistics";
+import { ParentAnalytics } from "../features/parent/ParentAnalytics";
+import { ParentDiagnosis } from "../features/parent/ParentDiagnosis";
+import { ParentHistory } from "../features/parent/ParentHistory";
+import { ParentWeakSpots } from "../features/parent/ParentWeakSpots";
+import { ParentReadStatus } from "../features/parent/ParentReadStatus";
 import { Training } from "../features/training/Training";
 import type { AppMode, Route } from "./router";
 
@@ -17,8 +21,8 @@ interface ModeShellProps {
 }
 
 function AchievementsPage() {
-  const { rewards } = useProgressData();
-  return <Achievements rewards={rewards} pageHeading />;
+  const { state, error } = useUnlockedAchievements();
+  return state ? <Achievements rewards={state} /> : <ParentReadStatus error={error} />;
 }
 
 function practice(mode: AppMode, screen: "training" | "weak" | "diagnostic", targetPair?: string, covered = false) {
@@ -47,7 +51,16 @@ export function ParentShell(props: ModeShellProps) {
       content = practice("parent", screen, targetPair);
       break;
     case "results":
-      content = <Statistics />;
+      content = <ParentAnalytics />;
+      break;
+    case "diagnosis":
+      content = <ParentDiagnosis />;
+      break;
+    case "weak-spots":
+      content = <ParentWeakSpots />;
+      break;
+    case "history":
+      content = <ParentHistory />;
       break;
     case "map":
       content = <MultiplicationMap />;
@@ -59,7 +72,7 @@ export function ParentShell(props: ModeShellProps) {
       content = <AchievementsPage />;
       break;
     default:
-      content = <Dashboard mode="parent" />;
+      content = <ParentSummary />;
   }
   return <AppShell mode="parent" {...props}>{content}</AppShell>;
 }

@@ -76,12 +76,13 @@ export function ParentPinDialog({ onDismiss, onUnlock }: {
             <label htmlFor="parent-pin">{t("parentPin")}</label>
             <input ref={input} id="parent-pin" type="password" inputMode="numeric"
               autoComplete="off" maxLength={4} required value={pin}
-              disabled={busy} aria-describedby="pin-hint" aria-invalid={message === "pinWrong" || message === "pinHint"}
+              disabled={busy} aria-describedby="pin-hint pin-default" aria-invalid={message === "pinWrong" || message === "pinHint"}
               onChange={(event) => {
                 setPin(event.target.value);
                 setMessage(null);
               }} />
             <p id="pin-hint" role={message === "pinHint" ? "alert" : undefined}>{t("pinHint")}</p>
+            <p id="pin-default">{t("pinDefaultHint", { pin: defaultParentPin })}</p>
           </div>
         )}
         {message && message !== "pinHint" && <p role={message === "pinResetDone" ? "status" : "alert"}>
