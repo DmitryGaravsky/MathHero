@@ -55,7 +55,8 @@ describe("learning repository and shared session lifecycle", () => {
     const migrated = new MathHeroDB(name);
     databases.push(migrated);
     await migrated.open();
-    expect(migrated.verno).toBe(3);
+    expect(migrated.verno).toBe(4);
+    expect(await migrated.parentGate.count()).toBe(0);
     expect(await migrated.sessions.get(diagnostic.session.id)).toEqual(
       diagnostic.session,
     );
@@ -82,13 +83,14 @@ describe("learning repository and shared session lifecycle", () => {
       random,
       "weak",
     ).start();
-    const target = await new LearningRepository(
+    const transposed = new LearningRepository(
       db,
       clock,
       random,
       "weak",
       "mul:8:7",
-    ).start();
+    );
+    const target = await transposed.start();
     const reverse = await new LearningRepository(
       db,
       clock,
@@ -99,6 +101,11 @@ describe("learning repository and shared session lifecycle", () => {
     expect(new Set([a.id, weak.id, target.id]).size).toBe(3);
     expect(target.id).toBe(reverse.id);
     expect(target.targetPair).toBe("mul:7:8");
+    expect(await transposed.claim("targeted-owner", target)).toMatchObject({
+      id: reverse.id,
+      targetPair: "mul:7:8",
+      owner: "targeted-owner",
+    });
   });
   it("commits attempt+progress+session once, rejecting stale checkpoints and foreign owners", async () => {
     const { db, repo } = setup();

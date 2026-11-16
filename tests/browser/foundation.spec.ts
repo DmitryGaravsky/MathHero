@@ -1,13 +1,15 @@
 import { expect, test } from "@playwright/test";
+import { goParent, openParent, parentNav } from "../support/parentMode";
 
-test("all five screens and both locales fit the viewport", async ({ page }) => {
+test("all adult destinations and both locales fit the viewport", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("./");
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Una pequeña misión",
+    "¡Hola! ¿Practicamos?",
   );
+  await openParent(page);
   for (const language of ["ru", "es"]) {
     await page
       .getByRole("button", {
@@ -16,9 +18,9 @@ test("all five screens and both locales fit the viewport", async ({ page }) => {
       })
       .first()
       .click();
-    for (const route of ["home", "training", "results", "map", "settings"]) {
-      await page.locator(`nav a[href="#${route}"]`).click();
-      await expect(page.locator(`nav a[href="#${route}"]`)).toHaveAttribute(
+    for (const route of ["home", "training", "results", "map", "weak-spots", "diagnosis", "history", "settings"]) {
+      await goParent(page, route);
+      await expect(parentNav(page, route)).toHaveAttribute(
         "aria-current",
         "page",
       );
@@ -29,7 +31,7 @@ test("all five screens and both locales fit the viewport", async ({ page }) => {
         ),
       ).toBe(true);
       const buttons = await page
-        .locator("button:visible:not(.map-cell), select:visible, nav a")
+        .locator("button:visible:not(.map-cell), select:visible, nav a:visible")
         .evaluateAll((elements) =>
           elements.map((element) => element.getBoundingClientRect().height),
         );
@@ -43,18 +45,12 @@ test("keypad, physical keyboard, native input path and empty submit", async ({
   page,
 }) => {
   await page.goto("./#diagnostic");
+  await openParent(page);
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   const input = page.getByRole("textbox", { name: "Tu respuesta" });
   await expect(
     page.getByRole("button", { name: "Confirmar respuesta" }),
   ).toBeDisabled();
-  if (page.viewportSize()?.width === 390) {
-    const confirm = await page
-      .getByRole("button", { name: "Confirmar respuesta" })
-      .boundingBox();
-    const navigation = await page.locator("nav").boundingBox();
-    expect(confirm!.y + confirm!.height).toBeLessThanOrEqual(navigation!.y);
-  }
   await page.getByRole("button", { name: "5", exact: true }).click();
   await page.getByRole("button", { name: "6", exact: true }).click();
   await expect(input).toHaveValue("56");
@@ -99,21 +95,22 @@ test("preview has no invented progress, supports back and reduced motion", async
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./");
-  await expect(page.locator(".journey-card")).toContainText("0 / 78");
+  await expect(page.locator(".child-progress")).toContainText("0 / 78");
   expect(
     await page
       .locator(".hero .mascot")
       .evaluate((element) => getComputedStyle(element).animationName),
   ).toBe("none");
-  await page.locator('nav a[href="#results"]').click();
+  await openParent(page);
+  await goParent(page, "diagnosis");
   await expect(
     page.getByText("Aún no hay respuestas guardadas.", { exact: false }),
   ).toBeVisible();
-  await page.locator('nav a[href="#map"]').click();
+  await goParent(page, "map");
   await expect(page.locator(".map-cell")).toHaveCount(144);
   await page.goBack();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Cada paso cuenta",
+    "Diagnóstico",
   );
 });
 
@@ -128,6 +125,7 @@ test("captures the foundation for visual review", async ({
     fullPage: true,
   });
   await page.goto("./#diagnostic");
+  await openParent(page);
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   await expect(page.locator(".equation")).toBeVisible();
   await expect(page.getByRole("textbox")).toBeEnabled();
@@ -143,7 +141,7 @@ test("captures the foundation for visual review", async ({
     path: testInfo.outputPath("feedback-ru.png"),
     fullPage: true,
   });
-  await page.locator('nav a[href="#results"]').click();
+  await goParent(page, "diagnosis");
   await expect(
     page.getByText("Правильно: 0 из 1.", { exact: false }),
   ).toBeVisible();

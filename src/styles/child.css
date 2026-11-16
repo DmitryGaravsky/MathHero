@@ -1,0 +1,266 @@
+.child-home,
+.child-achievements,
+.child-practice,
+.child-practice-panel,
+.child-practice-title,
+.child-result {
+  width: min(100%, 960px);
+  margin-inline: auto;
+}
+.child-home .child-hero {
+  min-height: 0;
+  grid-template-columns: 1.4fr 1fr;
+}
+.child-hero .hero-copy > p {
+  margin-bottom: 24px;
+}
+.child-hero .hero-art {
+  height: clamp(170px, 26vw, 300px);
+}
+.child-hero .mascot {
+  width: min(90%, 275px);
+  max-height: 100%;
+}
+.child-home-links,
+.child-badges {
+  display: grid;
+  gap: 16px;
+  margin-top: 18px;
+}
+.child-home-links {
+  grid-template-columns: 1.35fr 1fr;
+}
+.child-home-links h2,
+.child-progress p {
+  margin-bottom: 8px;
+}
+.child-progress strong {
+  display: block;
+  color: var(--accent);
+  font-size: clamp(1.6rem, 4vw, 2.15rem);
+  line-height: 1.25;
+}
+.child-progress progress,
+.child-practice progress {
+  width: 100%;
+  max-width: none;
+}
+.child-achievements-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.child-achievements-link strong {
+  flex: 1;
+  font-size: 1.2rem;
+}
+.child-achievements-link:hover {
+  border-color: var(--accent);
+}
+.child-badge {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border: 1px solid currentColor;
+  border-radius: 16px;
+  color: var(--accent);
+}
+.child-badge svg {
+  width: 30px;
+  height: 30px;
+}
+.child-badges {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  list-style: none;
+  padding: 0;
+}
+.child-badges li {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+.child-badges li[data-earned="true"] {
+  border-color: var(--accent);
+}
+.child-badges li[data-earned="false"] .child-badge,
+.child-badges li > span:last-child {
+  color: var(--muted);
+}
+.child-badges .child-badge {
+  margin-bottom: 6px;
+}
+.child-practice,
+.child-practice-panel,
+.child-practice-title,
+.child-result {
+  max-width: 580px;
+}
+.child-practice-title {
+  font-size: clamp(1.35rem, 3vw, 1.85rem);
+  margin-bottom: 12px;
+}
+.child-practice .question-progress {
+  display: grid;
+  grid-template-columns: auto minmax(64px, 1fr);
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+  text-align: start;
+}
+.child-practice .question-progress p {
+  margin: 0;
+}
+.child-practice .equation {
+  font-size: clamp(2.15rem, 8vw, 4rem);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 8px;
+}
+.child-practice .answer-input {
+  max-width: 240px;
+  margin-inline: auto;
+}
+.child-practice .input-hint {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.child-practice .question-controls {
+  margin-top: 14px;
+}
+.input-feedback p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.input-feedback[data-correct="true"] svg {
+  color: var(--accent);
+}
+[data-animations="true"] .input-feedback[data-correct="true"] svg {
+  animation: feedback-check 160ms ease-out;
+}
+@keyframes feedback-check {
+  from { opacity: 0.65; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+.practice-actions {
+  display: flex;
+  gap: 0 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.practice-actions > * {
+  margin-top: 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.child-result h1 {
+  font-size: clamp(1.7rem, 5vw, 2.4rem);
+  margin-bottom: 24px;
+}
+.child-result-score {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.child-result-score p {
+  margin: 2px 0 0;
+}
+.child-reward-list {
+  display: grid;
+  gap: 10px;
+  padding: 14px 0;
+  border-block: 1px solid var(--line);
+  list-style: none;
+}
+.child-reward-list li,
+.child-result-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.child-reward-list svg {
+  color: var(--accent);
+}
+.child-result-actions {
+  flex-wrap: wrap;
+}
+@media (max-width: 700px) {
+  .child-home-links {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .app-shell .child-hero {
+    padding-top: 12px;
+  }
+  .app-shell .child-hero .hero-art {
+    height: 130px;
+  }
+  .app-shell .child-hero .mascot {
+    width: 170px;
+  }
+  .app-shell .child-hero h1 {
+    margin-bottom: 8px;
+  }
+  .app-shell .child-home-links .card {
+    padding-block: 16px;
+  }
+  .child-result-actions > * {
+    flex: 1 1 auto;
+  }
+}
+@media (min-width: 701px) and (max-height: 550px) and (orientation: landscape) {
+  .app-shell[data-mode="child"] .app-header {
+    height: 62px;
+  }
+  .child-practice,
+  .child-practice-title {
+    max-width: 780px;
+  }
+  .app-shell[data-mode="child"] .navigation {
+    padding-block: 4px;
+  }
+  .app-shell[data-mode="child"] .navigation a {
+    min-height: 44px;
+  }
+  .app-shell main:has(.child-practice) {
+    padding-top: 8px;
+  }
+  .child-practice-title:has(+ .child-practice) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .app-shell .child-practice .exercise-card {
+    padding-block: 12px;
+  }
+  .child-practice form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 24px;
+  }
+  .child-practice .question-problem {
+    align-self: start;
+    padding-block-start: 16px;
+  }
+  .child-practice .equation {
+    font-size: clamp(2.15rem, 6vw, 3.5rem);
+  }
+  .child-practice .question-controls {
+    margin-top: 0;
+  }
+  .child-practice .keypad {
+    gap: 6px;
+  }
+  .app-shell .child-practice .keypad button {
+    height: 44px;
+  }
+}

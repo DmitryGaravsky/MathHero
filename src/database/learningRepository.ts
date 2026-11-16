@@ -8,10 +8,10 @@ import {
   type LearningSession,
 } from "../engine/learning/session";
 import { db, type MathHeroDB } from "./db";
+import { sessionTransaction } from "./sessionTransaction";
 
 /** One unfinished session per mode+target; completed sessions keep immutable history. */
 export class LearningRepository {
-  private id: string | undefined;
   constructor(
     private readonly database: MathHeroDB = db,
     private readonly clock: Clock = { now: () => Date.now() },
@@ -20,34 +20,25 @@ export class LearningRepository {
     readonly targetPair?: string,
     private readonly newId: () => string = () => crypto.randomUUID(),
   ) {
-    if (targetPair) getFact(targetPair);
+    this.targetPair = targetPair ? getFact(targetPair).canonicalId : undefined;
   }
   async get(): Promise<LearningSession | undefined> {
-    if (this.id) {
-      const row = await this.database.sessions.get(this.id);
-      return row?.mode !== "diagnostic" ? row : undefined;
-    }
     const sessions = await this.database.sessions
       .where("mode")
       .equals(this.mode)
       .toArray();
-    const target = this.targetPair
-      ? getFact(this.targetPair).canonicalId
-      : undefined;
     const latest = sessions
       .filter(
         (s): s is LearningSession =>
-          s.mode !== "diagnostic" && s.targetPair === target,
+          s.mode !== "diagnostic" && s.targetPair === this.targetPair,
       )
       .sort((a, b) => b.sequence - a.sequence);
     // Preserve the final feedback / summary on reload, including early completion.
-    const session = latest.find((s) => s.completedAt === null) ?? latest[0];
-    if (session) this.id = session.id;
-    return session;
+    return latest.find((s) => s.completedAt === null) ?? latest[0];
   }
-  async start() {
-    return this.database.transaction(
-      "rw",
+  async start(signal?: AbortSignal) {
+    return sessionTransaction(
+      this.database,
       [
         this.database.sessions,
         this.database.progress,
@@ -56,9 +47,8 @@ export class LearningRepository {
         this.database.rewards,
         this.database.rewardState,
       ],
+      signal,
       async () => {
-        // Re-query inside the serialized transaction, even when this instance has an old ID.
-        this.id = undefined;
         const existing = await this.get();
         if (existing && existing.phase !== "completed") return existing;
         const session = createLearning(
@@ -75,7 +65,6 @@ export class LearningRepository {
         );
         session.sequence = (existing?.sequence ?? 0) + 1;
         await this.database.sessions.add(session);
-        this.id = session.id;
         return session;
       },
     );
@@ -83,17 +72,17 @@ export class LearningRepository {
   async claim(
     owner: string,
     expected?: LearningSession,
-    isActive: () => boolean = () => true,
+    signal?: AbortSignal,
   ): Promise<LearningSession> {
-    return this.database.transaction("rw", this.database.sessions, async () => {
-      const session = await this.get();
-      if (!session || !isActive())
-        throw new Error("Missing session or disposed view");
+    return sessionTransaction(this.database, [this.database.sessions], signal, async () => {
+      const session = expected ? await this.database.sessions.get(expected.id) : await this.get();
+      if (!session || session.mode !== this.mode || session.targetPair !== this.targetPair)
+        throw new Error("Missing session");
       if (
         expected &&
-        (session.id !== expected.id ||
-          session.cursor !== expected.cursor ||
-          session.phase !== expected.phase)
+        (session.cursor !== expected.cursor ||
+          session.phase !== expected.phase || session.owner !== expected.owner ||
+          session.startedAt !== expected.startedAt)
       )
         throw new Error("Session changed");
       const claimed = { ...session, owner };
@@ -106,9 +95,11 @@ export class LearningRepository {
     if (
       !current ||
       current.mode === "diagnostic" ||
+      expected.owner === null ||
       current.owner !== expected.owner ||
       current.cursor !== expected.cursor ||
-      current.phase !== expected.phase
+      current.phase !== expected.phase ||
+      current.startedAt !== expected.startedAt
     )
       throw new Error("Session changed in another view");
     return current;
@@ -130,9 +121,9 @@ export class LearningRepository {
       });
     });
   }
-  submit(expected: LearningSession, answer: number, activeMs: number) {
-    return this.database.transaction(
-      "rw",
+  submit(expected: LearningSession, answer: number, activeMs: number, signal?: AbortSignal) {
+    return sessionTransaction(
+      this.database,
       [
         this.database.sessions,
         this.database.attempts,
@@ -141,6 +132,7 @@ export class LearningRepository {
         this.database.rewardState,
         this.database.progress,
       ],
+      signal,
       async () => {
         const current = await this.current(expected);
         const pair = getFact(current.order[current.cursor]!).canonicalId;
@@ -166,9 +158,9 @@ export class LearningRepository {
       },
     );
   }
-  advance(expected: LearningSession) {
-    return this.database.transaction(
-      "rw",
+  advance(expected: LearningSession, signal?: AbortSignal) {
+    return sessionTransaction(
+      this.database,
       [
         this.database.sessions,
         this.database.progress,
@@ -177,6 +169,7 @@ export class LearningRepository {
         this.database.rewards,
         this.database.rewardState,
       ],
+      signal,
       async () => {
         const next = advanceLearning(
           await this.current(expected),
@@ -193,15 +186,16 @@ export class LearningRepository {
       },
     );
   }
-  finish(expected: LearningSession) {
-    return this.database.transaction(
-      "rw",
+  finish(expected: LearningSession, signal?: AbortSignal) {
+    return sessionTransaction(
+      this.database,
       [
         this.database.sessions,
         this.database.attempts,
         this.database.journal,
         this.database.rewards,
       ],
+      signal,
       async () => {
         const current = await this.current(expected);
         const next: LearningSession = {

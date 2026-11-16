@@ -365,4 +365,110 @@ describe("IndexedDB and controller", () => {
     await c.saveCheckpoint();
     expect(checkpoint).toHaveBeenCalledOnce();
   });
+  it("cancels a deferred start while covered and ignores its late result after reactivation", async () => {
+    const { repo } = repository();
+    const controller = new DiagnosticController(repo, clock, "child");
+    await controller.load();
+    let release!: () => void;
+    const delay = new Promise<void>((resolve) => { release = resolve; });
+    const start = repo.start.bind(repo);
+    vi.spyOn(repo, "start").mockImplementationOnce(async (signal) => {
+      await delay;
+      return start(signal);
+    });
+    const pending = controller.start();
+    await controller.setActive(false);
+    await controller.setActive(true);
+    release();
+    await pending;
+    expect(await repo.get()).toBeUndefined();
+    expect(controller.getSnapshot()).toMatchObject({ active: true, busy: false, session: null });
+  });
+  it("aborts an in-flight answer transaction after its attempt and journal writes", async () => {
+    const { db, repo } = repository();
+    await repo.start();
+    const session = await repo.claim("child");
+    const activity = new AbortController();
+    const suspend = vi.fn(() => { activity.abort(); });
+    db.sessions.hook("updating", suspend);
+    try {
+      await expect(repo.submit(session, 0, 500, activity.signal)).rejects.toThrow();
+    } finally {
+      db.sessions.hook("updating").unsubscribe(suspend);
+    }
+    expect(suspend).toHaveBeenCalledOnce();
+    expect(await db.attempts.count()).toBe(0);
+    expect(await db.journal.count()).toBe(0);
+    expect(await repo.get()).toEqual(session);
+  });
+  it("only schedules automatic advance for active, unpaused, correctly answered, owned feedback", async () => {
+    const { repo } = repository();
+    const controller = new DiagnosticController(repo, clock, "child");
+    await controller.start();
+    const first = controller.getSnapshot().session!;
+    controller.reveal();
+    controller.setDraft(String(getFact(first.order[0]!).expectedAnswer));
+    await controller.submit();
+    const feedback = controller.getSnapshot().session!;
+    expect(controller.getSnapshot()).toMatchObject({ paused: false, session: { cursor: 1 } });
+    expect(controller.canAdvanceAutomatically(feedback)).toBe(true);
+    await controller.setActive(false);
+    expect(controller.canAdvanceAutomatically(feedback)).toBe(false);
+    await controller.advanceCorrectFeedback(feedback);
+    expect(await repo.get()).toEqual(feedback);
+    await controller.setActive(true);
+    expect(controller.canAdvanceAutomatically(feedback)).toBe(false);
+    const reopened = controller.getSnapshot().session!;
+    expect(controller.canAdvanceAutomatically(reopened)).toBe(true);
+    const claim = vi.spyOn(repo, "claim");
+    const otherTab = await repo.claim("other-tab");
+    claim.mockClear();
+    await controller.advanceCorrectFeedback(reopened);
+    expect(claim).not.toHaveBeenCalled();
+    expect(await repo.get()).toEqual(otherTab);
+    await controller.load();
+    expect(controller.canAdvanceAutomatically(controller.getSnapshot().session!)).toBe(false);
+  });
+  it("keeps a manual feedback pause through cover and reveal", async () => {
+    const { repo } = repository();
+    const controller = new DiagnosticController(repo, clock, "child");
+    await controller.start();
+    const first = controller.getSnapshot().session!;
+    controller.reveal();
+    controller.setDraft(String(getFact(first.order[0]!).expectedAnswer));
+    await controller.submit();
+    await controller.pause();
+    await controller.setActive(false);
+    await controller.setActive(true);
+    const { session, paused } = controller.getSnapshot();
+    expect(paused).toBe(true);
+    expect(controller.canAdvanceAutomatically(session!)).toBe(false);
+    await controller.next();
+    expect(controller.getSnapshot()).toMatchObject({ paused: false, session: { cursor: 1, phase: "question" } });
+  });
+  it("rolls back automatic advance when the view suspends during its transaction", async () => {
+    const { db, repo } = repository();
+    const controller = new DiagnosticController(repo, clock, "child");
+    await controller.start();
+    const first = controller.getSnapshot().session!;
+    controller.reveal();
+    controller.setDraft(String(getFact(first.order[0]!).expectedAnswer));
+    await controller.submit();
+    const feedback = controller.getSnapshot().session!;
+    const suspend = vi.fn(() => { void controller.setActive(false); });
+    db.sessions.hook("updating", suspend);
+    try {
+      await controller.advanceCorrectFeedback(feedback);
+    } finally {
+      db.sessions.hook("updating").unsubscribe(suspend);
+    }
+    expect(suspend).toHaveBeenCalledOnce();
+    expect(await repo.get()).toEqual(feedback);
+    expect(await db.attempts.count()).toBe(1);
+    await controller.setActive(true);
+    const restored = controller.getSnapshot().session!;
+    await controller.advanceCorrectFeedback(restored);
+    expect(await repo.get()).toMatchObject({ phase: "question", cursor: 1, activeMs: 0, owner: "child" });
+    expect(await db.attempts.count()).toBe(1);
+  });
 });

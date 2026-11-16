@@ -26,15 +26,15 @@ describe("foundation", () => {
     );
     expect(document.documentElement.lang).toBe("es");
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
-      "Una pequeña misión",
+      "¡Hola! ¿Practicamos?",
     );
     await user.click(screen.getByRole("button", { name: "Русский" }));
-    expect(document.documentElement.lang).toBe("ru");
+    await waitFor(() => expect(document.documentElement.lang).toBe("ru"));
     expect(
       screen.getByRole("link", { name: "Тренировка" }),
     ).toBeInTheDocument();
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
-      "Маленькая миссия",
+      "Привет! Потренируемся?",
     );
   });
   it("accepts keypad input, erases, submits once and clears for retry", async () => {
@@ -99,7 +99,7 @@ describe("foundation", () => {
     const toggle = await screen.findByRole("switch", { name: es.animations });
     expect(toggle).toHaveAttribute("aria-checked", "true");
     await user.click(toggle);
-    expect(toggle).toHaveAttribute("aria-checked", "false");
+    await waitFor(() => expect(toggle).toHaveAttribute("aria-checked", "false"));
     expect(screen.getByText(es.soundHint)).toBeInTheDocument();
   });
 });

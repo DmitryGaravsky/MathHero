@@ -1,11 +1,16 @@
 import { useRef, useState } from "react";
 import { useApp } from "../../app/AppContext";
 import { PageHeading } from "../../components/ui/PageHeading";
-import { useProgressData } from "../../database/useProgressData";
+import { readPairDetail } from "../../database/parentReadModel";
+import { useParentRead } from "../../database/useParentRead";
 import { getFact } from "../../engine/multiplication/facts";
 import { mapStatuses } from "../../engine/learning/analytics";
 import { pairTrainingLink } from "../../app/router";
 import { History } from "../statistics/History";
+import { ParentReadStatus } from "../parent/ParentReadStatus";
+import { useMetricFormat } from "../../app/useMetricFormat";
+import { useProgressView } from "../parent/useProgressView";
+import { PairEvidence } from "../parent/PairEvidence";
 
 const factors = Array.from({ length: 12 }, (_, index) => index + 1);
 const symbols = {
@@ -17,18 +22,22 @@ const symbols = {
 };
 export function MultiplicationMap() {
   const { t } = useApp();
-  const data = useProgressData();
+  const { view: stats, error } = useProgressView();
+  const { number } = useMetricFormat();
   const [a, setA] = useState(1);
   const [b, setB] = useState(1);
   const buttons = useRef(new Map<string, HTMLButtonElement>());
   const id = `mul:${a}:${b}`;
   const fact = getFact(id);
-  const status = data.stats.cells.find((c) => c.id === id)!.status;
+  const detail = useParentRead(readPairDetail, fact.canonicalId);
+  const cells = new Map(stats?.cells.map((cell) => [cell.id, cell]));
+  const status = cells.get(id)?.status ?? "unknown";
   return (
     <>
-      <PageHeading title={t("mapTitle")} description={t("mapDescription")} />
-      {data.error && <p role="alert">{t("storageError")}</p>}
+      <PageHeading title={t("progressMap")} description={t("mapDescription")} />
+      {!stats ? <ParentReadStatus error={error} /> : <>
       <section className="card map-card">
+        <p>{t("directionsCount", { count: number(stats.masteredDirections) })} · {t("pairsCount", { count: number(stats.masteredPairs) })}</p>
         <div className="factor-picker">
           <label>
             {t("firstFactor")}
@@ -66,9 +75,7 @@ export function MultiplicationMap() {
             <div key={x} className="map-row">
               <span aria-hidden="true">{x}</span>
               {factors.map((y) => {
-                const cell = data.stats.cells.find(
-                  (c) => c.id === `mul:${x}:${y}`,
-                )!;
+                const cell = cells.get(`mul:${x}:${y}`)!;
                 return (
                   <button
                     key={y}
@@ -114,35 +121,36 @@ export function MultiplicationMap() {
         <ul className="legend">
           {mapStatuses.map((s) => (
             <li key={s}>
-              <span className={`legend-dot ${s}`} />
-              {symbols[s]} {t(s)}
+              <span className={`legend-symbol ${s}`} aria-hidden="true">{symbols[s]}</span>
+              {t(s)}
             </li>
           ))}
         </ul>
         <p className="map-hint">{t("mapHint")}</p>
       </section>
-      <section className="card fact-detail" aria-live="polite">
-        <h2>
-          {a} × {b} = {a * b}
-        </h2>
-        <p>{t(status)}</p>
+      <section className="card fact-detail">
+        <div aria-live="polite">
+          <h2>{a} × {b} = {fact.expectedAnswer}</h2>
+          <p>{t(status)}</p>
+        </div>
+        {detail?.data ? <>
+        <PairEvidence data={detail.data} />
         <h3>{t("directionHistory")}</h3>
         <History
           key={id}
-          attempts={data.attempts.filter((row) => row.exerciseId === id)}
+          attempts={detail.data.attempts.filter((row) => row.exerciseId === id)}
         />
         <details>
           <summary>
             {t("pairHistory")} · {fact.operands.join(" × ")}
           </summary>
           <History
-            key={fact.canonicalId}
-            attempts={data.attempts.filter(
-              (row) => row.canonicalId === fact.canonicalId,
-            )}
+            key={fact.canonicalId} attempts={detail.data.attempts}
           />
         </details>
+        </> : <ParentReadStatus error={detail?.error} />}
       </section>
+      </>}
     </>
   );
 }

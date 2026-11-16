@@ -5,7 +5,7 @@ export function Achievements({ rewards }: { rewards: Reward[] }) {
   const { t } = useApp();
   return (
     <section className="card achievements">
-      <h2>{t("achievements")}</h2>
+      <h1>{t("achievements")}</h1>
       <p>{t("achievementHint")}</p>
       <ul>
         {achievementIds.map((id) => (

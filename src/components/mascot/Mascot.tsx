@@ -24,7 +24,7 @@ export function Mascot({
       data-state={state}
       viewBox="0 0 300 300"
     >
-      <ellipse cx="151" cy="275" rx="65" ry="10" fill="#ccd1e6" opacity=".5" />
+      <ellipse cx="151" cy="275" rx="65" ry="10" fill="var(--mascot-shadow)" opacity=".23" />
       <path d="M197 212q61-65 63-10c4 45-54 60-77 37" fill="#ee8e44" />
       <path d="M240 185q27 0 19 35l-26-10Z" fill="#fff1dc" />
       <path

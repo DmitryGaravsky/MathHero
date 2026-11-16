@@ -1,5 +1,8 @@
 # Stage 4 — Progress, rewards and backups
 
+Status — historical MVP stage record. See the
+[current data model](../architecture/DATA_MODEL.md) and [backup contract](../architecture/STORAGE.md).
+
 Implemented on 15 November 2026. Stage 4 worker chat:
 `01a1df84-bbcf-7481-a4c9-ee99f74ca714`.
 

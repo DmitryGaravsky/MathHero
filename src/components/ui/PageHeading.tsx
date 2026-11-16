@@ -3,12 +3,12 @@ export function PageHeading({
   description,
 }: {
   title: string;
-  description: string;
+  description?: string;
 }) {
   return (
     <header className="page-heading">
       <h1>{title}</h1>
-      <p>{description}</p>
+      {description && <p>{description}</p>}
     </header>
   );
 }

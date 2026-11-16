@@ -3,7 +3,7 @@ import type { Attempt } from "../sessions/diagnostic";
 
 export const DAY_MS = 86_400_000;
 /** Pilot parameters, not educational norms. Inject timeZone for reproducible simulations. */
-export const learningPolicy = {
+export const legacyLearningPolicy = {
   version: 1,
   timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   window: 20,
@@ -17,6 +17,7 @@ export const learningPolicy = {
   recentErrorDays: 7,
   intervals: [1, 3, 7, 14, 30],
 };
+export const learningPolicy = { ...legacyLearningPolicy, version: 2 };
 export type LearningPolicy = typeof learningPolicy;
 export type Difficulty =
   "unknown" | "error" | "slow" | "developing" | "fluent" | "mastered";
@@ -47,6 +48,13 @@ export interface PairProgress {
   lastIntervalDay: string | null;
   nextReviewAt: number;
   masteredAt: number | null;
+  retentionCheck?: RetentionCheck | null;
+}
+export interface RetentionCheck {
+  at: number;
+  dueAt: number;
+  intervalDays: number;
+  timeZone: string;
 }
 export function median(values: readonly number[]): number | null {
   if (!values.length) return null;
@@ -195,7 +203,42 @@ export function updateProgress(
     attempt.correct && masteryEvidence(next, attempt.createdAt, policy).eligible
       ? (previous?.masteredAt ?? attempt.createdAt)
       : null;
+  if (policy.version === learningPolicy.version || previous?.retentionCheck !== undefined) {
+    const check = retentionAfter(previous?.retentionCheck, previous, next, attempt, policy);
+    if (check !== undefined) next.retentionCheck = check;
+  }
   return next;
+}
+
+export function retentionAfter(
+  lastCheck: RetentionCheck | null | undefined,
+  previous: PairProgress | undefined,
+  next: PairProgress,
+  attempt: Attempt,
+  policy: LearningPolicy,
+) {
+  if (next.masteredAt === null || !attempt.correct || attempt.responseTimeMs > policy.fastMs)
+    return null;
+  const prior = previous?.recent.at(-1);
+  const current = next.recent.at(-1)!;
+  const intervalDays = previous && policy.intervals[previous.intervalIndex];
+  if (
+    previous && previous.masteredAt !== null && intervalDays !== undefined && prior &&
+    attempt.createdAt >= previous.nextReviewAt &&
+    attempt.createdAt - prior.at >= intervalDays * DAY_MS &&
+    current.sessionId !== prior.sessionId &&
+    current.day !== previous.lastIntervalDay &&
+    current.day !== prior.day &&
+    current.day !== calendarDay(prior.at, current.timeZone)
+  ) {
+    return {
+      at: current.at,
+      dueAt: previous.nextReviewAt,
+      intervalDays,
+      timeZone: current.timeZone,
+    };
+  }
+  return lastCheck;
 }
 export function difficulty(
   progress: PairProgress | undefined,

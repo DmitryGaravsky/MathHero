@@ -1,6 +1,6 @@
-import type { Preferences } from "../app/AppContext";
+import { readPreferences, validatePreferences, type StoredPreferences } from "../settings/preferences";
 import { getFact } from "../engine/multiplication/facts";
-import { learningPolicy, type PairProgress } from "../engine/learning/progress";
+import { learningPolicy, legacyLearningPolicy, type PairProgress } from "../engine/learning/progress";
 import {
   replayLearning,
   type JournalEntry,
@@ -11,21 +11,22 @@ import type { Session } from "../engine/learning/session";
 import type { Attempt } from "../engine/sessions/diagnostic";
 import { db, type MathHeroDB } from "./db";
 
-export interface Backup {
+export type Backup = (
+  | { version: 1; databaseVersion: 3 }
+  | { version: 2; databaseVersion: 4 }
+) & {
   format: "math-hero-backup";
-  version: 1;
-  databaseVersion: 3;
   exportedAt: number;
   tables: {
     sessions: Session[];
     attempts: Attempt[];
     progress: PairProgress[];
-    settings: { id: string; value: Preferences }[];
+    settings: { id: string; value: StoredPreferences }[];
     journal: JournalEntry[];
     rewards: Reward[];
     rewardState: RewardState[];
   };
-}
+};
 function requireValid(value: unknown): asserts value {
   if (!value) throw new Error("Invalid Math Hero backup");
 }
@@ -95,8 +96,8 @@ export function validateBackup(input: unknown): Backup {
   const root = object(input);
   requireValid(
     root.format === "math-hero-backup" &&
-      root.version === 1 &&
-      root.databaseVersion === 3 &&
+      ((root.version === 1 && root.databaseVersion === 3) ||
+        (root.version === 2 && root.databaseVersion === 4)) &&
       timestamp(root.exportedAt),
   );
   keys(root.tables, [
@@ -128,20 +129,7 @@ export function validateBackup(input: unknown): Backup {
   for (const row of settings) {
     keys(row, ["id", "value"]);
     requireValid(row.id === "preferences");
-    keys(row.value, [
-      "language",
-      "soundEnabled",
-      "animationsEnabled",
-      "dailyGoalMinutes",
-    ]);
-    requireValid(
-      ["ru", "es"].includes(row.value.language) &&
-        typeof row.value.soundEnabled === "boolean" &&
-        typeof row.value.animationsEnabled === "boolean" &&
-        [5, 10, 15].includes(row.value.dailyGoalMinutes),
-    );
-    // This release is intentionally silent and offers no sound toggle.
-    requireValid(row.value.soundEnabled === false);
+    validatePreferences(row.value, backup.version === 1);
   }
   const sessionById = new Map(sessions.map((s) => [s.id, s]));
   const attemptById = new Map(attempts.map((a) => [a.id, a]));
@@ -229,7 +217,12 @@ export function validateBackup(input: unknown): Backup {
       keys(s.policy, Object.keys(learningPolicy));
       requireValid(typeof s.policy.timeZone === "string");
       new Intl.DateTimeFormat("en", { timeZone: s.policy.timeZone }).format(0);
-      equal(s.policy, { ...learningPolicy, timeZone: s.policy.timeZone });
+      const policy = s.policy.version === legacyLearningPolicy.version
+        ? legacyLearningPolicy
+        : learningPolicy;
+      requireValid(s.policy.version === policy.version &&
+        (backup.version !== 1 || policy === legacyLearningPolicy));
+      equal(s.policy, { ...policy, timeZone: s.policy.timeZone });
       if (s.targetPair !== undefined)
         requireValid(
           s.mode === "weak" &&
@@ -359,21 +352,30 @@ export function parseBackup(text: string) {
   requireValid(text.length <= 20_000_000);
   return validateBackup(JSON.parse(text) as unknown);
 }
+
+function backupTables(database: MathHeroDB) {
+  return [database.sessions, database.attempts, database.progress, database.settings,
+    database.journal, database.rewards, database.rewardState];
+}
+
 export async function exportBackup(
   database: MathHeroDB = db,
   now = Date.now(),
 ): Promise<Backup> {
-  return database.transaction("r", database.tables, async () =>
+  return database.transaction("r", backupTables(database), async () =>
     validateBackup({
       format: "math-hero-backup",
-      version: 1,
-      databaseVersion: 3,
+      version: 2,
+      databaseVersion: 4,
       exportedAt: now,
       tables: {
         sessions: await database.sessions.toArray(),
         attempts: await database.attempts.toArray(),
         progress: await database.progress.toArray(),
-        settings: await database.settings.toArray(),
+        settings: (await database.settings.toArray()).map((row) => ({
+          ...row,
+          value: readPreferences(row.value),
+        })),
         journal: await database.journal.toArray(),
         rewards: await database.rewards.toArray(),
         rewardState: await database.rewardState.toArray(),
@@ -388,8 +390,9 @@ export async function restoreBackup(
 ) {
   if (!confirmed) return false;
   const backup = validateBackup(input);
-  await database.transaction("rw", database.tables, async () => {
-    for (const table of database.tables) await table.clear();
+  const tables = backupTables(database);
+  await database.transaction("rw", tables, async () => {
+    for (const table of tables) await table.clear();
     await database.sessions.bulkAdd(
       backup.tables.sessions.map((s) => ({ ...s, owner: null })),
     );

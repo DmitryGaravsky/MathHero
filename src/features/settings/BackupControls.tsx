@@ -8,7 +8,8 @@ import {
 } from "../../database/backup";
 
 export function BackupControls() {
-  const { t } = useApp();
+  const { t, preferences } = useApp();
+  const numbers = new Intl.NumberFormat(preferences.language);
   const file = useRef<HTMLInputElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const [pending, setPending] = useState<Backup | null>(null);
@@ -126,8 +127,8 @@ export function BackupControls() {
         <p id="restore-warning">{t("replaceWarning")}</p>
         <p>
           {t("backupPreview", {
-            attempts: String(pending?.tables.attempts.length ?? 0),
-            sessions: String(pending?.tables.sessions.length ?? 0),
+            attempts: numbers.format(pending?.tables.attempts.length ?? 0),
+            sessions: numbers.format(pending?.tables.sessions.length ?? 0),
           })}
         </p>
         <div className="action-row">

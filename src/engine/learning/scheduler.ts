@@ -8,6 +8,7 @@ import type { Attempt } from "../sessions/diagnostic";
 import {
   difficulty,
   learningPolicy,
+  masteryEvidence,
   type PairProgress,
   type LearningPolicy,
 } from "./progress";
@@ -73,8 +74,16 @@ export function selectNext(
         a.due - b.due,
     )[0];
   let chosen: string;
+  // Open ordinary practice with one due review. Later slots keep the full repeat queue.
+  const dueReview = policy.version === learningPolicy.version &&
+    index === 0 && context.mode === "adaptive" && !context.targetPair
+    ? progress
+        .filter((p) => p.nextReviewAt <= now && masteryEvidence(p, now, policy).mastered)
+        .sort((a, b) => a.nextReviewAt - b.nextReviewAt || a.canonicalId.localeCompare(b.canonicalId))[0]
+    : undefined;
   if (context.targetPair && index === 0)
     chosen = getFact(context.targetPair).canonicalId;
+  else if (dueReview) chosen = dueReview.canonicalId;
   else if (repeat) chosen = repeat.canonicalId;
   else {
     let candidates = pairs.filter(

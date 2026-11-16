@@ -1,4 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openParent } from "../support/parentMode";
+import { nativeSnapshot, rows } from "../support/nativeSnapshot";
+import type { Reward } from "../../src/engine/learning/rewards";
+import type { LearningSession } from "../../src/engine/learning/session";
+
 
 async function snapshot(page: Page) {
   return page.evaluate(async () => {
@@ -63,10 +68,11 @@ test("completes a real daily session, repeats the error, restores feedback and s
   page,
 }, info) => {
   test.setTimeout(90000);
+  await page.clock.install();
   await page.goto("./");
   await page.getByRole("link", { name: "Empezar a practicar" }).click();
   await page.getByRole("button", { name: "Empezar a practicar" }).click();
-  await expect(page.getByText("CALENTAMIENTO · 1 / 24")).toBeVisible();
+  await expect(page.getByText("Pregunta 1 de 24")).toBeVisible();
   await expect(page.getByRole("textbox")).toBeEnabled();
   await page.screenshot({
     path: info.outputPath("daily-question.png"),
@@ -76,24 +82,36 @@ test("completes a real daily session, repeats the error, restores feedback and s
   await page.reload();
   await expect(page.getByRole("status")).toContainText("La respuesta correcta");
   await page.getByRole("button", { name: "Siguiente", exact: true }).click();
+  let finalRewards: Reward[] = [];
   for (let i = 1; i < 24; i++) {
+    if (i === 23) await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
     const pair = await answer(page);
     if (i === 1 || i === 2) expect(pair).not.toBe(first);
     if (i === 3) expect(pair).toBe(first);
-    await page
-      .getByRole("button", {
-        name: i === 23 ? "Ver resumen" : "Siguiente",
-        exact: true,
-      })
-      .click();
+    if (i === 23) {
+      const saved = await nativeSnapshot(page);
+      expect(rows<LearningSession>(saved, "sessions")[0]).toMatchObject({ phase: "feedback", cursor: 24 });
+      finalRewards = rows<Reward>(saved, "rewards");
+      expect(finalRewards.filter((reward) => reward.kind === "completion")).toHaveLength(1);
+      await expect(page.getByRole("heading", { name: "Práctica completada" })).toHaveCount(0);
+    }
+    await page.clock.fastForward(800);
   }
+  await page.clock.resume();
   await expect(
     page.getByRole("heading", { name: "Práctica completada" }),
   ).toBeVisible();
   await expect(
     page.getByText("Correctas: 23 de 24.", { exact: true }),
   ).toBeVisible();
-  await expect(page.getByText("95,8%", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Te resultó más fácil recordar [1-9]\d?\s+multiplicaci/)).toBeVisible();
+  await expect(page.getByText("95,8%", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Tiempo medio")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Práctica completada" })).toBeFocused();
+  const complete = await nativeSnapshot(page);
+  expect(rows<LearningSession>(complete, "sessions")[0]).toMatchObject({ phase: "completed", cursor: 24 });
+  expect(rows<Reward>(complete, "rewards")).toEqual(finalRewards);
+  await expect(page.getByText("Primeros 10 aciertos", { exact: true })).toBeVisible();
   const data = await snapshot(page);
   expect(data.attempts).toHaveLength(24);
   expect(data.progress.reduce((n, p) => n + p.attempts, 0)).toBe(24);
@@ -115,10 +133,15 @@ test("completes a real daily session, repeats the error, restores feedback and s
     path: info.outputPath("daily-summary-ru.png"),
     fullPage: true,
   });
-  await page.locator('nav a[href="#results"]').click();
+  await page.locator('nav a[href="#achievements"]').click();
+  await expect(page.locator('.child-badges li[data-earned="true"]')).toHaveCount(1);
+  await openParent(page, "home");
   await expect(
-    page.getByRole("heading", { name: "Последнее занятие" }),
-  ).toBeVisible();
+    page.locator(".latest-practice summary"),
+  ).toHaveText("Последнее занятие");
+  await page.locator(".latest-practice summary").click();
+  const accuracy = new Intl.NumberFormat("ru", { style: "percent", maximumFractionDigits: 1 }).format(23 / 24);
+  await expect(page.locator(".card.empty-state .session-metrics").getByText(accuracy, { exact: true })).toBeVisible();
   await expect(
     page.getByText("Правильно: 23 из 24.", { exact: true }),
   ).toBeVisible();
@@ -177,12 +200,11 @@ test("ends early from a restored pause, retains the summary and starts another i
   await page.goto("./#training");
   await page.getByRole("button", { name: "Empezar a practicar" }).click();
   await answer(page);
-  await page.getByRole("button", { name: "Siguiente", exact: true }).click();
   await expect(page.getByRole("textbox")).toBeEnabled();
   await page.reload();
   await page.getByRole("button", { name: "Terminar esta práctica" }).click();
   await expect(
-    page.getByRole("heading", { name: "Práctica guardada" }),
+    page.getByRole("heading", { name: "Práctica finalizada" }),
   ).toBeVisible();
   await expect(
     page.getByText("Correctas: 1 de 1.", { exact: true }),
@@ -195,8 +217,10 @@ test("ends early from a restored pause, retains the summary and starts another i
   await expect(page.getByRole("textbox")).toBeEnabled();
   await page.getByRole("button", { name: "Terminar esta práctica" }).click();
   await expect(
-    page.getByText("Correctas: 0 de 0.", { exact: true }),
+    page.getByText("Aún no has respondido ninguna pregunta.", { exact: true }),
   ).toBeVisible();
+  await expect(page.getByText("¡Bien hecho!", { exact: true })).toHaveCount(0);
+  await expect(page.locator(".child-reward-list")).toHaveCount(0);
   const data = await snapshot(page);
   expect(data.sessions).toHaveLength(2);
   expect(data.attempts).toHaveLength(1);
@@ -213,7 +237,7 @@ test("targeted weak practice uses the requested canonical pair with fillers, and
     const pair = await answer(page);
     if (i < 3) expect(pair).not.toBe("7:8");
     else expect(pair).toBe("7:8");
-    await page.getByRole("button", { name: "Siguiente", exact: true }).click();
+    await expect(page.getByRole("textbox")).toBeEnabled();
   }
   const before = await snapshot(page);
   expect(before.sessions[0]).toMatchObject({
@@ -221,6 +245,7 @@ test("targeted weak practice uses the requested canonical pair with fillers, and
     targetPair: "mul:7:8",
   });
   await page.goto("./#diagnostic");
+  await openParent(page);
   await page.getByRole("button", { name: "Empezar diagnóstico" }).click();
   await answer(page, true);
   const after = await snapshot(page);

@@ -1,6 +1,7 @@
 import {
   useEffect,
   useLayoutEffect,
+  useRef,
   useState,
   useSyncExternalStore,
 } from "react";
@@ -9,11 +10,15 @@ import { DiagnosticController } from "./DiagnosticController";
 import type { Session } from "../../engine/learning/session";
 import { LearningRepository } from "../../database/learningRepository";
 import { diagnosticRepository } from "../../database/diagnosticRepository";
+import { observeSession } from "../../database/usePracticeData";
 import type { SessionMode } from "../../engine/sessions/diagnostic";
+
+const correctFeedbackMs = 800;
 
 export function useDiagnostic(
   mode: SessionMode = "diagnostic",
   targetPair?: string,
+  covered = false,
 ) {
   const [controller] = useState(
     () =>
@@ -33,38 +38,74 @@ export function useDiagnostic(
     controller.subscribe,
     controller.getSnapshot,
   );
-  useEffect(() => {
-    controller.attach();
-    void controller.load();
-    const hide = () => {
-      if (document.hidden) void controller.pause();
+  const pageAvailable = useRef(true);
+  useLayoutEffect(() => {
+    controller.attach(false);
+    return () => { void controller.detach(); };
+  }, [controller]);
+  useLayoutEffect(() => {
+    const syncActivity = () => {
+      void controller.setActive(pageAvailable.current && !document.hidden && !covered);
     };
     const leave = () => {
-      void controller.pause();
+      pageAvailable.current = false;
+      syncActivity();
     };
-    document.addEventListener("visibilitychange", hide);
+    const show = () => {
+      pageAvailable.current = true;
+      syncActivity();
+    };
+    syncActivity();
+    document.addEventListener("visibilitychange", syncActivity);
     window.addEventListener("pagehide", leave);
-    window.addEventListener("beforeunload", leave);
+    window.addEventListener("pageshow", show);
+    return () => {
+      document.removeEventListener("visibilitychange", syncActivity);
+      window.removeEventListener("pagehide", leave);
+      window.removeEventListener("pageshow", show);
+    };
+  }, [controller, covered]);
+  useEffect(() => {
     const interval = window.setInterval(() => {
-      if (!document.hidden) void controller.saveCheckpoint();
+      void controller.saveCheckpoint();
     }, 250);
     return () => {
-      document.removeEventListener("visibilitychange", hide);
-      window.removeEventListener("pagehide", leave);
-      window.removeEventListener("beforeunload", leave);
       window.clearInterval(interval);
-      void controller.detach();
     };
   }, [controller]);
   useLayoutEffect(() => {
-    if (!document.hidden) controller.reveal();
-    else void controller.pause();
+    controller.reveal();
   }, [
     controller,
+    view.active,
+    view.loading,
     view.session?.cursor,
     view.session?.phase,
     view.paused,
     view.busy,
   ]);
+  const { active, busy, error, loading, paused, session } = view;
+  useLayoutEffect(() => {
+    if (!session || !controller.canAdvanceAutomatically(session)) return;
+    const hash = window.location.hash;
+    const timeout = window.setTimeout(() => {
+      if (pageAvailable.current && !document.hidden && window.location.hash === hash) {
+        void controller.advanceCorrectFeedback(session);
+      }
+    }, correctFeedbackMs);
+    const subscription = observeSession(session.id).subscribe({
+      next: (saved) => {
+        if (saved?.owner === session.owner && saved.phase === session.phase &&
+          saved.cursor === session.cursor && saved.startedAt === session.startedAt) return;
+        window.clearTimeout(timeout);
+        if (controller.canAdvanceAutomatically(session)) void controller.load();
+      },
+      error: () => window.clearTimeout(timeout),
+    });
+    return () => {
+      window.clearTimeout(timeout);
+      subscription.unsubscribe();
+    };
+  }, [controller, active, busy, error, loading, paused, session]);
   return { controller, ...view };
 }
