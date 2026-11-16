@@ -44,7 +44,7 @@ attachment itself as a website asset.
 | 3. Child experience | Short entry flow, exercises, automatic feedback, results, achievements | Accepted / 01a1e017-9be1-7173-be21-1064b66d2c7e / [PR 3](https://github.com/DmitryGaravsky/MathHero/pull/3) |
 | 4. Parent experience and themes | Complete management, light/dark/system, localization and terminology | Accepted / 01a1e03e-63f6-7242-9592-2b027cfa43c4 / [PR 4](https://github.com/DmitryGaravsky/MathHero/pull/4) |
 | 5. Pedagogy | Learned/fluent/retained evidence, retention checks, error/weakness analytics | Accepted / 01a1e3b4-f59b-7971-bf0f-923aef3d047a / [PR 5](https://github.com/DmitryGaravsky/MathHero/pull/5) |
-| 6. Documentation and release | Product/user/pedagogy/architecture/developer docs, screenshots, regression, publication | Accepted locally; release CI/publication pending / 01a1e3d6-207f-7cc1-9310-ae56147aa103 |
+| 6. Documentation and release | Product/user/pedagogy/architecture/developer docs, screenshots, regression, publication | Accepted; final publication pending / 01a1e3d6-207f-7cc1-9310-ae56147aa103 / [PR 6](https://github.com/DmitryGaravsky/MathHero/pull/6) |
 
 ## Acceptance — 19 of 19 verified for 1.1
 
@@ -199,3 +199,8 @@ installation. The clean rebuilt worker remains `01ee92a8204ef083b478`. Reviewed
 956 rendered contrast samples, 259 matching locale keys, local links, comment
 audit and an acyclic 65-module dependency graph with no engine boundary violations.
 The stage handoff records exact evidence; real iPhone/iPad testing stays pending.
+
+[GitHub CI run 43848703530](https://github.com/DmitryGaravsky/MathHero/actions/runs/43848703530)
+passed all verification steps on Ubuntu in 7m55s. PR 6 merged into the release
+integration branch as `17d24d0` on 16 November 2026. The coordinator's final
+documentation audit checked 124 local references after adding acceptance links.
