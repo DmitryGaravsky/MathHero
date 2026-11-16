@@ -99,6 +99,20 @@ duplicate checking and advancement, exact feedback/draft resume, bounded
 reads, rollback after partial writes, v1/v2 preservation and corruption of
 v3 snapshots, attempts, progress, journal and support proofs.
 
+## Stage PR CI correction
+
+PR #9 CI run `43916856310` reported 218 browser passes, six existing skips
+and eight failures in the localized PIN change and reset test. The test checked
+the serialized snapshot's keys after the helper added verifier type fields.
+The test now requests the keys from the IndexedDB row before serialization.
+It verifies that the row has exactly
+`hash`, `id`, `salt` and `version`, and that the salt and hash are 16- and
+32-byte `Uint8Array` values. The default native snapshot output and product
+PIN storage are unchanged.
+
+`npm run test:e2e -- tests/browser/modes.spec.ts --grep 'localized PIN change' --reporter=list`
+passed in all eight Chromium and WebKit profiles. Typecheck and lint passed.
+
 ## Outstanding acceptance
 
 The child controller, illustrations, touch and keyboard entry, timing and

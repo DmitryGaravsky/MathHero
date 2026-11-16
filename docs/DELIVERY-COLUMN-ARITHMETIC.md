@@ -125,3 +125,10 @@ All dates and scripted answers are test fixtures, not child learning records.
 The existing CI command now builds both published baselines and runs all ten
 upgrade checks. Full browser regression remains required in stage PR CI before
 starting the child interface stage. No new module device acceptance is claimed.
+
+The initial stage CI run `43916856310` found eight failures in an existing PIN
+test because the native snapshot helper now includes verifier type metadata.
+The correction checks the actual IndexedDB row's keys before serialization,
+as well as the byte types and lengths. All eight affected browser profiles,
+type checking and lint passed locally. Product storage and the helper's default
+output remain unchanged; full stage CI is being repeated.
