@@ -3,7 +3,7 @@
 Stage 1 implements the pure engine and replay in `src/engine/column/`. The
 [approved requirements](../product/REQUIREMENTS-COLUMN-ARITHMETIC.md) cover the
 full module. Stage 2 adds the repository and backup integration. Stage 3 adds
-child navigation and practice. Parent reporting belongs to stage 4.
+child navigation and practice. Stage 4 adds read-only parent reporting.
 
 ## Arithmetic and entry
 
@@ -233,6 +233,34 @@ The requested explanation uses the engine's computed carry or borrow steps.
 Hint exposure is durable and commits before the panel opens. The panel
 expansion is temporary and reopens only by request after resume. Manual
 marks stay editable with the answer and remain independent of hint exposure.
+
+## Parent reporting
+
+The parent module selector labels the existing multiplication routes and opens
+`#parent/column-addition-report` by default. The report has distinct addition
+and subtraction destinations. The route resolver treats both report names as
+parent-only even without a namespace. Reload returns to child mode and
+requires the existing PIN flow before rendering a report. The app retains
+the saved child destination and its existing controllers across the switch.
+
+`columnParentRead.ts` reads the operation's four or five compound-key progress
+rows for the overview. Current proof needs only primary-key lookups of its
+supporting checks. Session pages use the operation and start-sequence index,
+with an exclusive cursor for the next page. History uses commit order even
+if wall time moves backward. Expanded sessions fetch attempts and journal
+entries by session ID. An opened hint comes from the journal, including
+when no later check observed it. Active time is the latest captured time per
+example, including the open checkpoint when present.
+
+Historical proof reconstruction runs only for an expanded session containing
+an independent check on an issued review. It reads the relevant operation's
+indexed check prefix, looks up the issued selections for the candidate
+skills, and applies the engine's support transitions through each review.
+It reads earlier raw checks so a later regression can clear current proof
+without removing past evidence. The timing disclosure samples the last 100
+committed checks by operation, resolves qualifying attempts to the issued
+exercise and groups by the computed carry or borrow pattern and result length.
+Neither report writes records nor claims a practice session.
 
 ## Backup and compatibility
 
