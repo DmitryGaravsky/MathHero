@@ -33,7 +33,7 @@ The coordinator owns this record and Git operations. Target version: 1.2.0.
 
 | Stage | Deliverable | State / chat / PR |
 | --- | --- | --- |
-| 1. Engine and contracts | Arithmetic, digit/mark state, generator, pilot adaptation/evidence and replay contracts | Pending |
+| 1. Engine and contracts | Arithmetic, digit/mark state, generator, pilot adaptation/evidence and replay contracts | Coordinator review accepted; PR CI pending / 01a1e52e-d374-7d80-af58-7020b90a4c43 |
 | 2. Persistence and compatibility | Additive stores, owned transactions, resumable drafts, validated backups and native 1.1 upgrade | Pending |
 | 3. Child experience | Illustrated home, two-action entry, column exercise, manual marks, hints, pause and offline resume | Pending |
 | 4. Parent experience | Separate addition/subtraction evidence, history and difficulties; locale/theme/accessibility review | Pending |
@@ -84,3 +84,20 @@ The coordinator owns this record and Git operations. Target version: 1.2.0.
 
 Physical iPhone/iPad acceptance of this new module remains separate and pending.
 The user's completed 1.1 device sign-off does not cover these future changes.
+
+## Stage 1 review
+
+The coordinator reviewed the arithmetic, editable draft, selection, session and
+replay code and the [handoff](stages/column-arithmetic/01-engine.md). Corrections
+use recorded local calendar days, retain wrong first checks even after help,
+clear current evidence after regression, and anchor reviews to the last actual
+practice. Tests cover these cases and backward clocks. Pilot defaults are six
+examples, two supporting days, a 24-hour initial review gap and 72-hour later
+gap; these are product parameters, not validated educational norms.
+
+Local type checking, lint and production build passed; 82 tests passed, including
+14 new column tests. The arithmetic test checked all 1,215,450 valid operand
+pairs and their intermediate carry/borrow steps. The unchanged application
+build still has the published 1.1 worker revision. Persistence, browser/PWA,
+native upgrade and full product acceptance remain subsequent work. Stage PR CI
+must pass before the persistence stage starts.
