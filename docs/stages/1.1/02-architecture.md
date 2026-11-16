@@ -1,5 +1,8 @@
 # MathHero 1.1 stage 2 — architecture handoff
 
+Status — historical 1.1 stage record. See the
+[active 1.1 architecture](../../architecture/OVERVIEW.md).
+
 Working branch `v1.1/02-architecture`. This handoff is for coordinator review.
 
 ## Contracts and decisions

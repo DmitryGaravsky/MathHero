@@ -1,10 +1,10 @@
-# Physical iPhone and iPad acceptance
+# MathHero 1.1 physical iPhone and iPad acceptance
 
-Status: **not yet executed**. The user will run this checklist on real hardware
-after the coordinator confirms the HTTPS deployment. Automated WebKit, viewport
-emulation and desktop timing are separate evidence and do not complete this gate.
+Status — active instructions. Physical-device results are **pending**. Run
+on real hardware after the coordinator confirms the 1.1 HTTPS deployment.
+Automated WebKit, viewport emulation and desktop timing are separate evidence.
 
-Use [Math Hero](https://DmitryGaravsky.github.io/MathHero/). Before testing with
+Use [MathHero](https://dmitrygaravsky.github.io/MathHero/). Before testing with
 valuable history, download a backup. Record device model, iOS/iPadOS version,
 Safari version, date, deployed commit, mode (Safari or Home Screen), orientation,
 network and pass/fail notes. Repeat on **both iPhone and iPad**, in Safari and from
@@ -12,13 +12,15 @@ the Home Screen. Record separate storage/history behavior in each mode.
 
 | Check | Procedure and expected result | Result / notes |
 | --- | --- | --- |
-| Launch and install | Open HTTPS online. Wait for Settings to report offline readiness. Use Share → Add to Home Screen. The fox icon and Math Hero name appear; launching uses standalone mode. | Not run |
+| Launch and install | Open HTTPS online. Enter Parent mode → Settings and Data and wait for offline readiness. Use Share → Add to Home Screen. The fox icon and Math Hero name appear. Launch from the icon and check offline readiness there too. | Not run |
+| Modes and PIN | Verify Child mode opens by default and practice starts or resumes within two actions. Enter Parent mode with the default PIN on a fresh install. Change it in Settings and Data, return to child mode in one action, then reset it from the entry dialog. Confirm the default PIN works and the child screen and saved practice remain available. | Not run |
 | Layout | Rotate portrait/landscape on home, practice, map, results and settings. Safe areas clear the notch/home indicator; text and buttons remain readable, no horizontal page scroll or covered keypad. | Not run |
+| Themes and glossary | Check System while changing device appearance. Select Light and Dark explicitly, rotate and relaunch, and check that the selection persists. In Settings and Data, expand the glossary and check the Spanish terms and Russian meanings. | Not run |
 | Keyboards | Answer with the custom keypad, delete and confirm. Switch to the real system numeric keyboard, dismiss/reopen it, rotate, then return to the custom keypad. If available, test a hardware keyboard. No zoom, duplicate input, hidden answer or blocked confirm. | Not run |
 | Complete learning flows | Complete all six diagnostic parts (144 directions), then a daily practice and targeted/difficult practice. Inspect child results, parent analytics, map and stars. Diagnosis itself gives no mastery/stars; one session does not grant stable mastery. | Not run |
-| Pause/background | Enter a draft, pause for 30 seconds, resume. Repeat by switching apps and locking the screen for at least 30 seconds. Return is paused, draft remains, and the recorded answer excludes the pause/background duration. | Not run |
+| Feedback and pause | Watch a correct answer advance after brief feedback. A wrong answer shows its explanation and waits for Next or optional correction. During correct feedback, immediately open the parent prompt or background/lock the app. On return, verify feedback waits for deliberate continuation. Pause a partially typed answer for 30 seconds and repeat by switching apps. Verify the draft remains and recorded response time excludes pause, hidden time and feedback. | Not run |
 | Persistence/restart | Save answers and a draft; pause, close and restart Safari/Home Screen app. Resume the same question with draft, history and preferences preserved. Also record what happens after force-closing the process; a not-yet-committed change is a distinct limitation. | Not run |
-| Backup/restore | Export to Files; change a preference and save an answer; choose the backup, cancel and verify unchanged data. Import again and confirm replacement: original history/preferences/draft return once. Try a damaged file: reject without replacing data. Transfer a backup between iPhone and iPad if desired. | Not run |
+| Backup/restore | Export to Files. Change a preference and save an answer, then choose the backup and cancel. Check the current data remains. Confirm replacement on the next import and check the original history, preferences and draft return once. Verify the destination PIN still works. Try a damaged file and check that the app rejects it and keeps the current data. If you have an MVP v1 export, import it in a disposable context and check its history and draft. | Not run |
 | Languages | Switch RU/ES on all screens, including installation/update guidance, backup dialog and resumed feedback. Restart and verify the selected language. | Not run |
 | Airplane mode | After offline readiness, enable airplane mode and ensure Wi-Fi is off. Close/reopen each app mode. Start/resume practice, save an answer, view results/map, switch language, export/import a backup and reload while offline. No network is required for these flows. | Not run |
 | Multiple windows | Open two Safari tabs on the app. Explicitly resume the same session in the second tab: the stale first tab must not overwrite its answers. Close tabs after testing. | Not run |
@@ -43,5 +45,5 @@ Restore any valuable data after a deliberate storage-clear test.
 
 Attach observations/screenshots and startup samples to the coordinator. Record
 failures with exact reproduction steps; do not mark unexecuted rows as passed.
-The coordinator records physical-device results and the remaining MVP gate in
-`docs/DELIVERY.md` after review.
+The coordinator records physical-device results in the
+[1.1 delivery record](DELIVERY-1.1.md) after review.

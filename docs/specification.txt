@@ -1,5 +1,10 @@
 Technical specification: Math Hero — a mathematical fluency trainer
 
+Status — historical MVP specification. See docs/product/REQUIREMENTS-1.1.md
+for the active 1.1 release specification and docs/development/ for current
+setup and release instructions. The scaffold and deployment examples below
+are obsolete.
+
 MVP · iPhone / iPad · Russian / Español
 
 I propose a slight change to the original concept. We are building a serious adaptive trainer with a game-like presentation, rather than a children's game containing math problems.

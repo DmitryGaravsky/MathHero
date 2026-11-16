@@ -1,6 +1,7 @@
 # MathHero 1.1 stage 1 — baseline audit
 
-Status — stage handoff for coordinator review. The 1.1 acceptance checklist
+Status — historical 1.1 baseline audit. For the implemented release behavior,
+see the [current documentation](../../README.md). The 1.1 acceptance checklist
 remains open. The audit covers `v1.1/01-audit` at `eb27960` on 15 November
 2026 (Europe/Paris). The release-planning record names `3367eb9` as the
 baseline and `923d1f6` as the published app. The committed differences from

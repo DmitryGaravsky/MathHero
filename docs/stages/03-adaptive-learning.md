@@ -1,5 +1,8 @@
 # Stage 3 — adaptive learning
 
+Status — historical MVP stage record. See the
+[current practice selection](../pedagogy/ADAPTIVE_TRAINING.md) and [mastery policy](../pedagogy/MASTERY_POLICY.md).
+
 Date: 15 November 2026, Europe/Paris.
 Worker status: implemented and verified as described below; coordinator acceptance pending.
 No commits, push, deployment, additional chats, or agents. The worker did not change

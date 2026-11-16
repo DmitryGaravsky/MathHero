@@ -1,5 +1,8 @@
 # Stage 5 — offline PWA and release preparation
 
+Status — historical MVP stage record. See the
+[current release instructions](../development/RELEASE.md).
+
 Implemented locally on 15 November 2026 (Europe/Paris), on top of accepted
 `a2d97f2`. Ready for coordinator review; no commit, push, remote Pages setting
 change or deployment was performed by this stage. `AGENTS.md` and `DELIVERY.md`

@@ -1,5 +1,8 @@
 # MathHero 1.1 stage 3 — child experience
 
+Status — historical 1.1 stage record. See the
+[active 1.1 child guide](../../user/CHILD_GUIDE.md).
+
 Working branch `v1.1/03-child`. Handoff for coordinator review.
 
 ## Child flow
