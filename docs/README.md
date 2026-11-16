@@ -5,6 +5,7 @@ Status — active documentation index for MathHero 1.1.
 | Purpose | Start here |
 | --- | --- |
 | Product scope and behavior | [Overview](product/OVERVIEW.md) · [Release requirements](product/REQUIREMENTS-1.1.md) |
+| Planned column arithmetic | [Column arithmetic requirements](product/REQUIREMENTS-COLUMN-ARITHMETIC.md) |
 | Using the app | [Child guide](user/CHILD_GUIDE.md) · [Parent guide](user/PARENT_GUIDE.md) · [Settings and offline use](user/SETTINGS.md) · [Data and backup](user/DATA_AND_BACKUP.md) |
 | Learning and assessment | [Learning model](pedagogy/LEARNING_MODEL.md) · [Mastery policy](pedagogy/MASTERY_POLICY.md) · [Adaptive training](pedagogy/ADAPTIVE_TRAINING.md) · [Diagnosis](pedagogy/DIAGNOSTICS.md) |
 | Maintaining the app | [Architecture](architecture/OVERVIEW.md) · [Setup](development/SETUP.md) · [Testing](development/TESTING.md) · [Release](development/RELEASE.md) · [Contributing](development/CONTRIBUTING.md) |
