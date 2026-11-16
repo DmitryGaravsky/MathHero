@@ -191,6 +191,11 @@ test.describe("native IndexedDB upgrade", () => {
     await page.goto("./#parent/weak?pair=mul%3A7%3A8");
     await expect(page.getByRole("status")).toContainText("La respuesta correcta");
     expect(rows<Attempt>(await nativeSnapshot(page), "attempts")).toEqual(attempts);
+    await goParent(page, "home");
+    await expect(page.locator(".knowledge-counts dd").last()).toHaveText("1 / 78");
+    await goParent(page, "map");
+    await page.getByRole("button", { name: "9 × 9: Dominio consolidado" }).click();
+    await expect(page.locator(".pair-evidence")).toContainText("Intervalo programado: 14 días.");
 
     const clean = await browser.newContext({ baseURL: `${origin}/MathHero/`, serviceWorkers: "block", timezoneId: provenance.timeZone });
     try {

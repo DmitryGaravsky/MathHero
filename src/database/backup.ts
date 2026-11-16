@@ -1,6 +1,6 @@
 import { readPreferences, validatePreferences, type StoredPreferences } from "../settings/preferences";
 import { getFact } from "../engine/multiplication/facts";
-import { learningPolicy, type PairProgress } from "../engine/learning/progress";
+import { learningPolicy, legacyLearningPolicy, type PairProgress } from "../engine/learning/progress";
 import {
   replayLearning,
   type JournalEntry,
@@ -217,7 +217,12 @@ export function validateBackup(input: unknown): Backup {
       keys(s.policy, Object.keys(learningPolicy));
       requireValid(typeof s.policy.timeZone === "string");
       new Intl.DateTimeFormat("en", { timeZone: s.policy.timeZone }).format(0);
-      equal(s.policy, { ...learningPolicy, timeZone: s.policy.timeZone });
+      const policy = s.policy.version === legacyLearningPolicy.version
+        ? legacyLearningPolicy
+        : learningPolicy;
+      requireValid(s.policy.version === policy.version &&
+        (backup.version !== 1 || policy === legacyLearningPolicy));
+      equal(s.policy, { ...policy, timeZone: s.policy.timeZone });
       if (s.targetPair !== undefined)
         requireValid(
           s.mode === "weak" &&

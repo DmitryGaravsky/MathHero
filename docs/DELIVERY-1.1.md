@@ -42,8 +42,8 @@ attachment itself as a website asset.
 | 1. Audit | Screens, documents, algorithms, debt, baseline and release requirements | Accepted / 01a1dfe4-77de-7401-aa39-e23055253c8f / [PR 1](https://github.com/DmitryGaravsky/MathHero/pull/1) |
 | 2. Architecture | Central settings, modes, parent gate, storage boundaries/migrations | Accepted / 01a1dff0-6e88-7131-abe8-a916c704b53f / [PR 2](https://github.com/DmitryGaravsky/MathHero/pull/2) |
 | 3. Child experience | Short entry flow, exercises, automatic feedback, results, achievements | Accepted / 01a1e017-9be1-7173-be21-1064b66d2c7e / [PR 3](https://github.com/DmitryGaravsky/MathHero/pull/3) |
-| 4. Parent experience and themes | Complete management, light/dark/system, localization and terminology | Local review accepted; CI pending / 01a1e03e-63f6-7242-9592-2b027cfa43c4 |
-| 5. Pedagogy | Learned/fluent/retained evidence, retention checks, error/weakness analytics | Pending |
+| 4. Parent experience and themes | Complete management, light/dark/system, localization and terminology | Accepted / 01a1e03e-63f6-7242-9592-2b027cfa43c4 / [PR 4](https://github.com/DmitryGaravsky/MathHero/pull/4) |
+| 5. Pedagogy | Learned/fluent/retained evidence, retention checks, error/weakness analytics | Accepted locally; CI pending / 01a1e3b4-f59b-7971-bf0f-923aef3d047a |
 | 6. Documentation and release | Product/user/pedagogy/architecture/developer docs, screenshots, regression, publication | Pending |
 
 ## Acceptance — 0 of 19 verified for 1.1
@@ -141,3 +141,24 @@ dark, and meaningful large-text/control/graphic samples 4.13:1 / 5.42:1.
 This is measured coverage, not a full accessibility certification. The stage
 handoff records screenshots and exact checks. Static inspection found no import
 cycles or engine dependencies on UI/storage, and 238 matching locale keys.
+
+[GitHub CI run 43838831378](https://github.com/DmitryGaravsky/MathHero/actions/runs/43838831378)
+passed every verification step on Ubuntu in 12m42s. PR 4 merged into the release
+integration branch as `f8ce9ce` on 16 November 2026; publication remains deferred.
+
+## Stage 5 acceptance
+
+Reviewed Learned/Fluent/Retained evidence, conservative error observations,
+policy v2 due-first selection, optional retention cache and exact historical
+policy replay. Coordinator corrections require consistent recent accuracy and
+an actual full elapsed interval since the last practice attempt; a near-due
+rehearsal cannot masquerade as delayed retention. Original mastery, interval
+transitions and reward ledger rules remain compatible. The coordinator inspected
+populated Russian light overview and Spanish dark weakness captures.
+
+Build/types/lint, 68 unit/repository, 218 browser (six baseline skips), 10 PWA and
+6 native published-release upgrade checks passed. Mixed v1/v2 round trips reject
+forged proof and altered policies; native old history exposes its genuine 14-day
+check without rewriting old records. Deterministic 14/30-day checks fit within
+24 questions, and all three 90-day synthetic profiles cover 78 pairs/144 directions.
+See `stages/1.1/05-pedagogy.md` for thresholds, evidence and limitations.

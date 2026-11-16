@@ -139,6 +139,9 @@ for (const theme of ["light", "dark"] as const) {
     expect(barContrast).toBeGreaterThanOrEqual(3);
     readings.push({ sample: "Progress fill token against rendered track", ...bar, ratio: barContrast, minimum: 3 });
     await inspect(overview.locator("progress"), "Progress track boundary", 3, "border-top-color", "outside");
+    await inspect(page.locator(".knowledge-counts dt").last(), "Knowledge state label");
+    await inspect(page.locator(".knowledge-counts dd").last(), "Knowledge state count");
+    await inspect(page.locator(".knowledge-counts + p"), "Knowledge count explanation");
     await page.locator(".latest-practice summary").click();
     await expect(page.locator(".latest-practice .session-metrics")).toBeVisible();
     await screen("parent-overview");
@@ -184,6 +187,8 @@ for (const theme of ["light", "dark"] as const) {
     await inspect(difficult, "Selected map cell border against panel", 3, "border-top-color", "outside");
     await inspect(page.locator(".map-cell.unknown").first(), "Map cell boundary", 3, "border-top-color", "outside");
     await expect(page.locator(".fact-detail .history-list").first().getByRole("listitem")).not.toHaveCount(0);
+    await inspect(page.locator(".fact-detail .pair-evidence p strong"), "Pair knowledge state");
+    await inspect(page.locator(".fact-detail .evidence-list li").first(), "Recorded incorrect count");
     await screen("parent-map");
 
     await goParent(page, "results");
@@ -196,6 +201,11 @@ for (const theme of ["light", "dark"] as const) {
     await goParent(page, "weak-spots");
     await expect(page.locator(".difficult-list li").first()).toBeVisible();
     await inspect(page.locator(".difficult-list a").first(), "Weak-pair practice link");
+    await inspect(page.locator(".weak-pair-observations").first(), "Weak-pair observation counts");
+    await page.locator(".difficult-list summary").first().click();
+    const weakEvidence = page.locator(".difficult-list .pair-evidence");
+    await expect(weakEvidence).toBeVisible();
+    await inspect(weakEvidence.locator(".evidence-list li").first(), "Weak-pair incorrect count");
     await screen("parent-weak");
     await page.locator(".difficult-list a").first().click();
     await expect(button(locale.startLearning)).toBeVisible();

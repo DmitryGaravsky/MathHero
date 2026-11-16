@@ -78,10 +78,62 @@
   margin: 12px 0 0;
   list-style: none;
 }
-.difficult-list li + li {
+.knowledge-counts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: 12px;
+  margin-block: 16px 12px;
+}
+.knowledge-counts > div {
+  border-radius: 12px;
+  background: var(--surface-muted);
+  padding: 12px;
+}
+.knowledge-counts dd {
+  margin-inline-start: 0;
+  margin-top: 4px;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.knowledge-counts + p,
+.weak-pair-heading span,
+.weak-pair-observations {
+  color: var(--muted);
+}
+.difficult-list {
+  list-style: none;
+  padding: 0;
+}
+.difficult-list > li {
+  padding-block: 8px 14px;
+}
+.difficult-list > li + li {
   border-top: 1px solid var(--line);
 }
-.difficult-list span,
+.weak-pair-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.weak-pair-heading a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 80px;
+}
+.weak-pair-observations {
+  margin-block: 0 8px;
+}
+.pair-evidence {
+  border-block-start: 1px solid var(--line);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+.evidence-list {
+  padding-inline-start: 1.4em;
+}
 .daily-trend span {
   color: var(--muted);
 }
