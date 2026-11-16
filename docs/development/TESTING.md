@@ -1,6 +1,6 @@
 # Testing
 
-Status — active verification instructions for MathHero 1.1.
+Status — verification instructions for the column arithmetic integration.
 
 From the repository root, install dependencies and run:
 
@@ -24,17 +24,26 @@ local browser artifacts.
 
 | Suite | Scope |
 | --- | --- |
-| Vitest | Fact catalog, seed/clock-driven trajectories, mastery and retention, repositories, settings, v1/v2 replay, backup and rollback |
+| Vitest | Fact catalog, column arithmetic, seed/clock-driven trajectories, mastery and retention, repositories, settings, v1/v2/v3 replay, backup and rollback |
 | Browser | Chromium and WebKit, phone and tablet viewports in portrait and landscape, both locales, route and PIN guards, real input flows, resume, history and rendered contrast |
 | PWA | Install, scoped caches, new offline window, updates with multiple clients, failed download recovery and desktop loopback startup samples |
-| Native upgrade | Empty/populated IndexedDB generated in the published app, preserved drafts and feedback, legacy backup import, and natural worker update with offline resume |
+| Native upgrade | Empty/populated IndexedDB generated in each published app, preserved drafts and feedback, legacy backup import, and natural worker update with offline resume from MVP |
 
 The full baseline diagnosis runs once per engine. Six duplicate runs in other
-viewport projects are deliberately skipped. The native harness archives pinned
-commit `923d1f634047322e688eafb38679ad3dba66e1d7` under ignored `.playwright/`.
-It uses that archive's own lockfile installation when the lockfile differs
-from the current one, builds it and checks published worker revision
-`7a73513eb82bcfc66d1d`. Keep the pinned commit available in local Git history.
+viewport projects are deliberately skipped. The native harness archives and
+builds both pinned commits under ignored `.playwright/`. It installs an archive's
+original lockfile in isolation when it differs from the current one and verifies
+the published worker revision before starting Playwright.
+
+| Published build | Commit | Worker revision |
+| --- | --- | --- |
+| MVP | `923d1f634047322e688eafb38679ad3dba66e1d7` | `7a73513eb82bcfc66d1d` |
+| 1.1 | `9309abde58cff9c001e7944f29d2b727965ee093` | `01ee92a8204ef083b478` |
+
+Keep both pinned commits available in local Git history. The 1.1 suite captures
+native v4 store metadata, rows and verifier bytes before switching the same
+origin to the candidate. It compares all old stores immediately after upgrade
+and checks that the six new stores are empty.
 
 For real hardware, use the [iPhone and iPad checklist](../DEVICE-ACCEPTANCE.md).
 Emulated viewports, browser contrast samples and desktop timings provide

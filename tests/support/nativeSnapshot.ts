@@ -20,7 +20,17 @@ export function nativeSnapshot(page: Page) {
           get.onsuccess = () => resolve(get.result);
           get.onerror = () => reject(get.error);
         });
-        return { name, keyPath: store.keyPath, indexes, rows };
+        // Preserve the byte values in test attachments and Playwright comparisons.
+        if (name === "parentGate") {
+          const pinRows = rows as { salt: Uint8Array; hash: Uint8Array }[];
+          return { name, keyPath: store.keyPath, autoIncrement: store.autoIncrement, indexes,
+            rows: pinRows.map((row) => ({
+              ...row, salt: [...row.salt], hash: [...row.hash],
+              saltType: row.salt.constructor.name, hashType: row.hash.constructor.name,
+            })),
+          };
+        }
+        return { name, keyPath: store.keyPath, autoIncrement: store.autoIncrement, indexes, rows };
       }));
       return { version: db.version, stores };
     } finally {

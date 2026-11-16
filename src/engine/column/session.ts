@@ -102,7 +102,7 @@ function validTimeZone(value: unknown): boolean {
 }
 
 export function isColumnJournalEntry(value: unknown): value is ColumnJournalEntry {
-  if (typeof value !== "object" || value === null) return false;
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
   const row = value as Record<string, unknown>;
   const { type, sequence, sessionId, at } = row;
   if (

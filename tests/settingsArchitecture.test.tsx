@@ -37,12 +37,13 @@ it("displays only committed preferences after a failed save and refreshes on leg
   failed.mockRestore();
 
   const exported = await exportBackup();
+  const { sessions, attempts, progress, journal, rewards, rewardState } = exported.tables;
   const old: Backup = {
     ...exported,
     version: 1,
     databaseVersion: 3,
     tables: {
-      ...exported.tables,
+      sessions, attempts, progress, journal, rewards, rewardState,
       settings: [{ id: "preferences", value: oldPreferences }],
     },
   };

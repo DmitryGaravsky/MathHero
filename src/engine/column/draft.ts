@@ -39,16 +39,17 @@ function isDigit(value: unknown): value is number {
 }
 
 export function isColumnInput(value: unknown, operation: ColumnOperation): value is ColumnInput {
-  if (typeof value !== "object" || value === null) return false;
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
   const { digits, marks, activePlace } = value as Partial<ColumnInput>;
   return (
     Object.keys(value).length === 3 &&
     ["digits", "marks", "activePlace"].every((key) => Object.hasOwn(value, key)) &&
-    Array.isArray(digits) && digits.length === 4 &&
-    Array.isArray(marks) && marks.length === 4 &&
+    Array.isArray(digits) && digits.length === 4 && Object.keys(digits).length === 4 &&
+    Array.isArray(marks) && marks.length === 4 && Object.keys(marks).length === 4 &&
     activePlace !== undefined && places.includes(activePlace) &&
     (operation === "addition" || (activePlace < 3 && digits[3] === null)) &&
     places.every((place) =>
+      Object.hasOwn(digits, place) && Object.hasOwn(marks, place) &&
       (digits[place] === null || isDigit(digits[place])) &&
       (marks[place] === false || (marks[place] === true && canMark(operation, place))),
     )

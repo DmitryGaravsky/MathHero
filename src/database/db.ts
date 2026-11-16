@@ -3,6 +3,14 @@ import type { Attempt } from "../engine/sessions/diagnostic";
 import type { Session } from "../engine/learning/session";
 import type { PairProgress } from "../engine/learning/progress";
 import type { StoredPreferences } from "../settings/preferences";
+import type { ColumnOperation, ColumnSkill } from "../engine/column/arithmetic";
+import type { ColumnSkillProgress } from "../engine/column/policy";
+import type {
+  ColumnAttempt,
+  ColumnJournalCursor,
+  ColumnJournalEntry,
+  ColumnSession,
+} from "../engine/column/session";
 import {
   replayLearning,
   type JournalEntry,
@@ -17,6 +25,24 @@ export interface ParentPinVerifier {
   hash: Uint8Array<ArrayBuffer>;
 }
 
+export interface ColumnSessionRow {
+  session: ColumnSession;
+  owner: string | null;
+  revision: number;
+  openOperation?: ColumnOperation;
+}
+
+export interface ColumnStateRow {
+  id: "state";
+  generation: string;
+  cursor: ColumnJournalCursor;
+}
+
+export interface ColumnSeenRow {
+  operation: ColumnOperation;
+  bits: Uint8Array;
+}
+
 export class MathHeroDB extends Dexie {
   sessions!: Table<Session, string>;
   progress!: Table<PairProgress, string>;
@@ -26,6 +52,12 @@ export class MathHeroDB extends Dexie {
   rewards!: Table<Reward, string>;
   rewardState!: Table<RewardState, string>;
   parentGate!: Table<ParentPinVerifier, "parent">;
+  columnSessions!: Table<ColumnSessionRow, string>;
+  columnAttempts!: Table<ColumnAttempt, string>;
+  columnProgress!: Table<ColumnSkillProgress, [ColumnOperation, ColumnSkill]>;
+  columnJournal!: Table<ColumnJournalEntry, number>;
+  columnSeen!: Table<ColumnSeenRow, ColumnOperation>;
+  columnState!: Table<ColumnStateRow, "state">;
   constructor(name = "math-hero") {
     super(name);
     this.version(1).stores({
@@ -83,6 +115,14 @@ export class MathHeroDB extends Dexie {
         await tx.table("rewardState").put(replay.state);
       });
     this.version(4).stores({ parentGate: "id" });
+    this.version(5).stores({
+      columnSessions: "session.id, &openOperation, [session.operation+session.startSequence]",
+      columnAttempts: "id, sessionId, &sequence, [operation+sequence]",
+      columnProgress: "[operation+skill]",
+      columnJournal: "sequence, sessionId",
+      columnSeen: "operation",
+      columnState: "id",
+    });
   }
 }
 export const db = new MathHeroDB();

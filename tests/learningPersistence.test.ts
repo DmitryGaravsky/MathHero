@@ -55,7 +55,7 @@ describe("learning repository and shared session lifecycle", () => {
     const migrated = new MathHeroDB(name);
     databases.push(migrated);
     await migrated.open();
-    expect(migrated.verno).toBe(4);
+    expect(migrated.verno).toBe(5);
     expect(await migrated.parentGate.count()).toBe(0);
     expect(await migrated.sessions.get(diagnostic.session.id)).toEqual(
       diagnostic.session,

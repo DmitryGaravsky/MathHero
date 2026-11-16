@@ -1,8 +1,8 @@
 # Persistence, resume and backup
 
-Status — active implementation reference for MathHero 1.1.
+Status — implementation reference for the column arithmetic integration.
 
-## Answer lifecycle
+## Multiplication answer lifecycle
 
 The practice controller starts timing when the question is available and stops
 it on submission, pause, navigation, visibility changes or when the parent
@@ -22,27 +22,48 @@ event IDs. The journal records the cross-stream order for exact replay. Drafts
 and active time use asynchronous checkpoints, so a process exit during a
 checkpoint can lose the most recent edit.
 
+## Column arithmetic answer lifecycle
+
+There is one open session per operation. A unique sparse index enforces this
+inside IndexedDB. A view reads the open snapshot, then takes ownership through
+an explicit claim that compares session ID, generation, owner and revision.
+Claims, edits, phase changes and releases increment the revision. Use the
+returned token for the next serialized write. Release can commit the final
+answering checkpoint alongside the owner change. After release, the next view
+claims the saved snapshot and sees the same exercise, marks, hint state and
+phase.
+
+Checkpoints store the entire current input and cumulative active milliseconds.
+Events commit the updated session, journal entry, any attempt or changed skill
+progress, any newly issued pair and the new cursor in one cancellable transaction.
+A check reads just the owned session, the singleton cursor and the operation's
+skill rows. Issuing an exercise also reads one operation-specific pair bitmap
+of 50,682 bytes. The global column cursor orders events across both operations
+and tracks the highest committed wall time.
+
 ## Migration and backup
 
-Schema v4 adds only the parent verifier store to the published v3 schema.
-Existing sessions, attempts, progress, preferences, journal and rewards retain
-their records. Earlier schema upgrades create the journal and rebuild derived
-learning data for pre-journal databases in a transaction. Established journals
-use their sequence even when wall-clock time disagrees.
+Schema v5 adds six empty column stores. The eight published v4 stores, including
+the local PIN verifier, keep their native indexes and rows. The upgrade from
+published v3 also adds the parent verifier store. Earlier schema upgrades create
+the multiplication journal and rebuild derived data for pre-journal databases.
 
-The exporter writes the v2 JSON envelope for database v4. It excludes the local
-verifier. The importer also accepts the previous v1 envelope for database v3.
-V1 accepts registered policy v1. V2 accepts both registered policies. Validation
-checks schema, IDs, relationships, exact policy fields with the saved IANA zone,
-ordering and replayed summaries, learning evidence and rewards before offering
-confirmation. The file picker accepts files up to 20 MB. Validation loads the
-backup in memory. These checks establish internal consistency. A backup has
-no digital signature or external authenticity proof.
+The exporter writes the v3 JSON envelope for database v5. The importer also
+accepts v1/database v3 and v2/database v4. V1 accepts multiplication policy v1.
+V2 and v3 accept both registered multiplication policies. Validation checks
+record shapes, relationships, exact policy fields and replayed evidence before
+offering confirmation. Column replay reconstructs the journal's outcomes and
+compares sessions, attempts, progress and support proofs. Only an answering
+snapshot can include a later legal editing checkpoint. The file picker accepts
+files up to 20 MB and validation loads the file in memory. The checks establish
+internal consistency of the local backup.
 
-Confirmed restore replaces the seven portable stores in one transaction and
-clears session owners, so a previous view cannot overwrite restored state.
-Cancel or failed validation leaves the database as it was. A failed write
-rolls back. The destination's local PIN verifier stays in place.
+Full v3 restore replaces both practice modules and common preferences in one
+transaction. It clears owners, rebuilds the column pair index and cursor, and
+rotates the column generation every time. V1 and v2 restore replace multiplication
+and common preferences while preserving all column data and its owners. Cancel,
+failed validation and transaction aborts preserve the previous data. The
+destination's local PIN verifier stays in place for all formats.
 
 ## Parent gate
 

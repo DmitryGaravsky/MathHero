@@ -8,7 +8,7 @@ let release = "A";
 let failAsset = false;
 let failIcon = false;
 const root = new URL("../../dist/", import.meta.url);
-const legacyRoot = process.env.MATH_HERO_LEGACY_DIST;
+const published = { legacy: process.env.MATH_HERO_LEGACY_DIST, published11: process.env.MATH_HERO_11_DIST };
 const port = Number(process.env.MATH_HERO_TEST_PORT ?? 4174);
 const types = { html: "text/html", js: "text/javascript", css: "text/css", png: "image/png", svg: "image/svg+xml", webmanifest: "application/manifest+json" };
 createServer(async (request, response) => {
@@ -31,10 +31,11 @@ createServer(async (request, response) => {
     return;
   }
   try {
-    if (release === "legacy" && !legacyRoot) throw new Error("Legacy build directory required");
-    const source = release === "legacy" ? join(legacyRoot, file) : new URL(file, root);
+    const isPublished = Object.hasOwn(published, release);
+    if (isPublished && !published[release]) throw new Error("Published build directory required");
+    const source = isPublished ? join(published[release], file) : new URL(file, root);
     let data = await readFile(source);
-    if (release !== "legacy" && release !== "candidate") {
+    if (!isPublished && release !== "candidate") {
       if (file === "index.html") data = Buffer.from(data.toString().replace('<html lang="es">', `<html lang="es" data-release="${release}">`));
       if (file === "sw.js") data = Buffer.from(data.toString().replaceAll(/math-hero:\/MathHero\/:([a-f0-9]{20})/g, `math-hero:/MathHero/:$1-${release}`));
     }
