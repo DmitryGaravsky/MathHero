@@ -1,9 +1,10 @@
 # Column arithmetic — delivery and acceptance
 
 Status: MathHero 1.2.0 accepted, merged into main and published on Pages.
-Automated and public HTTPS/offline checks passed; physical 1.2 iPhone/iPad
-acceptance remains pending. Prepared 16 November 2026; software release
-completed 17 November 2026 (Europe/Paris).
+Automated and public HTTPS/offline checks passed; the user confirmed successful
+operation after updating on iPhone and iPad. MathHero 1.2 acceptance is complete.
+Prepared 16 November 2026; software release and final user acceptance completed
+17 November 2026 (Europe/Paris).
 Baseline: accepted MathHero 1.1, main `9792b9d`; published app `9309abde58cff9c001e7944f29d2b727965ee093`,
 worker `01ee92a8204ef083b478`. The completed [1.1 record](DELIVERY-1.1.md)
 remains historical evidence for that release.
@@ -86,8 +87,10 @@ publish or create chats. Released version: 1.2.0.
 - [x] Multiplication, ownership, timing, offline caching and update behavior retain their regression checks.
 - [x] Current English documentation, real screenshots, CI and live release checks are complete.
 
-Physical iPhone/iPad acceptance of this new module remains separate and pending.
-The user's completed 1.1 device sign-off does not cover the new module.
+- [x] The user confirmed successful post-update operation of the new module on physical iPhone and iPad and requested closure of 1.2 acceptance.
+
+Physical acceptance is recorded separately in the [1.2 device sign-off](DEVICE-ACCEPTANCE-1.2.md).
+The earlier 1.1 sign-off remains historical evidence for that release.
 
 ## Stage 1 review
 
@@ -220,7 +223,7 @@ candidate offline. It compares all old native stores and every cached asset
 hash, verifies saved preferences and the custom PIN, resumes the multiplication
 draft, and saves and reopens a marked column draft with incorrect feedback and
 prior help. Both Chromium and WebKit passed. The completed 1.1 device record
-is unchanged; [physical 1.2 checks](DEVICE-ACCEPTANCE-1.2.md) remain pending.
+was unchanged; physical 1.2 acceptance was still pending at this stage.
 
 [CI run 44042419784](https://github.com/DmitryGaravsky/MathHero/actions/runs/44042419784)
 completed cleanly on stage commit `85354725bdad4c49d41b19a70ee522fe82d6a861`:
@@ -274,5 +277,20 @@ The initial public script stopped because the language selector exists in both
 the header and Settings. Scoping the test locator to the header resolved the
 ambiguity; the complete run above then passed. No product change was needed.
 These are desktop browser checks of the deployed release, separate from the
-pending physical-device checklist. All five development stages and software
-publication acceptance are complete.
+then-pending physical-device checklist. All five development stages and
+software publication acceptance were complete before the user sign-off below.
+
+### Physical-device sign-off
+
+On 17 November 2026 (Europe/Paris), the user reported updating the app and
+checking the new module on both iPhone and iPad, confirmed that everything
+worked, and explicitly requested closure of MathHero 1.2 acceptance. No issues
+were reported. The [device acceptance record](DEVICE-ACCEPTANCE-1.2.md)
+records a user-reported pass for each device.
+
+This confirmation closes the remaining physical-device gate for the published
+1.2.0 release. All five stages, automated verification, publication, public
+HTTPS/offline checks and user acceptance are complete. Exact device models,
+OS versions, launch modes and individual extended-case results were not
+supplied and are not inferred. The retained checklist is a future regression
+reference, not a claim that every procedure was individually reported.

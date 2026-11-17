@@ -9,7 +9,7 @@ Documentation for MathHero 1.2.
 | Using the app | [Child guide](user/CHILD_GUIDE.md) · [Parent guide](user/PARENT_GUIDE.md) · [Settings and offline use](user/SETTINGS.md) · [Data and backup](user/DATA_AND_BACKUP.md) |
 | Learning and assessment | [Multiplication learning model](pedagogy/LEARNING_MODEL.md) · [Column arithmetic learning model](pedagogy/COLUMN_ARITHMETIC.md) · [Multiplication mastery policy](pedagogy/MASTERY_POLICY.md) · [Multiplication adaptive training](pedagogy/ADAPTIVE_TRAINING.md) · [Multiplication diagnosis](pedagogy/DIAGNOSTICS.md) |
 | Maintaining the app | [Architecture](architecture/OVERVIEW.md) · [Setup](development/SETUP.md) · [Testing](development/TESTING.md) · [Release](development/RELEASE.md) · [Contributing](development/CONTRIBUTING.md) |
-| Acceptance | [1.2 delivery record](DELIVERY-COLUMN-ARITHMETIC.md) · [1.2 stage handoffs](stages/column-arithmetic/) · [1.2 physical-device checklist](DEVICE-ACCEPTANCE-1.2.md) |
+| Acceptance | [1.2 delivery record](DELIVERY-COLUMN-ARITHMETIC.md) · [1.2 stage handoffs](stages/column-arithmetic/) · [Completed iPhone/iPad sign-off](DEVICE-ACCEPTANCE-1.2.md) |
 
 The column arithmetic requirements extend the accepted multiplication scope.
 The learning guides explain the implemented evidence and practice policies for

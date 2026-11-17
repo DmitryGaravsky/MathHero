@@ -48,8 +48,9 @@ See more examples in the [child guide](docs/user/CHILD_GUIDE.md) and
 
 ## Documentation and release status
 
-Version 1.2.0 is published. Automated and live offline checks passed;
-[physical iPhone/iPad acceptance](docs/DEVICE-ACCEPTANCE-1.2.md) remains pending.
+Version 1.2.0 is published and acceptance is complete. Automated and live
+offline checks passed; the user confirmed successful operation of the new
+module on [iPhone and iPad](docs/DEVICE-ACCEPTANCE-1.2.md) on 17 November 2026.
 
 - [Release notes](CHANGELOG.md) · [Delivery evidence](docs/DELIVERY-COLUMN-ARITHMETIC.md)
 - [Child guide](docs/user/CHILD_GUIDE.md) · [Parent guide](docs/user/PARENT_GUIDE.md) · [Settings and offline use](docs/user/SETTINGS.md)

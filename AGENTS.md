@@ -10,8 +10,10 @@ Read `docs/product/REQUIREMENTS-COLUMN-ARITHMETIC.md` and
 Five sequential Sol stage chats, coordinator review and PRs delivered 1.2.0
 through `release/column-arithmetic`. The complete release was merged into
 main and published on Pages on 17 November 2026. Automated acceptance and
-public HTTPS/offline checks passed. Physical 1.2 iPhone/iPad acceptance remains
-pending in `docs/DEVICE-ACCEPTANCE-1.2.md`; completed 1.1 acceptance is historical.
+public HTTPS/offline checks passed. The user confirmed successful operation
+after updating on iPhone and iPad on 17 November 2026. MathHero 1.2 acceptance
+is complete; see `docs/DEVICE-ACCEPTANCE-1.2.md` for the user-reported sign-off
+and its scope. Completed 1.1 acceptance remains historical.
 The coordinator owns Git, stage PRs, acceptance and publication. Workers must
 not create chats or agents. Preserve multiplication behavior and all old data.
 

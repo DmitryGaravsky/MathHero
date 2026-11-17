@@ -2,8 +2,8 @@
 
 Status — implemented and published in MathHero 1.2.0. The user accepted the
 exercise mockup and illustrated module cards before implementation. See the
-[delivery record](../DELIVERY-COLUMN-ARITHMETIC.md) for software acceptance;
-physical iPhone/iPad checks remain pending.
+[delivery record](../DELIVERY-COLUMN-ARITHMETIC.md) for completed software and
+physical-device acceptance, including the user's iPhone/iPad sign-off.
 
 The child already understands regrouping and needs practice to make calculation
 more automatic. Each operation starts with two three-digit operands in the

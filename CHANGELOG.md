@@ -42,9 +42,10 @@ delete the app or clear website data to refresh it.
 The published release passed 103 unit tests, 306 browser checks, 10 PWA checks
 and 12 native upgrade checks, plus public HTTPS and offline checks in Chromium
 and WebKit. Six existing duplicate diagnosis cases were intentionally skipped.
-Physical 1.2 iPhone/iPad acceptance remains pending. See the
+The user confirmed successful operation after updating on both iPhone and
+iPad on 17 November 2026, completing physical-device acceptance. See the
 [delivery record](docs/DELIVERY-COLUMN-ARITHMETIC.md) and
-[device checklist](docs/DEVICE-ACCEPTANCE-1.2.md).
+[device sign-off](docs/DEVICE-ACCEPTANCE-1.2.md).
 
 ## Earlier releases
 
