@@ -1,7 +1,7 @@
 # Column arithmetic — delivery and acceptance
 
-Status: complete release candidate under final CI review. Prepared 16 November
-2026; candidate reviewed 17 November 2026 (Europe/Paris).
+Status: complete release accepted on integration; main and Pages publication
+pending. Prepared 16 November 2026; accepted 17 November 2026 (Europe/Paris).
 Baseline: accepted MathHero 1.1, main `9792b9d`; published app `9309abde58cff9c001e7944f29d2b727965ee093`,
 worker `01ee92a8204ef083b478`. The completed [1.1 record](DELIVERY-1.1.md)
 remains historical evidence for that release.
@@ -38,7 +38,7 @@ The coordinator owns this record and Git operations. Target version: 1.2.0.
 | 2. Persistence and compatibility | Additive stores, owned transactions, resumable drafts, validated backups and native 1.1 upgrade | Accepted, merged / 01a1e548-4398-7912-899c-29fcf66d4054 / [PR #9](https://github.com/DmitryGaravsky/MathHero/pull/9) |
 | 3. Child experience | Illustrated home, two-action entry, column exercise, manual marks, hints, pause and offline resume | Accepted, merged / 01a1e571-69fd-7001-b774-70b183ec8f33 / [PR #10](https://github.com/DmitryGaravsky/MathHero/pull/10) |
 | 4. Parent experience | Separate addition/subtraction evidence, history and difficulties; locale/theme/accessibility review | Accepted, merged / 01a1e610-33d3-7080-bd92-393d920d638c / [PR #11](https://github.com/DmitryGaravsky/MathHero/pull/11) |
-| 5. Release | Current documentation/screenshots, full regression, upgrade/PWA acceptance, CI and publication | Candidate reviewed; CI and publication pending / 01a1e648-ae08-7220-b023-718fcce674e5 |
+| 5. Release | Current documentation/screenshots, full regression, upgrade/PWA acceptance, CI and publication | Accepted, merged; publication pending / 01a1e648-ae08-7220-b023-718fcce674e5 / [PR #12](https://github.com/DmitryGaravsky/MathHero/pull/12) |
 
 ## Implementation decisions to verify
 
@@ -80,7 +80,7 @@ The coordinator owns this record and Git operations. Target version: 1.2.0.
 - [x] ES/RU, all themes, touch/physical keyboard and phone/tablet orientations work in automated browser profiles.
 - [x] The published 1.1 native database upgrades without loss of multiplication records or unfinished practice.
 - [x] Old and new backups follow the documented scope, validation and atomicity rules.
-- [ ] Multiplication, ownership, timing, offline caching and update behavior retain their regression checks.
+- [x] Multiplication, ownership, timing, offline caching and update behavior retain their regression checks.
 - [ ] Current English documentation, real screenshots, CI and live release checks are complete.
 
 Physical iPhone/iPad acceptance of this new module remains separate and pending.
@@ -215,3 +215,10 @@ hash, verifies saved preferences and the custom PIN, resumes the multiplication
 draft, and saves and reopens a marked column draft with incorrect feedback and
 prior help. Both Chromium and WebKit passed. The completed 1.1 device record
 is unchanged; [physical 1.2 checks](DEVICE-ACCEPTANCE-1.2.md) remain pending.
+
+[CI run 44042419784](https://github.com/DmitryGaravsky/MathHero/actions/runs/44042419784)
+completed cleanly on stage commit `85354725bdad4c49d41b19a70ee522fe82d6a861`:
+103 unit tests, all 306 browser checks, 10 PWA checks and 12 native upgrade
+checks passed. Six existing duplicate-diagnosis skips remain. PR #12 merged
+into integration as `b6baabf`. All five implementation stages are accepted;
+the reviewed complete release is ready for its main PR and publication checks.
