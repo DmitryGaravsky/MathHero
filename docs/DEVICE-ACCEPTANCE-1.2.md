@@ -5,9 +5,9 @@ Status — pending on iPhone and iPad. The
 See the [1.2 delivery record](DELIVERY-COLUMN-ARITHMETIC.md) for publication status.
 
 Use Safari and the Home Screen installation at
-[the MathHero Pages URL](https://dmitrygaravsky.github.io/MathHero/) after
-1.2 is published. Record the iPhone and iPad models, OS versions, installation
-mode and observed results. Export important history before any restore or
+[the MathHero Pages URL](https://dmitrygaravsky.github.io/MathHero/), where
+1.2.0 was published on 17 November 2026. Record the iPhone and iPad models,
+OS versions, installation mode and observed results. Export important history before any restore or
 storage reset. Use a disposable profile or installation for backup tests.
 
 | Check | Expected on each device | iPhone | iPad |

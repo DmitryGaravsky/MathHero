@@ -2,17 +2,18 @@
 
 Status: active engineering and coordination instructions.
 
-## Active development: column arithmetic
+## Current release: MathHero 1.2
 
-The user approved implementation in the design chat on 16 November 2026.
+The user approved column arithmetic in the design chat on 16 November 2026.
 Read `docs/product/REQUIREMENTS-COLUMN-ARITHMETIC.md` and
-`docs/DELIVERY-COLUMN-ARITHMETIC.md` before this work. These explicit new
-requirements extend the accepted 1.1 scope. Use `release/column-arithmetic`
-for integration and sequential Sol stage chats. The coordinator owns Git,
-stage PRs, acceptance and final publication; workers must not create chats or
-agents. Preserve the published multiplication engine and all old data.
-Record column-stage evidence in the new delivery record and
-`docs/stages/column-arithmetic/`; do not overwrite completed 1.1 acceptance.
+`docs/DELIVERY-COLUMN-ARITHMETIC.md` for the implemented scope and evidence.
+Five sequential Sol stage chats, coordinator review and PRs delivered 1.2.0
+through `release/column-arithmetic`. The complete release was merged into
+main and published on Pages on 17 November 2026. Automated acceptance and
+public HTTPS/offline checks passed. Physical 1.2 iPhone/iPad acceptance remains
+pending in `docs/DEVICE-ACCEPTANCE-1.2.md`; completed 1.1 acceptance is historical.
+The coordinator owns Git, stage PRs, acceptance and publication. Workers must
+not create chats or agents. Preserve multiplication behavior and all old data.
 
 Start addition and subtraction with two three-digit operands and independent
 practice. Manual carry ones and borrow dots are optional working notes, not
@@ -20,11 +21,11 @@ app-provided help. Persist digits, marks, active place, hint exposure and phase
 together. The child home uses the approved counters and notebook illustrations.
 Keep new documentation/comments English and every product label in ES/RU.
 
-## Current release: MathHero 1.1
+## Established behavior and release process
 
 Read `docs/DELIVERY-1.1.md` alongside the historical MVP delivery record.
 MathHero 1.1 was delivered through six sequential Sol stage chats, coordinator
-review and stage PRs. It is now published on main and Pages. For future staged
+review and stage PRs. It was published before the 1.2 release. For future staged
 releases, keep implementation on an integration branch until acceptance; only
 a reviewed complete release may reach main and Pages. Follow the current user
 request when deciding the scope and coordination of subsequent work.
@@ -42,11 +43,12 @@ records. All new documentation and comments must be English.
 ## Product and scope
 
 Read `docs/specification.txt` and `docs/DELIVERY.md` before implementing a stage.
-This is a React + TypeScript + Vite PWA for multiplication fluency, with RU/ES,
-local IndexedDB storage, and GitHub Pages deployment. No backend or accounts.
-The active 1.1 requirements are in `docs/product/REQUIREMENTS-1.1.md`; the
-original specification preserves the MVP requirements. Explicit subsequent
-user decisions take precedence. Record resolved ambiguities.
+This is a React + TypeScript + Vite PWA for multiplication fluency and
+three-digit column addition/subtraction, with RU/ES, local IndexedDB storage,
+and GitHub Pages deployment. No backend or accounts. The 1.1 baseline is in
+`docs/product/REQUIREMENTS-1.1.md`; the column requirements extend it and the
+original specification preserves the MVP history. Explicit subsequent user
+decisions take precedence. Record resolved ambiguities.
 The user additionally requires ALL repository documentation and source-code
 comments to be in English when work is complete. Write new documentation and
 comments in English now; translate existing Russian docs in the final stage,
@@ -62,8 +64,9 @@ the coordinator accepts its prerequisite. Do not spawn additional agents
 unless explicitly asked. Do not create extra stage chats from a worker chat.
 Each stage must leave a handoff with changed files, executed checks, results,
 known limitations, and outstanding acceptance criteria in `docs/stages/`.
-The coordinator records actual chat IDs and acceptance evidence in
-`docs/DELIVERY-1.1.md`; `docs/DELIVERY.md` preserves the MVP delivery history.
+The coordinator records actual chat IDs and acceptance evidence in the
+current release's delivery record. `docs/DELIVERY-COLUMN-ARITHMETIC.md`
+records 1.2; `docs/DELIVERY-1.1.md` and `docs/DELIVERY.md` preserve earlier history.
 Never represent planned, unexecuted, simulated, or device-only checks as passed.
 
 ## Engineering and verification

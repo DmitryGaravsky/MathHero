@@ -1,7 +1,9 @@
 # Column arithmetic — delivery and acceptance
 
-Status: complete release accepted on integration; main and Pages publication
-pending. Prepared 16 November 2026; accepted 17 November 2026 (Europe/Paris).
+Status: MathHero 1.2.0 accepted, merged into main and published on Pages.
+Automated and public HTTPS/offline checks passed; physical 1.2 iPhone/iPad
+acceptance remains pending. Prepared 16 November 2026; software release
+completed 17 November 2026 (Europe/Paris).
 Baseline: accepted MathHero 1.1, main `9792b9d`; published app `9309abde58cff9c001e7944f29d2b727965ee093`,
 worker `01ee92a8204ef083b478`. The completed [1.1 record](DELIVERY-1.1.md)
 remains historical evidence for that release.
@@ -38,7 +40,7 @@ The coordinator owns this record and Git operations. Target version: 1.2.0.
 | 2. Persistence and compatibility | Additive stores, owned transactions, resumable drafts, validated backups and native 1.1 upgrade | Accepted, merged / 01a1e548-4398-7912-899c-29fcf66d4054 / [PR #9](https://github.com/DmitryGaravsky/MathHero/pull/9) |
 | 3. Child experience | Illustrated home, two-action entry, column exercise, manual marks, hints, pause and offline resume | Accepted, merged / 01a1e571-69fd-7001-b774-70b183ec8f33 / [PR #10](https://github.com/DmitryGaravsky/MathHero/pull/10) |
 | 4. Parent experience | Separate addition/subtraction evidence, history and difficulties; locale/theme/accessibility review | Accepted, merged / 01a1e610-33d3-7080-bd92-393d920d638c / [PR #11](https://github.com/DmitryGaravsky/MathHero/pull/11) |
-| 5. Release | Current documentation/screenshots, full regression, upgrade/PWA acceptance, CI and publication | Accepted, merged; publication pending / 01a1e648-ae08-7220-b023-718fcce674e5 / [PR #12](https://github.com/DmitryGaravsky/MathHero/pull/12) |
+| 5. Release | Current documentation/screenshots, full regression, upgrade/PWA acceptance, CI and publication | Accepted, merged and published / 01a1e648-ae08-7220-b023-718fcce674e5 / [PR #12](https://github.com/DmitryGaravsky/MathHero/pull/12) |
 
 ## Implementation decisions to verify
 
@@ -81,10 +83,10 @@ The coordinator owns this record and Git operations. Target version: 1.2.0.
 - [x] The published 1.1 native database upgrades without loss of multiplication records or unfinished practice.
 - [x] Old and new backups follow the documented scope, validation and atomicity rules.
 - [x] Multiplication, ownership, timing, offline caching and update behavior retain their regression checks.
-- [ ] Current English documentation, real screenshots, CI and live release checks are complete.
+- [x] Current English documentation, real screenshots, CI and live release checks are complete.
 
 Physical iPhone/iPad acceptance of this new module remains separate and pending.
-The user's completed 1.1 device sign-off does not cover these future changes.
+The user's completed 1.1 device sign-off does not cover the new module.
 
 ## Stage 1 review
 
@@ -222,3 +224,50 @@ completed cleanly on stage commit `85354725bdad4c49d41b19a70ee522fe82d6a861`:
 checks passed. Six existing duplicate-diagnosis skips remain. PR #12 merged
 into integration as `b6baabf`. All five implementation stages are accepted;
 the reviewed complete release is ready for its main PR and publication checks.
+
+## Main release and publication
+
+[Release PR #13](https://github.com/DmitryGaravsky/MathHero/pull/13) contains
+the complete five-stage release. [Its CI run 44095403751](https://github.com/DmitryGaravsky/MathHero/actions/runs/44095403751)
+passed lint, type checking, build, 103 unit tests, 306 browser checks, 10 PWA
+checks and 12 native upgrade checks on integration commit
+`97154b2aa0752287e3c0291dd5d7329f32649490`, with six existing duplicate skips.
+The coordinator then merged the PR into main as
+`209949cae2f0fa62c44c1c607fc1880ceeac3154` on 17 November 2026.
+Rebuilding that main commit reproduced worker `d8377b92265b069a569b` and
+the candidate's JS/CSS bundles.
+
+[Main verification and Pages run 44097533703](https://github.com/DmitryGaravsky/MathHero/actions/runs/44097533703)
+passed the same 103 unit, 306 browser, 10 PWA and 12 native upgrade checks,
+with six existing duplicate skips. The workflow uploaded only verified
+`dist/` assets and the Pages deployment succeeded. Version 1.2.0 is live at
+[MathHero](https://dmitrygaravsky.github.io/MathHero/).
+
+### Public HTTPS and offline acceptance
+
+The coordinator ran `.playwright/column-live-smoke.mjs` against the public URL
+in fresh Chromium and WebKit contexts on 17 November 2026, completing at
+14:06:00 and 14:06:12 UTC respectively. Both reported HTML version 1.2.0.
+The public worker matched the rebuilt candidate byte for byte, SHA-256
+`c5a74c317d8f43ddf06dca85def7da303060902371297d80638c776efcad2b23`.
+All nine precached files matched local build bytes. Requests for
+`src/main.tsx` and `docs/specification.txt` returned 404.
+
+Both engines completed a multiplication answer and observed automatic advance,
+saved the next answer `42`, and saved separate marked addition and subtraction
+drafts. PIN `1234` opened parent mode. After choosing Russian and Dark, returning
+to child mode preserved the exact subtraction route in its paused state.
+A new offline window resumed the same subtraction operands, digits, selected
+place and dots; switching operations restored the marked addition draft.
+Completing addition advanced to the next example offline, and returning to
+multiplication restored its exact question and `42` draft. Russian and Dark
+persisted. Neither engine reported a page error. The coordinator inspected the
+public WebKit offline screenshot. JSON results and captures are retained
+locally under ignored `test-results/column-live-release/`.
+
+The initial public script stopped because the language selector exists in both
+the header and Settings. Scoping the test locator to the header resolved the
+ambiguity; the complete run above then passed. No product change was needed.
+These are desktop browser checks of the deployed release, separate from the
+pending physical-device checklist. All five development stages and software
+publication acceptance are complete.

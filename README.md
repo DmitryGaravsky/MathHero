@@ -55,8 +55,9 @@ Open [localhost on the MathHero base path](http://127.0.0.1:5173/MathHero/).
 
 ## Documentation and release status
 
-Version 1.2.0 adds column arithmetic. The delivery record tracks candidate
-verification, publication and acceptance.
+Version 1.2.0 is published and adds column arithmetic. Automated and live
+offline checks passed; physical iPhone/iPad acceptance of 1.2 remains pending.
+The delivery record contains verification and publication evidence.
 
 - [Child guide](docs/user/CHILD_GUIDE.md) · [Parent guide](docs/user/PARENT_GUIDE.md) · [Settings and offline use](docs/user/SETTINGS.md)
 - [Learning model](docs/pedagogy/LEARNING_MODEL.md) · [Architecture](docs/architecture/OVERVIEW.md) · [Testing](docs/development/TESTING.md)
