@@ -2,6 +2,7 @@
   "id": "/MathHero/",
   "name": "Math Hero",
   "short_name": "Math Hero",
+  "description": "Practica las tablas de multiplicar, las sumas y las restas en columna.",
   "lang": "es",
   "start_url": "/MathHero/",
   "scope": "/MathHero/",

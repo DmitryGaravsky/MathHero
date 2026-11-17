@@ -4,7 +4,9 @@ Column sessions use two three-digit operands. The six-example pilot covers
 four addition groups (no carry, one carry, multiple carries below thousands
 and a carry into thousands) and five subtraction groups (no borrow, one
 borrow, multiple borrows, a borrow through zero and a zero result). The
-practice revisits recent difficulties with fresh operand pairs.
+practice starts independently and revisits recent difficulties with fresh
+operand pairs. Six examples is a pilot session length. The checks and review
+gaps below describe app behavior and observed performance.
 
 ## Results
 
@@ -34,8 +36,8 @@ different sessions provide support. A further independent first check on a
 fresh pair after a real elapsed gap can confirm the result. The review is in a
 different session and on a different local day. The initial gap is at least
 24 hours since last practice for the group, and later reviews use 72 hours
-while that evidence remains current. These intervals are product defaults for
-the pilot. The report describes what was checked after a gap.
+while that evidence remains current. Educational norms would require separate
+validation of the session length, recent-error threshold and review intervals.
 
 A wrong first check clears current support and verification, including when
 help was open before the first check. A helped correct answer earns no new
@@ -55,3 +57,6 @@ In history the time at a check is the cumulative answering time within that
 example, including prior active answering before a retry. The session total
 adds the latest time for each example once. It excludes pauses, background
 time, feedback and time spent with the help panel open.
+
+Column results appear in their own reports. Multiplication mastery and
+achievements use [multiplication practice evidence](LEARNING_MODEL.md).

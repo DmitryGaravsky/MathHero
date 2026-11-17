@@ -1,6 +1,6 @@
 # Mastery, delayed retention and rewards
 
-Status — active policy reference for MathHero 1.1. The mastery and reward rules
+Multiplication policy reference for MathHero 1.2. The mastery and reward rules
 carry forward from the published MVP. Retained is additional parent evidence.
 
 ## Mastery and review intervals

@@ -1,7 +1,5 @@
 # Settings and offline use
 
-Status — active instructions for MathHero 1.1.
-
 Open **Parent mode → Settings and Data**. Language can also be switched from
 the app header.
 
@@ -10,9 +8,9 @@ the app header.
 | Language | Spanish by default. Russian is available. Numbers and dates follow the selected locale. |
 | Theme | System by default. Select Light or Dark to set a fixed appearance. |
 | Animations | On by default. The app also respects the device's reduced-motion preference. |
-| Sound | Off. MathHero 1.1 is silent. |
-| Daily goal | 5, 10 or 15 minutes, with 10 as the default. This is a suggestion, and practice can end early. |
-| Glossary | Expand the section to see Spanish terms and their Russian meanings for multiplication, factor, product and multiplication table. |
+| Sound | Off. MathHero is silent. |
+| Multiplication daily goal | 5, 10 or 15 minutes, with 10 as the default. The goal is a suggestion and practice can end early. |
+| Multiplication glossary | Expand the section to see Spanish terms and their Russian meanings for multiplication, factor, product and multiplication table. |
 
 ## Parent PIN
 
@@ -30,7 +28,7 @@ saved practice remain available. The PIN confirms a local mode switch.
    the standalone app. Check offline readiness in the specific browser or
    Home Screen window you will use.
 
-Practice, results, language changes and backup tools are available offline
+Both practice modules, results, language changes and backup tools are available offline
 after setup. If the Home Screen app and Safari show different histories,
 [transfer a backup](DATA_AND_BACKUP.md) between them.
 

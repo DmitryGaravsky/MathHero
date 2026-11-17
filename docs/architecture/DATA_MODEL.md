@@ -1,6 +1,6 @@
 # Data model
 
-Status — schema reference for the column arithmetic integration.
+Schema reference for MathHero 1.2.
 
 IndexedDB schema v5 keeps the eight published v4 stores and adds six for
 column practice. The first seven v4 stores are portable across the three backup

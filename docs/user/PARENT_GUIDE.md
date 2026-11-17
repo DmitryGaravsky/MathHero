@@ -1,7 +1,5 @@
 # Parent guide
 
-Status — includes the column arithmetic release candidate.
-
 Choose Parent mode and enter the four-digit PIN. The default is **1234**.
 Use **Return to child mode** to go back in one action. A saved child practice
 keeps its place, and an active question needs explicit resume.
@@ -46,3 +44,11 @@ checks, help, recorded notes and active time. The history includes unfinished
 examples and preserves earlier successful reviews if a later first check
 clears the current evidence. See the [column practice and evidence guide](../pedagogy/COLUMN_ARITHMETIC.md)
 for how to interpret the counts.
+
+These screenshots show an addition summary in Spanish and an expanded check
+from the same replay-valid synthetic backup fixture in Russian. The dates
+and results are test examples.
+
+<img src="../assets/column-parent-summary-light.png" alt="Addition report with first-check accuracy, independent solutions, help and session counts" width="760">
+
+<img src="../assets/column-parent-history-dark.png" alt="Expanded addition history with answer checks, an unfinished example, help exposure and active time" width="760">

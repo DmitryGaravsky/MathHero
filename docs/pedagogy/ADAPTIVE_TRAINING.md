@@ -1,13 +1,13 @@
 # Adaptive and targeted practice
 
-Status — active selection reference for MathHero 1.1.
+Multiplication selection reference for MathHero 1.2.
 
 A standard session contains 24 questions. The first four are the warm-up and
 the last four are the challenge. General weak practice favors incorrect and
 slow pairs. Targeted practice begins with the selected canonical pair and gives
 it more weight in later slots.
 
-New 1.1 sessions use registered **policy v2**. When ordinary adaptive practice
+New multiplication sessions use registered **policy v2**. When ordinary adaptive practice
 starts with mastered pairs due for review, slot one goes to the oldest due
 mastered pair. This gives delayed recall a regular opportunity within the
 existing session length. A backlog can span sessions. Policy v1, general weak
