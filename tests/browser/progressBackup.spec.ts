@@ -1,5 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
+import type { FullBackup, LegacyBackup } from "../../src/database/backup";
+import { columnWork } from "../../src/engine/column/arithmetic";
+import { replayColumnJournal } from "../../src/engine/column/replay";
+import type { ColumnJournalEntry } from "../../src/engine/column/session";
 import { goParent, openParent } from "../support/parentMode";
 
 async function answer(page: Page) {
@@ -135,8 +139,13 @@ test("downloads all data, rejects corruption, cancels unchanged and restores res
       "journal",
       "rewards",
       "rewardState",
+      "columnSessions",
+      "columnAttempts",
+      "columnProgress",
+      "columnJournal",
     ].sort(),
   );
+  expect(backup).toMatchObject({ version: 3, databaseVersion: 5 });
   expect(backup.tables.sessions[0].draft).toBe("42");
   expect(backup.tables.attempts).toHaveLength(1);
   await page
@@ -172,6 +181,7 @@ test("downloads all data, rejects corruption, cancels unchanged and restores res
   expect(await snapshot(page)).toEqual(before);
   await page.locator('input[type="file"]').setInputFiles(path);
   await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page.getByRole("dialog")).toContainText("Cálculo en columna · Respuestas (0) · Sesiones (0)");
   await expect(
     page.getByRole("button", { name: "Cancelar", exact: true }),
   ).toBeFocused();
@@ -203,10 +213,65 @@ test("downloads all data, rejects corruption, cancels unchanged and restores res
   expect((await snapshot(page)).rewards).toHaveLength(2);
 });
 
+test("previews both restore scopes and preserves column sessions through the legacy backup UI", async ({ page }, info) => {
+  const at = Date.UTC(2026, 9, 1, 12);
+  const journal: ColumnJournalEntry[] = [
+    { sequence: 1, type: "start", sessionId: "add", at, operation: "addition", policyVersion: 1, seed: 42, timeZone: "Europe/Paris" },
+    { sequence: 2, type: "hint", sessionId: "add", at, activeMs: 750,
+      input: { digits: [3, 3, 2, null], marks: [false, true, true, true], activePlace: 3 } },
+    { sequence: 3, type: "start", sessionId: "sub", at, operation: "subtraction", policyVersion: 1, seed: 42, timeZone: "Europe/Paris" },
+  ];
+  const exercise = replayColumnJournal(journal).sessions.get("sub")!.order[0]!.exercise;
+  const wrong = columnWork(exercise).answer === 0 ? 1 : 0;
+  journal.push({ sequence: 4, type: "check", sessionId: "sub", at, activeMs: 900,
+    input: { digits: [wrong, null, null, null], marks: [true, false, true, false], activePlace: 1 } });
+  const replay = replayColumnJournal(journal);
+  const legacy: LegacyBackup = {
+    format: "math-hero-backup", version: 2, databaseVersion: 4, exportedAt: at,
+    tables: { sessions: [], attempts: [], progress: [], settings: [], journal: [], rewards: [], rewardState: [] },
+  };
+  const columns = {
+    columnSessions: [...replay.sessions.values()],
+    columnAttempts: replay.attempts,
+    columnProgress: [...replay.progress.addition.values(), ...replay.progress.subtraction.values()],
+    columnJournal: journal,
+  };
+  const full: FullBackup = { ...legacy, version: 3, databaseVersion: 5, tables: { ...legacy.tables, ...columns } };
+  await page.goto("./#parent/settings");
+  await openParent(page);
+  const choose = (backup: unknown) => page.locator('input[type="file"]').setInputFiles({
+    name: "arithmetic.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(backup)),
+  });
+  await choose(full);
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toContainText("Se sustituirán los datos de multiplicación y de cálculo en columna");
+  await expect(dialog).toContainText("Cálculo en columna · Respuestas (1) · Sesiones (2)");
+  await dialog.getByRole("button", { name: "Reemplazar y restaurar" }).click();
+  await expect(page.getByRole("status")).toContainText("Copia restaurada");
+
+  await choose(legacy);
+  await expect(dialog).toContainText("Se conservarán el historial y las sesiones sin terminar de cálculo en columna");
+  await expect(dialog).not.toContainText("Cálculo en columna · Respuestas");
+  await dialog.getByRole("button", { name: "Reemplazar y restaurar" }).click();
+  await expect(page.getByRole("status")).toContainText("Copia restaurada");
+
+  await page.getByRole("button", { name: "Русский", exact: true }).first().click();
+  await choose({ ...legacy, version: 1, databaseVersion: 3 });
+  await expect(dialog).toContainText("История и незавершённые занятия по вычислениям столбиком, а также твой PIN сохранятся.");
+  await dialog.getByRole("button", { name: "Отмена" }).click();
+  await expect(dialog).not.toBeVisible();
+  const downloading = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Скачать копию" }).click();
+  const path = info.outputPath("column-v3.json");
+  await (await downloading).saveAs(path);
+  expect(JSON.parse(await readFile(path, "utf8")).tables).toMatchObject(columns);
+});
+
 test("goal and animation settings persist in both locales and all four calm fox states exist", async ({
   page,
 }, info) => {
   await page.goto("./");
+  await page.getByRole("link", { name: "Tablas de multiplicar" }).click();
   await expect(page.locator('.mascot[data-state="greeting"]')).toBeVisible();
   await openParent(page, "settings");
   await page.getByRole("switch", { name: "Animaciones" }).click();

@@ -1,6 +1,6 @@
 # Code and documentation style
 
-Status — active development instructions for MathHero 1.1.
+Development conventions for MathHero 1.2.
 
 - Write repository documentation and source comments in English. Keep visible
   app strings in the ES and RU catalogs with matching keys and parameters.

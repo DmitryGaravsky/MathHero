@@ -79,12 +79,28 @@ test("localized PIN change and deliberate reset preserve learning and persist th
   await newPin.fill("0427");
   await page.getByRole("button", { name: "Изменить PIN" }).click();
   await expect(page.getByText("PIN изменён.")).toBeVisible();
-  const saved = await nativeSnapshot(page);
-  const verifiers = rows<{ id: string; salt: Uint8Array; hash: Uint8Array; version: number }>(saved, "parentGate");
+  const pinSnapshotOptions = { includePinKeys: true };
+  const saved = await nativeSnapshot(page, pinSnapshotOptions);
+  const verifiers = rows<{
+    id: string;
+    version: number;
+    salt: number[];
+    hash: number[];
+    saltType: string;
+    hashType: string;
+    storedKeys: string[];
+  }>(saved, "parentGate");
   expect(verifiers).toHaveLength(1);
-  expect(Object.keys(verifiers[0]!).sort()).toEqual(["hash", "id", "salt", "version"]);
-  expect(Object.values(verifiers[0]!.salt)).toHaveLength(16);
-  expect(Object.values(verifiers[0]!.hash)).toHaveLength(32);
+  const [verifier] = verifiers;
+  expect(verifier).toMatchObject({
+    id: "parent",
+    version: 1,
+    storedKeys: ["hash", "id", "salt", "version"],
+    saltType: "Uint8Array",
+    hashType: "Uint8Array",
+  });
+  expect(verifier!.salt).toHaveLength(16);
+  expect(verifier!.hash).toHaveLength(32);
 
   await page.reload();
   await expect(page.locator(".app-shell")).toHaveAttribute("data-mode", "child");
@@ -98,7 +114,7 @@ test("localized PIN change and deliberate reset preserve learning and persist th
   await expect(dialog.getByRole("button", { name: "Отмена" })).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(dialog.getByLabel("PIN для родителей")).toBeFocused();
-  expect(rows(await nativeSnapshot(page), "parentGate")).toEqual(verifiers);
+  expect(rows(await nativeSnapshot(page, pinSnapshotOptions), "parentGate")).toEqual(verifiers);
   await dialog.getByRole("button", { name: "Отмена" }).click();
 
   await openParent(page, undefined, "0427");

@@ -2,6 +2,24 @@
 
 Status: active engineering and coordination instructions.
 
+## Active development: column arithmetic
+
+The user approved implementation in the design chat on 16 November 2026.
+Read `docs/product/REQUIREMENTS-COLUMN-ARITHMETIC.md` and
+`docs/DELIVERY-COLUMN-ARITHMETIC.md` before this work. These explicit new
+requirements extend the accepted 1.1 scope. Use `release/column-arithmetic`
+for integration and sequential Sol stage chats. The coordinator owns Git,
+stage PRs, acceptance and final publication; workers must not create chats or
+agents. Preserve the published multiplication engine and all old data.
+Record column-stage evidence in the new delivery record and
+`docs/stages/column-arithmetic/`; do not overwrite completed 1.1 acceptance.
+
+Start addition and subtraction with two three-digit operands and independent
+practice. Manual carry ones and borrow dots are optional working notes, not
+app-provided help. Persist digits, marks, active place, hint exposure and phase
+together. The child home uses the approved counters and notebook illustrations.
+Keep new documentation/comments English and every product label in ES/RU.
+
 ## Current release: MathHero 1.1
 
 Read `docs/DELIVERY-1.1.md` alongside the historical MVP delivery record.

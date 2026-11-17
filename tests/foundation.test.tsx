@@ -31,7 +31,7 @@ describe("foundation", () => {
     await user.click(screen.getByRole("button", { name: "Русский" }));
     await waitFor(() => expect(document.documentElement.lang).toBe("ru"));
     expect(
-      screen.getByRole("link", { name: "Тренировка" }),
+      screen.getByRole("link", { name: /^Таблица$/ }),
     ).toBeInTheDocument();
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
       "Привет! Потренируемся?",

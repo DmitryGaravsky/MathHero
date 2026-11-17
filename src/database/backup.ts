@@ -9,24 +9,44 @@ import {
 } from "../engine/learning/rewards";
 import type { Session } from "../engine/learning/session";
 import type { Attempt } from "../engine/sessions/diagnostic";
+import { operandPairId } from "../engine/column/arithmetic";
+import type { ColumnSkillProgress } from "../engine/column/policy";
+import {
+  replayColumnJournal, sameColumnValue, validateColumnSessionSnapshot,
+} from "../engine/column/replay";
+import type { ColumnAttempt, ColumnJournalEntry, ColumnSession } from "../engine/column/session";
+import { columnSessionRow, columnTables } from "./columnRepository";
+import { ColumnSeen } from "./columnSeen";
 import { db, type MathHeroDB } from "./db";
+import { sessionTransaction } from "./sessionTransaction";
 
-export type Backup = (
-  | { version: 1; databaseVersion: 3 }
-  | { version: 2; databaseVersion: 4 }
-) & {
+interface BackupMetadata {
   format: "math-hero-backup";
   exportedAt: number;
-  tables: {
-    sessions: Session[];
-    attempts: Attempt[];
-    progress: PairProgress[];
-    settings: { id: string; value: StoredPreferences }[];
-    journal: JournalEntry[];
-    rewards: Reward[];
-    rewardState: RewardState[];
-  };
+}
+interface MultiplicationTables {
+  sessions: Session[];
+  attempts: Attempt[];
+  progress: PairProgress[];
+  settings: { id: string; value: StoredPreferences }[];
+  journal: JournalEntry[];
+  rewards: Reward[];
+  rewardState: RewardState[];
+}
+interface ColumnTables {
+  columnSessions: ColumnSession[];
+  columnAttempts: ColumnAttempt[];
+  columnProgress: ColumnSkillProgress[];
+  columnJournal: ColumnJournalEntry[];
+}
+export type FullBackup = BackupMetadata & {
+  version: 3; databaseVersion: 5; tables: MultiplicationTables & ColumnTables;
 };
+export type LegacyBackup = BackupMetadata & { tables: MultiplicationTables } & (
+  | { version: 1; databaseVersion: 3 }
+  | { version: 2; databaseVersion: 4 }
+);
+export type Backup = LegacyBackup | FullBackup;
 function requireValid(value: unknown): asserts value {
   if (!value) throw new Error("Invalid Math Hero backup");
 }
@@ -37,9 +57,8 @@ function object(value: unknown): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 function keys(value: unknown, names: string[]) {
-  requireValid(
-    Object.keys(object(value)).sort().join(",") === [...names].sort().join(","),
-  );
+  const row = object(value);
+  requireValid(Object.keys(row).length === names.length && names.every((key) => Object.hasOwn(row, key)));
 }
 function integer(
   value: unknown,
@@ -89,28 +108,24 @@ function unique(rows: unknown[], key: string) {
   requireValid(new Set(ids).size === ids.length);
 }
 
-/** No writes. Unknown schemas and unverifiable aggregates are rejected, never silently trusted. */
-export function validateBackup(input: unknown): Backup {
+const multiplicationNames = ["sessions", "attempts", "progress", "settings", "journal", "rewards", "rewardState"] as const;
+const columnNames = ["columnSessions", "columnAttempts", "columnProgress", "columnJournal"] as const;
+
+function decodeBackup(input: unknown) {
   safeTree(input);
   keys(input, ["format", "version", "databaseVersion", "exportedAt", "tables"]);
   const root = object(input);
   requireValid(
     root.format === "math-hero-backup" &&
       ((root.version === 1 && root.databaseVersion === 3) ||
-        (root.version === 2 && root.databaseVersion === 4)) &&
+        (root.version === 2 && root.databaseVersion === 4) ||
+        (root.version === 3 && root.databaseVersion === 5)) &&
       timestamp(root.exportedAt),
   );
-  keys(root.tables, [
-    "sessions",
-    "attempts",
-    "progress",
-    "settings",
-    "journal",
-    "rewards",
-    "rewardState",
-  ]);
+  keys(root.tables, [...multiplicationNames, ...(root.version === 3 ? columnNames : [])]);
   const tables = object(root.tables);
-  for (const [name, rows] of Object.entries(tables)) {
+  for (const name of multiplicationNames) {
+    const rows = tables[name];
     requireValid(Array.isArray(rows));
     unique(rows, name === "progress" ? "canonicalId" : "id");
   }
@@ -176,7 +191,7 @@ export function validateBackup(input: unknown): Backup {
         /^\d{0,3}$/.test(s.draft) &&
         finite(s.activeMs),
     );
-    requireValid(s.owner === null || typeof s.owner === "string");
+    requireValid(s.owner === null || (backup.version !== 3 && typeof s.owner === "string"));
     requireValid(
       timestamp(s.startedAt) &&
         (s.completedAt === null ||
@@ -346,14 +361,50 @@ export function validateBackup(input: unknown): Backup {
       );
       equal(s.repeats, r?.repeats ?? []);
     }
-  return backup;
+  const columnReplay = backup.version === 3 ? validateColumnTables(backup.tables) : null;
+  return { backup, columnReplay };
+}
+
+function exactColumnRows<T>(actual: readonly unknown[], expected: ReadonlyMap<string, T>,
+  id: (row: Record<string, unknown>) => unknown, matches: (row: unknown, expected: T) => boolean = sameColumnValue,
+) {
+  const remaining = new Map(expected);
+  requireValid(actual.length === remaining.size);
+  for (const row of actual) {
+    const key = id(object(row));
+    requireValid(typeof key === "string");
+    const value = remaining.get(key);
+    requireValid(value && matches(row, value));
+    remaining.delete(key);
+  }
+}
+
+function validateColumnTables(tables: ColumnTables) {
+  for (const name of columnNames) {
+    const rows = tables[name];
+    requireValid(Array.isArray(rows) && Object.keys(rows).length === rows.length);
+    for (let i = 0; i < rows.length; i++) requireValid(Object.hasOwn(rows, i));
+  }
+  const replay = replayColumnJournal(tables.columnJournal);
+  exactColumnRows(tables.columnSessions, replay.sessions, (row) => row.id,
+    (row, expected) => !!validateColumnSessionSnapshot(expected, row));
+  exactColumnRows(tables.columnAttempts, new Map(replay.attempts.map((row) => [row.id, row])), (row) => row.id);
+  const progress = [...replay.progress.addition.values(), ...replay.progress.subtraction.values()];
+  exactColumnRows(tables.columnProgress, new Map(progress.map((row) => [`${row.operation}:${row.skill}`, row])),
+    ({ operation, skill }) => `${operation}:${skill}`);
+  return replay;
+}
+
+/** No writes. Unknown schemas and unverifiable aggregates are rejected. */
+export function validateBackup(input: unknown): Backup {
+  return decodeBackup(input).backup;
 }
 export function parseBackup(text: string) {
   requireValid(text.length <= 20_000_000);
   return validateBackup(JSON.parse(text) as unknown);
 }
 
-function backupTables(database: MathHeroDB) {
+function multiplicationTables(database: MathHeroDB) {
   return [database.sessions, database.attempts, database.progress, database.settings,
     database.journal, database.rewards, database.rewardState];
 }
@@ -361,15 +412,14 @@ function backupTables(database: MathHeroDB) {
 export async function exportBackup(
   database: MathHeroDB = db,
   now = Date.now(),
-): Promise<Backup> {
-  return database.transaction("r", backupTables(database), async () =>
-    validateBackup({
+): Promise<FullBackup> {
+  const backup = await database.transaction("r", [...multiplicationTables(database), ...columnTables(database)], async (): Promise<FullBackup> => ({
       format: "math-hero-backup",
-      version: 2,
-      databaseVersion: 4,
+      version: 3,
+      databaseVersion: 5,
       exportedAt: now,
       tables: {
-        sessions: await database.sessions.toArray(),
+        sessions: (await database.sessions.toArray()).map((session) => ({ ...session, owner: null })),
         attempts: await database.attempts.toArray(),
         progress: await database.progress.toArray(),
         settings: (await database.settings.toArray()).map((row) => ({
@@ -379,19 +429,43 @@ export async function exportBackup(
         journal: await database.journal.toArray(),
         rewards: await database.rewards.toArray(),
         rewardState: await database.rewardState.toArray(),
+        columnSessions: (await database.columnSessions.toArray()).map((row) => row.session),
+        columnAttempts: await database.columnAttempts.toArray(),
+        columnProgress: await database.columnProgress.toArray(),
+        columnJournal: await database.columnJournal.toArray(),
       },
-    }),
-  );
+  }));
+  validateBackup(backup);
+  return backup;
 }
 export async function restoreBackup(
   input: unknown,
   confirmed: boolean,
   database: MathHeroDB = db,
+  signal?: AbortSignal,
 ) {
   if (!confirmed) return false;
-  const backup = validateBackup(input);
-  const tables = backupTables(database);
-  await database.transaction("rw", tables, async () => {
+  signal?.throwIfAborted();
+  const { backup, columnReplay } = decodeBackup(input);
+  const column = backup.version === 3 && columnReplay ? {
+    tables: backup.tables,
+    cursor: columnReplay.cursor,
+    generation: crypto.randomUUID(),
+    seen: [
+      new ColumnSeen("addition"),
+      new ColumnSeen("subtraction"),
+    ].filter((index) => {
+      let hasEntries = false;
+      for (const session of columnReplay.sessions.values()) {
+        if (session.operation !== index.operation) continue;
+        for (const { exercise } of session.order) index.add(operandPairId(exercise));
+        hasEntries = true;
+      }
+      return hasEntries;
+    }).map(({ operation, bits }) => ({ operation, bits })),
+  } : null;
+  const tables = [...multiplicationTables(database), ...(column ? columnTables(database) : [])];
+  await sessionTransaction(database, tables, signal, async () => {
     for (const table of tables) await table.clear();
     await database.sessions.bulkAdd(
       backup.tables.sessions.map((s) => ({ ...s, owner: null })),
@@ -402,6 +476,14 @@ export async function restoreBackup(
     await database.journal.bulkAdd(backup.tables.journal);
     await database.rewards.bulkAdd(backup.tables.rewards);
     await database.rewardState.bulkAdd(backup.tables.rewardState);
+    if (column) {
+      await database.columnSessions.bulkAdd(column.tables.columnSessions.map(columnSessionRow));
+      await database.columnAttempts.bulkAdd(column.tables.columnAttempts);
+      await database.columnProgress.bulkAdd(column.tables.columnProgress);
+      await database.columnJournal.bulkAdd(column.tables.columnJournal);
+      await database.columnSeen.bulkAdd(column.seen);
+      await database.columnState.add({ id: "state", generation: column.generation, cursor: column.cursor });
+    }
   });
   return true;
 }

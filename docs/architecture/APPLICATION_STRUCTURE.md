@@ -1,13 +1,13 @@
 # Application structure
 
-Status — active source map for MathHero 1.1.
+Status — active source map including the column arithmetic release candidate.
 
 | Directory | Responsibility |
 | --- | --- |
 | `src/app` | Hash routes, child and parent shells, shared preferences, theme resolution and localization |
-| `src/features` | Child home and results, practice controller, parent destinations, multiplication map, settings and statistics |
+| `src/features` | Child home and results, multiplication and column practice controllers, parent destinations, multiplication map, settings and statistics |
 | `src/components` | Shared navigation, input and keypad, heading, icons and fox artwork |
-| `src/engine` | Exercise contracts, multiplication catalog, diagnosis, active timer, selection, mastery, evidence and rewards |
+| `src/engine` | Exercise contracts, shared active timer, multiplication catalog, diagnosis, selection, evidence and rewards, and column arithmetic policy and replay |
 | `src/database` | Dexie schema, repositories, write transactions, backup validation and reactive read adapters |
 | `src/settings` | Preference types, defaults and validation |
 | `src/locales` and `src/styles` | Matching ES/RU message catalogs, theme tokens and responsive styling |
@@ -17,6 +17,8 @@ Child mode is the default on launch. The app shell guards parent destinations,
 including pasted and bookmarked hashes, and remembers the child screen while
 the parent view is open. Route and mode changes deactivate the current practice
 controller. The parent prompt also covers the practice and suspends it.
+The [column architecture](COLUMN-ARITHMETIC.md) describes how the child
+routes coordinate the operation controllers and the repository.
 
 A central preference repository validates changes, persists them and publishes
 the updated snapshot. System theme follows the device's current preference.

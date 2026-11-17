@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 import { useApp } from "../../app/AppContext";
-import { routeHref, type AppMode, type Route } from "../../app/router";
+import { reportOperation, routeHref, type AppMode, type Route } from "../../app/router";
 import { Icon } from "../ui/Icon";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Navigation } from "./Navigation";
@@ -39,7 +39,7 @@ export function AppShell({ mode, screen, targetPair, onSwitchMode, children }: {
           {t(mode === "child" ? "parentMode" : "childMode")}
         </button>
       </header>
-      <Navigation mode={mode} screen={screen} />
+      {!reportOperation(screen) && <Navigation mode={mode} screen={screen} />}
       <main id="main-content" tabIndex={-1} ref={main}>{children}</main>
       <footer className="app-footer">{t("tagline")}</footer>
     </div>

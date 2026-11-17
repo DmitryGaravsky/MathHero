@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main, release/mathhero-1.1]
+    branches: [main, release/mathhero-1.1, release/column-arithmetic]
   workflow_dispatch:
 
 permissions:

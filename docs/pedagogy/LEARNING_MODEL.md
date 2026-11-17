@@ -1,6 +1,7 @@
 # Learning model
 
-Status — active description of the implemented 1.1 model.
+Status — active description of the multiplication learning model. See the
+[column arithmetic guide](COLUMN_ARITHMETIC.md) for addition and subtraction.
 
 The catalog covers 144 directed facts for factors 1–12. For example, 7 × 8
 and 8 × 7 have separate answer histories and share one canonical pair. There

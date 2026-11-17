@@ -23,6 +23,7 @@ export default defineConfig({
     env: {
       MATH_HERO_TEST_PORT: "4175",
       MATH_HERO_LEGACY_DIST: resolve(process.env.MATH_HERO_LEGACY_DIST ?? ".playwright/legacy-923d1f6/dist"),
+      MATH_HERO_11_DIST: resolve(process.env.MATH_HERO_11_DIST ?? ".playwright/legacy-9309abd/dist"),
     },
     url: "http://127.0.0.1:4175/MathHero/",
     reuseExistingServer: false,

@@ -1,7 +1,10 @@
-import { useLayoutEffect, useRef, useState } from "react";
-import { replaceRoute, resolveRoute, routeHref, useHash, type AppMode } from "./router";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { columnRoutes, replaceRoute, resolveRoute, routeHref, useHash, type AppMode } from "./router";
 import { ChildShell, ParentShell } from "./ModeShells";
 import { ParentPinDialog } from "../features/settings/ParentPinDialog";
+import type { ColumnOperation } from "../engine/column/arithmetic";
+import { ColumnRepository } from "../database/columnRepository";
+import { ColumnController } from "../features/column/ColumnController";
 
 interface GateRequest {
   destination: string;
@@ -13,13 +16,29 @@ export function App() {
   const [gate, setGate] = useState<GateRequest | null>(null);
   const gateRequest = useRef<GateRequest | null>(null);
   const childDestination = useRef(routeHref("child", "home"));
+  const columnEntry = useRef<ColumnOperation | null>(null);
+  const [columns] = useState(() => {
+    const repository = new ColumnRepository();
+    return {
+      repository,
+      addition: new ColumnController("addition", repository, crypto.randomUUID()),
+      subtraction: new ColumnController("subtraction", repository, crypto.randomUUID()),
+    };
+  });
   const hash = useHash();
   const { screen, targetPair, parentDestination } = resolveRoute(hash, mode);
+  const takeColumnEntry = useCallback((operation: ColumnOperation) => {
+    const matches = columnEntry.current === operation;
+    columnEntry.current = null;
+    return matches;
+  }, []);
 
   useLayoutEffect(() => {
     if (mode === "child" && !parentDestination) {
       childDestination.current = routeHref("child", screen, targetPair);
     }
+    const entry = columnEntry.current;
+    if (entry && (mode !== "child" || screen !== columnRoutes[entry])) columnEntry.current = null;
   }, [mode, parentDestination, screen, targetPair]);
 
   useLayoutEffect(() => {
@@ -54,11 +73,18 @@ export function App() {
 
   return (
     <>
-      <ChildShell screen={screen} targetPair={targetPair} covered={gate !== null} onSwitchMode={() => {
-        const request = { destination: parentDestination ?? routeHref("parent", "home"), hash };
-        gateRequest.current = request;
-        setGate(request);
-      }} />
+      <ChildShell screen={screen} targetPair={targetPair} covered={gate !== null} columns={columns}
+        chooseColumn={(operation) => {
+          columnEntry.current = operation;
+          window.location.hash = routeHref("child", columnRoutes[operation]);
+        }}
+        takeColumnEntry={takeColumnEntry}
+        onSwitchMode={() => {
+          columnEntry.current = null;
+          const request = { destination: parentDestination ?? routeHref("parent", "home"), hash };
+          gateRequest.current = request;
+          setGate(request);
+        }} />
       {gate && <ParentPinDialog onDismiss={closeGate} onUnlock={() => unlock(gate)} />}
     </>
   );

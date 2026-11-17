@@ -6,6 +6,7 @@ import "./styles/themes.css";
 import "./styles/global.css";
 import "./styles/responsive.css";
 import "./styles/child.css";
+import "./styles/column.css";
 import "./styles/parent.css";
 import { registerOffline } from "./pwa/register";
 

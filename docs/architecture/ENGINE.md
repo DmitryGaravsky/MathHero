@@ -1,9 +1,9 @@
 # Engine boundaries and policy compatibility
 
-Status — active implementation reference for MathHero 1.1.
+Engine reference for MathHero 1.2.
 
-- `core` defines exercise, clock and random-source contracts. Multiplication
-  is the only registered operation.
+- `core` defines the multiplication exercise contract and reusable clock and
+  random-source contracts.
 - `multiplication` generates all 144 directed facts and canonicalizes reversed
   factors into 78 pairs. It supplies evaluation and the catalog used by diagnosis
   and the adaptive scheduler.
@@ -11,6 +11,8 @@ Status — active implementation reference for MathHero 1.1.
   baseline statistics and provides the active timer.
 - `learning` implements session transitions, selection, interval changes,
   mastery, pair evidence, analytics and deterministic reward replay.
+- `column` defines its own addition and subtraction exercises, entry state,
+  regrouping steps, selection, evidence and deterministic journal replay.
 
 The engine depends on data passed into it. Keep React, the DOM, Dexie and
 browser storage outside this boundary. Inject clocks and random sources to make
@@ -27,7 +29,6 @@ The additional parent evidence can be derived from old records.
 
 A future policy change needs an explicit registered version, compatibility
 tests for historical sessions and backups, and a decision about mixed replay.
-Preserve fact IDs and canonical identities. Adding another operation would
-also require explicit catalog, validation, persistence, UI, locale and
-migration designs. The current architecture supports only the multiplication
-flows described here.
+Preserve fact IDs and canonical identities. Column arithmetic stores policy
+version 1 with its own exercise IDs and journal. Its [contract](COLUMN-ARITHMETIC.md)
+describes which parameters and transitions future versions must replay.
