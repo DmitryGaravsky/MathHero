@@ -1,6 +1,7 @@
 # Architecture decisions
 
-Status — active decision record for MathHero 1.1.
+This record preserves MathHero 1.1 decisions. MathHero 1.2 adds the
+[column arithmetic contract](../COLUMN-ARITHMETIC.md).
 
 | Decision | Reason and consequence |
 | --- | --- |

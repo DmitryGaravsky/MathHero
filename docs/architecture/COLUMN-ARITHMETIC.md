@@ -1,9 +1,8 @@
 # Column arithmetic engine and storage contract
 
-Stage 1 implements the pure engine and replay in `src/engine/column/`. The
-[approved requirements](../product/REQUIREMENTS-COLUMN-ARITHMETIC.md) cover the
-full module. Stage 2 adds the repository and backup integration. Stage 3 adds
-child navigation and practice. Stage 4 adds read-only parent reporting.
+MathHero 1.2 uses `src/engine/column/` for the pure engine and replay. This
+reference also describes the repository, child practice and parent reporting
+that implement the [approved requirements](../product/REQUIREMENTS-COLUMN-ARITHMETIC.md).
 
 ## Arithmetic and entry
 

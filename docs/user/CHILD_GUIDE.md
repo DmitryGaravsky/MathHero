@@ -38,6 +38,12 @@ with the tables.
    Pause also offers Skip exercise and End session. A complete practice
    contains six examples.
 
+For example, `586 + 647` can have a carry one above each of tens, hundreds
+and thousands. For `604 − 187`, you can mark the `6` and the `0` as you
+borrow through the zero.
+
+<img src="../assets/column-help-light.png" alt="Mistaken tens digit highlighted in 604 minus 187, with the requested worked explanation below" width="700">
+
 A physical keyboard can enter digits, select neighboring places with the
 arrow keys, erase with Backspace or Delete, and check with Enter from the
 answer cells. Opening the parent prompt or leaving the app pauses practice.

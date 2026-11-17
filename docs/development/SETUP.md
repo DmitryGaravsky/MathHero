@@ -1,6 +1,6 @@
 # Local setup
 
-Status — active development instructions for MathHero 1.1.
+Development setup for MathHero 1.2.
 
 Use Git, npm and Node.js 24.15 or later within the 24 series. The release
 workflow uses Node 24.22.1. The project `.npmrc` selects the public registry

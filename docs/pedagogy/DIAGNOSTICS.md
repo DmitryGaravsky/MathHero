@@ -1,6 +1,6 @@
 # Initial diagnosis
 
-Status — active assessment reference for MathHero 1.1.
+Multiplication assessment reference for MathHero 1.2.
 
 The optional baseline in Parent mode shuffles all 144 directed multiplication
 facts and presents each once, in six parts of 24. A part boundary offers a

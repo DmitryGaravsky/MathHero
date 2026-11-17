@@ -1,6 +1,6 @@
 # Persistence, resume and backup
 
-Status — implementation reference for the column arithmetic integration.
+Storage reference for MathHero 1.2.
 
 ## Multiplication answer lifecycle
 
@@ -47,6 +47,9 @@ Schema v5 adds six empty column stores. The eight published v4 stores, including
 the local PIN verifier, keep their native indexes and rows. The upgrade from
 published v3 also adds the parent verifier store. Earlier schema upgrades create
 the multiplication journal and rebuild derived data for pre-journal databases.
+Workers that are still serving 1.1 keep the old client active while 1.2 is
+waiting. The database upgrade runs when the candidate app first opens after
+activation. See the [native upgrade checks](../development/TESTING.md).
 
 The exporter writes the v3 JSON envelope for database v5. The importer also
 accepts v1/database v3 and v2/database v4. V1 accepts multiplication policy v1.
