@@ -4,9 +4,10 @@ Documentation for MathHero 1.2.
 
 | Purpose | Start here |
 | --- | --- |
+| Start or update | [Start practicing](../README.md#start-practicing) · [Install](user/SETTINGS.md#install-and-practice-offline) · [Update the Home Screen app](user/SETTINGS.md#apply-an-update) · [Release notes](../CHANGELOG.md) |
 | Product scope and behavior | [Overview](product/OVERVIEW.md) · [Features](product/FEATURES.md) · [Column arithmetic requirements](product/REQUIREMENTS-COLUMN-ARITHMETIC.md) |
 | Using the app | [Child guide](user/CHILD_GUIDE.md) · [Parent guide](user/PARENT_GUIDE.md) · [Settings and offline use](user/SETTINGS.md) · [Data and backup](user/DATA_AND_BACKUP.md) |
-| Learning and assessment | [Multiplication learning model](pedagogy/LEARNING_MODEL.md) · [Column arithmetic](pedagogy/COLUMN_ARITHMETIC.md) · [Mastery policy](pedagogy/MASTERY_POLICY.md) · [Adaptive training](pedagogy/ADAPTIVE_TRAINING.md) · [Diagnosis](pedagogy/DIAGNOSTICS.md) |
+| Learning and assessment | [Multiplication learning model](pedagogy/LEARNING_MODEL.md) · [Column arithmetic learning model](pedagogy/COLUMN_ARITHMETIC.md) · [Multiplication mastery policy](pedagogy/MASTERY_POLICY.md) · [Multiplication adaptive training](pedagogy/ADAPTIVE_TRAINING.md) · [Multiplication diagnosis](pedagogy/DIAGNOSTICS.md) |
 | Maintaining the app | [Architecture](architecture/OVERVIEW.md) · [Setup](development/SETUP.md) · [Testing](development/TESTING.md) · [Release](development/RELEASE.md) · [Contributing](development/CONTRIBUTING.md) |
 | Acceptance | [1.2 delivery record](DELIVERY-COLUMN-ARITHMETIC.md) · [1.2 stage handoffs](stages/column-arithmetic/) · [1.2 physical-device checklist](DEVICE-ACCEPTANCE-1.2.md) |
 

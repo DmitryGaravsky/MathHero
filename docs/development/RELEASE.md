@@ -20,6 +20,10 @@ Release instructions for MathHero 1.2.
    profiles, including multiplication and both marked column drafts. Record
    the actual CI, Pages and browser results in the delivery record. Collect
    [1.2 physical-device acceptance](../DEVICE-ACCEPTANCE-1.2.md) separately.
+5. Update [release notes](../../CHANGELOG.md) with user-visible changes,
+   compatibility and update instructions. Publish a GitHub Release tagged at
+   the verified application commit, linking the current guides and acceptance
+   evidence. Keep physical-device results distinct from automated verification.
 
 The build allowlist permits only the app shell, bundled JS/CSS, web manifest,
 icons and worker. The documentation, original source attachment, screenshots,

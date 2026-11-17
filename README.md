@@ -1,66 +1,72 @@
 # MathHero
 
-MathHero helps children practice multiplication facts for factors 1–12 and
-three-digit addition and subtraction in columns. [Open the live app](https://dmitrygaravsky.github.io/MathHero/).
+Offline-first math practice for kids: multiplication tables and three-digit
+addition and subtraction in columns. Short adaptive sessions, optional working
+notes and separate parent reports help families follow practice over time.
 
-- **Child mode** offers short adaptive sessions. In column practice, children
-  can add their own carry ones and borrow dots. Saved sessions resume with
-  the same question, answer and notes.
-- **Parent mode** has a local PIN, multiplication diagnosis and a 12 × 12
-  progress map. Column reports show accuracy, independent solutions and
-  practice history separately for addition and subtraction.
-- **Spanish and Russian** interfaces support system, light and dark themes.
-  Install from Safari on iPhone or iPad. Practice offline after the first
-  successful setup.
+**[Open MathHero](https://dmitrygaravsky.github.io/MathHero/)** ·
+[What's new in 1.2](CHANGELOG.md#120--2026-11-17) ·
+[Install or update on iPhone](docs/user/SETTINGS.md#install-and-practice-offline)
 
-The React, TypeScript and Vite app stores history in local IndexedDB. It has
-no backend, accounts, child identifiers or telemetry. Keep learning history
-portable with [JSON backups](docs/user/DATA_AND_BACKUP.md).
+## Start practicing
 
-## Screenshots
+1. Open the app online. No account or setup questionnaire is required.
+2. Choose **Multiplication tables**, then Start; or **Column arithmetic**,
+   then Addition or Subtraction. Each operation resumes its own saved practice.
+3. Use the on-screen keypad. Pause or Save and exit to continue later.
 
-| Child home · light, Spanish | Child practice · dark, Spanish |
+The interface is available in Spanish and Russian, with system, light and
+dark themes. Install from Safari with **Share → Add to Home Screen** and
+check offline readiness in the installation you will use. See the
+[installation and update guide](docs/user/SETTINGS.md), including
+[updating the Home Screen app](docs/user/SETTINGS.md#apply-an-update).
+
+Parent mode uses the default local PIN **1234**. History stays on the device;
+there are no accounts, child identifiers, telemetry or cloud synchronization.
+Use [JSON backups](docs/user/DATA_AND_BACKUP.md) to keep or transfer history.
+
+## Two practice modules
+
+| | Multiplication tables | Column arithmetic |
+| --- | --- | --- |
+| Exercises | Factors 1–12 | Two three-digit operands; addition and nonnegative subtraction |
+| Regular session | 24 questions | 6 examples per operation |
+| Answer entry | One product field | Digits from units leftward, with optional carry ones and borrow dots |
+| Parent view | Diagnosis, 12 × 12 map, accuracy, fluency and recall | Separate addition/subtraction reports, first-check accuracy, independence, help and history |
+| Progress | Multiplication mastery, stars and achievements | Skill evidence and reviews after a gap; separate from multiplication rewards |
+
+Both modules give feedback, revisit difficulties, save unfinished practice
+and work offline after setup. Read the [multiplication learning model](docs/pedagogy/LEARNING_MODEL.md)
+or the [column arithmetic learning model](docs/pedagogy/COLUMN_ARITHMETIC.md).
+
+| Multiplication · dark, Spanish | Column addition · light, Spanish |
 | --- | --- |
-| <img src="docs/assets/child-home-light.png" alt="Child home with illustrated counters and notebook cards" width="290"> | <img src="docs/assets/child-practice-dark.png" alt="Multiplication exercise with a focused answer field and numeric keypad" width="290"> |
+| <img src="docs/assets/child-practice-dark.png" alt="Multiplication question with a numeric keypad" width="290"> | <img src="docs/assets/column-addition-light.png" alt="586 plus 647 with carry ones, 233 entered and the thousands place selected" width="290"> |
 
-| Column addition · light, Spanish | Column subtraction · dark, Russian |
-| --- | --- |
-| <img src="docs/assets/column-addition-light.png" alt="586 plus 647 with three carry ones, 233 entered and the thousands place selected" width="290"> | <img src="docs/assets/column-subtraction-dark.png" alt="604 minus 187 with two borrow dots, 17 entered and the hundreds place selected" width="290"> |
+See more examples in the [child guide](docs/user/CHILD_GUIDE.md) and
+[parent guide](docs/user/PARENT_GUIDE.md).
 
-The [column help example](docs/user/CHILD_GUIDE.md#column-arithmetic) shows
-how a child can review a borrow through zero after an incorrect check. The
-[parent guide](docs/user/PARENT_GUIDE.md#column-arithmetic) shows the addition
-summary and an expanded history entry.
+## Documentation and release status
 
-**Multiplication overview · light, Russian**. The counters come from a
-synthetic backup fixture imported into the app.
+Version 1.2.0 is published. Automated and live offline checks passed;
+[physical iPhone/iPad acceptance](docs/DEVICE-ACCEPTANCE-1.2.md) remains pending.
 
-![Parent overview showing mastered pairs, stars, and Learned, Fluent and Retained counts](docs/assets/parent-overview-light.png)
+- [Release notes](CHANGELOG.md) · [Delivery evidence](docs/DELIVERY-COLUMN-ARITHMETIC.md)
+- [Child guide](docs/user/CHILD_GUIDE.md) · [Parent guide](docs/user/PARENT_GUIDE.md) · [Settings and offline use](docs/user/SETTINGS.md)
+- [Documentation index](docs/README.md) · [Architecture](docs/architecture/OVERVIEW.md) · [Testing](docs/development/TESTING.md)
 
-**Parent map · dark, Spanish**. The selected square shows a 14-day recall check
-from the same synthetic history.
+## Run locally
 
-![Multiplication map with 9 × 9 selected and its Retained evidence](docs/assets/parent-map-dark.png)
-
-## Quick start
-
-With Node.js 24.15 or later in the 24 series:
+The app uses React, TypeScript, Vite and IndexedDB. With Node.js 24.15 or later
+in the 24 series, run these commands from the repository root:
 
 ```powershell
 npm ci
 npm run dev
 ```
 
-Open [localhost on the MathHero base path](http://127.0.0.1:5173/MathHero/).
-
-## Documentation and release status
-
-Version 1.2.0 is published and adds column arithmetic. Automated and live
-offline checks passed; physical iPhone/iPad acceptance of 1.2 remains pending.
-The delivery record contains verification and publication evidence.
-
-- [Child guide](docs/user/CHILD_GUIDE.md) · [Parent guide](docs/user/PARENT_GUIDE.md) · [Settings and offline use](docs/user/SETTINGS.md)
-- [Learning model](docs/pedagogy/LEARNING_MODEL.md) · [Architecture](docs/architecture/OVERVIEW.md) · [Testing](docs/development/TESTING.md)
-- [Documentation index](docs/README.md) · [1.2 delivery record](docs/DELIVERY-COLUMN-ARITHMETIC.md) · [1.2 physical-device checklist](docs/DEVICE-ACCEPTANCE-1.2.md)
+Open [the local app](http://127.0.0.1:5173/MathHero/). See
+[developer setup](docs/development/SETUP.md) and
+[contributing](docs/development/CONTRIBUTING.md) for the complete workflow.
 
 MathHero is available under the [MIT License](LICENSE).

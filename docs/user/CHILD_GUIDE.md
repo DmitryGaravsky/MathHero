@@ -49,3 +49,16 @@ arrow keys, erase with Backspace or Delete, and check with Enter from the
 answer cells. Opening the parent prompt or leaving the app pauses practice.
 A resumed explanation starts closed. If you return to saved correct feedback,
 select Next to continue.
+
+<details>
+<summary>Home and subtraction screenshots</summary>
+
+The illustrated home offers both modules. The subtraction example uses a
+synthetic saved draft of `604 − 187`, with dots above the lending digits,
+`17` entered and the hundreds place selected.
+
+| Home · light, Spanish | Subtraction · dark, Russian |
+| --- | --- |
+| <img src="../assets/child-home-light.png" alt="Home with multiplication and column arithmetic cards" width="290"> | <img src="../assets/column-subtraction-dark.png" alt="604 minus 187 with borrow dots and a partial answer of 17" width="290"> |
+
+</details>

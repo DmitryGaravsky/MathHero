@@ -1,6 +1,6 @@
 # Application structure
 
-Status — active source map including the column arithmetic release candidate.
+Status — source map for the published MathHero 1.2 release.
 
 | Directory | Responsibility |
 | --- | --- |

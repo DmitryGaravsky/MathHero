@@ -28,11 +28,12 @@ not the optional notes. Hints remain separately recorded after resume.
 
 ## Coordination and integration
 
-Use sequential Sol stage chats in the shared checkout. Review and correct each
-stage, run its required checks, and merge its PR into `release/column-arithmetic`
-before starting the dependent stage. Only the accepted complete release reaches
-main and GitHub Pages. Stage workers do not commit, push, publish or create chats.
-The coordinator owns this record and Git operations. Target version: 1.2.0.
+Five sequential Sol stage chats used the shared checkout. The coordinator
+reviewed and corrected each stage, verified its checks and merged its PR into
+`release/column-arithmetic` before starting the dependent stage. Only the
+accepted complete release reached main and GitHub Pages. The coordinator
+owned Git operations and publication; stage workers did not commit, push,
+publish or create chats. Released version: 1.2.0.
 
 | Stage | Deliverable | State / chat / PR |
 | --- | --- | --- |
@@ -42,7 +43,7 @@ The coordinator owns this record and Git operations. Target version: 1.2.0.
 | 4. Parent experience | Separate addition/subtraction evidence, history and difficulties; locale/theme/accessibility review | Accepted, merged / 01a1e610-33d3-7080-bd92-393d920d638c / [PR #11](https://github.com/DmitryGaravsky/MathHero/pull/11) |
 | 5. Release | Current documentation/screenshots, full regression, upgrade/PWA acceptance, CI and publication | Accepted, merged and published / 01a1e648-ae08-7220-b023-718fcce674e5 / [PR #12](https://github.com/DmitryGaravsky/MathHero/pull/12) |
 
-## Implementation decisions to verify
+## Accepted implementation contracts
 
 - Reuse the shell, settings, localization, PWA and appropriate input/timing
   infrastructure; keep the mathematical engine independent of UI and storage.
@@ -51,18 +52,18 @@ The coordinator owns this record and Git operations. Target version: 1.2.0.
 - Column sessions and evidence are separate from multiplication and from each
   other operation. Do not transplant the 3-second threshold, 24-question length,
   canonical-pair mastery or multiplication rewards into this module.
-- Stage 1 must define bounded pilot session and review parameters, repeated
+- Stage 1 defined bounded pilot session and review parameters, repeated
   independent evidence across days, fresh operands for checks and cautious
   interpretations of errors. Speed remains descriptive on comparable examples.
-  Record chosen parameters and rationale as product decisions, not educational norms.
+  The parameters and rationale are product decisions, not educational norms.
 - Preserve the user's own marks and the complete current draft atomically.
   Background, covered views and feedback do not accrue answer time. Automatic
   advance cannot reclaim ownership or advance a paused/restored snapshot.
-- Legacy v1/v2 imports should replace their multiplication/common-preference
+- Legacy v1/v2 imports replace their multiplication/common-preference
   scope while preserving column history; the confirmation must state that scope.
   The new backup replaces both modules atomically after complete validation.
-  Keep the PIN local. Stage 2 must prove these contracts and reject inconsistent
-  history, forged evidence and unknown policy versions before replacement.
+  Keep the PIN local. Stage 2 verified these contracts and rejection of
+  inconsistent history, forged evidence and unknown policy versions before replacement.
 - Reuse the approved code-native illustration design. No new backend, accounts,
   child identifiers, telemetry or cloud synchronization.
 
@@ -90,6 +91,9 @@ The user's completed 1.1 device sign-off does not cover the new module.
 
 ## Stage 1 review
 
+The stage reviews below record decisions and results at each integration
+milestone. Final publication evidence appears under Main release and publication.
+
 The coordinator reviewed the arithmetic, editable draft, selection, session and
 replay code and the [handoff](stages/column-arithmetic/01-engine.md). Corrections
 use recorded local calendar days, retain wrong first checks even after help,
@@ -101,8 +105,8 @@ gap; these are product parameters, not validated educational norms.
 Local type checking, lint and production build passed; 82 tests passed, including
 14 new column tests. The arithmetic test checked all 1,215,450 valid operand
 pairs and their intermediate carry/borrow steps. The unchanged application
-build still has the published 1.1 worker revision. Persistence, browser/PWA,
-native upgrade and full product acceptance remain subsequent work. Stage PR CI
+build still had the published 1.1 worker revision. Persistence, browser/PWA,
+native upgrade and full product acceptance were subsequent work. Stage PR CI
 passed before the persistence stage started. [Run 43911129345](https://github.com/DmitryGaravsky/MathHero/actions/runs/43911129345)
 passed 82 unit tests, 218 browser checks, 10 PWA checks and six native MVP
 upgrade checks. The six pre-existing duplicate-diagnosis skips remain unchanged.
@@ -125,9 +129,9 @@ the tests also imported that published app's actual v2 export through the
 candidate UI, compared its data and verifier bytes, and resumed practice.
 All dates and scripted answers are test fixtures, not child learning records.
 
-The existing CI command now builds both published baselines and runs all ten
-upgrade checks. Full browser regression remains required in stage PR CI before
-starting the child interface stage. No new module device acceptance is claimed.
+At this stage the CI command built both published baselines and ran ten
+upgrade checks. Full browser regression was required in stage PR CI before
+starting the child interface stage. No new module device acceptance was claimed.
 
 The initial stage CI run `43916856310` found eight failures in an existing PIN
 test because the native snapshot helper now includes verifier type metadata.
@@ -167,7 +171,7 @@ green PR CI before integration and the parent stage.
 completed cleanly: 98 unit tests, 282 browser checks, 10 PWA checks and 10 native
 upgrade checks passed. The six existing duplicate-diagnosis skips remain.
 PR #10 merged into integration as `d842c5d` before stage 4 started. Main and
-Pages still contain the accepted 1.1 release.
+Pages still contained the accepted 1.1 release at that milestone.
 
 ## Stage 4 review
 
@@ -186,7 +190,7 @@ existing duplicate-diagnosis skips. The report's 24 new browser checks cover
 all eight profiles. The final Russian date punctuation correction passed the
 eight focused proof cases, PWA checks and native upgrades on the final build.
 The coordinator accepted the [handoff](stages/column-arithmetic/04-parent-experience.md)
-and implementation. Stage PR CI remains required before integration.
+and implementation. Stage PR CI was required before integration.
 
 [CI run 43959611017](https://github.com/DmitryGaravsky/MathHero/actions/runs/43959611017)
 passed 103 unit tests, 306 browser checks, 10 PWA checks and 10 native upgrade
@@ -208,7 +212,7 @@ upgrade checks passed. The full browser run recorded 304 passes, six existing
 skips and two Chromium tablet theme timeouts spanning a roughly five-hour
 gap in test activity. Both affected cases passed on the identical candidate
 in a focused rerun. This interrupted local run is not a clean full pass;
-complete green PR CI on the stage commit is required before integration.
+complete green PR CI on the stage commit was required before integration.
 
 The added natural 1.1 worker update test preserves two old clients until they
 close, observes normal activation outside the app scope, and launches the
@@ -222,8 +226,9 @@ is unchanged; [physical 1.2 checks](DEVICE-ACCEPTANCE-1.2.md) remain pending.
 completed cleanly on stage commit `85354725bdad4c49d41b19a70ee522fe82d6a861`:
 103 unit tests, all 306 browser checks, 10 PWA checks and 12 native upgrade
 checks passed. Six existing duplicate-diagnosis skips remain. PR #12 merged
-into integration as `b6baabf`. All five implementation stages are accepted;
-the reviewed complete release is ready for its main PR and publication checks.
+into integration as `b6baabf`. At that point all five implementation stages
+were accepted and the complete release was ready for its main PR and
+publication checks, recorded below.
 
 ## Main release and publication
 

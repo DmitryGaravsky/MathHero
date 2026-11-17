@@ -25,6 +25,23 @@ On a narrow display, use the parent menu for these destinations. See
 [how to read the evidence](../pedagogy/LEARNING_MODEL.md) and
 [settings, PIN reset and offline use](SETTINGS.md).
 
+<details>
+<summary>Multiplication report screenshots</summary>
+
+These screenshots use a synthetic backup fixture. The dates and results are
+test examples, not a child's records.
+
+**Overview · light, Russian.** Current knowledge counts and stars.
+
+<img src="../assets/parent-overview-light.png" alt="Multiplication overview with mastery, stars and Learned, Fluent and Retained counts" width="760">
+
+**Progress map · dark, Spanish.** Selected `9 × 9` with evidence of a
+14-day recall check.
+
+<img src="../assets/parent-map-dark.png" alt="Multiplication map and dated Retained evidence for 9 times 9" width="760">
+
+</details>
+
 ## Column arithmetic
 
 Choose Addition or Subtraction. The report shows evidence and history for the
